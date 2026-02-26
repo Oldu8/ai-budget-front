@@ -1,23 +1,15 @@
-import { StyleSheet } from 'react-native';
-
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title">AI Budget</ThemedText>
-      <ThemedText>Главный экран</ThemedText>
+    <ThemedView className="flex-1 items-center justify-center bg-slate-900">
+      <ThemedText type="title" className="text-white">
+        AI Budget
+      </ThemedText>
+      <ThemedText className="text-slate-300 mt-2">
+        Главный экран
+      </ThemedText>
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    gap: 8,
-  },
-});
