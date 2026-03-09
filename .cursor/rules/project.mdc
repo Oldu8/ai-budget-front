@@ -1,0 +1,32 @@
+---
+description: Project conventions for ai-budget-front
+---
+
+# ai-budget-front
+
+### 1. COMPACT & ACCURATE CODE
+
+- Write small, focused functions
+- Avoid unnecessary abstractions
+- Keep code simple and readable
+- Don't create extra layers unless absolutely necessary
+- Prefer inline solutions over separate utilities
+
+### 2. README.md
+
+- Keep all info about start/setup project in it. Add to it env example without variables.
+
+### 3. General
+
+- Always refer to frontend-backend-spec.md for the database schema, table naming conventions, and business logic before generating any backend code.
+- When implementing new features or significant changes, update the documentation (e.g. front-spec.md) so it stays accurate and up to date.
+- For better understanding already existed routes, params for them use api-routes.json
+
+### 4. COMMENTS FOR COMPLEX LOGIC
+
+- For non-trivial methods or functions, add a short description (docblock or inline comment) of what the method does or what a block of code is for.
+- Prefer one line; avoid obvious restatements of the code.
+
+### 5. Styles
+
+- Don't use dark theme. We have only one bright theme.

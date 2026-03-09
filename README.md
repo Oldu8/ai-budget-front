@@ -42,5 +42,5 @@ env.appEnv;   // development | production
 
 - **app/** — экраны (file-based routing, expo-router)
 - **components/** — переиспользуемые компоненты
-- **constants/** — тема, env
-- **hooks/** — useColorScheme, useThemeColor
+- **constants/** — тема (светлая), env
+- **hooks/** — useThemeColor

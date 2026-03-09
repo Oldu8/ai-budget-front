@@ -17,11 +17,18 @@ module.exports = {
           icon: "#687076",
           "icon-muted": "#9BA1A6",
         },
-        "app-dark": {
-          bg: "#151718",
-          text: "#ECEDEE",
-          tint: "#fff",
-          icon: "#9BA1A6",
+        brand: {
+          // Primary brand colors
+          primary: "#00CEC8",
+          "primary-hover": "#00B9B3",
+          "primary-active": "#81DACA",
+          "primary-dark": "#005451",
+          // Neutral palette
+          black: "#000000",
+          grey: "#9B938F",
+          "grey-hover": "#EDE7DF",
+          "grey-low": "#F7F5F3",
+          white: "#FFFFFF",
         },
       },
     },
