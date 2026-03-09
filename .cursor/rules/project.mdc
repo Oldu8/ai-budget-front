@@ -30,3 +30,8 @@ description: Project conventions for ai-budget-front
 ### 5. Styles
 
 - Don't use dark theme. We have only one bright theme.
+
+### 5. Language
+
+- For all namings in description, labels and so on use only english as primary language.
+- Use for all namings that we have on the project vocabular.

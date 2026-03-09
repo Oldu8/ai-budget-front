@@ -19,10 +19,9 @@ module.exports = {
         },
         brand: {
           // Primary brand colors
-          primary: "#00CEC8",
+          primary: "#005451",
           "primary-hover": "#00B9B3",
           "primary-active": "#81DACA",
-          "primary-dark": "#005451",
           // Neutral palette
           black: "#000000",
           grey: "#9B938F",
