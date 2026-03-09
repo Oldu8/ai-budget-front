@@ -1,14 +1,17 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useTranslation } from 'react-i18next';
 
 export default function AddScreen() {
+  const { t } = useTranslation();
+
   return (
     <ThemedView className="flex-1 justify-center items-center bg-brand-grey-low">
       <ThemedText type="title" className="text-brand-primary">
-        Add operation
+        {t('add.title')}
       </ThemedText>
       <ThemedText className="mt-2 text-brand-grey">
-        This is the screen for adding an operation. Here a form will appear later.
+        {t('add.description')}
       </ThemedText>
     </ThemedView>
   );

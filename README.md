@@ -44,3 +44,57 @@ env.appEnv;   // development | production
 - **components/** — переиспользуемые компоненты
 - **constants/** — тема (светлая), env
 - **hooks/** — useThemeColor
+
+## Internationalization (i18n) & Vocabulary
+
+- **Библиотеки**: используется `i18next` + `react-i18next`. Английский (`en`) — язык по умолчанию и fallback.
+- **Где лежат словари**:
+  - `i18n/index.ts` — инициализация i18n, экспорт `setLanguage` (на будущее).
+  - `i18n/locales/en.ts` — основной словарь (английский, всегда заполняется первым).
+  - `i18n/locales/es.ts` — испанский (ключи совпадают с `en`, значения пока дублируют английский).
+  - `i18n/locales/uk.ts` — украинский (аналогично).
+- **Подключение в приложение**:
+  - В `app/_layout.tsx` импортируется `@/i18n`, поэтому словарь доступен во всём дереве React.
+
+### Как добавить новый текст в словарь
+
+1. **Придумай ключ** в формате `section.subsection.name`, например:
+   - `home.title`, `home.description`
+   - `add.title`, `add.description`
+   - `nav.home`, `buttons.save` и т.д.
+2. **Добавь ключ в английский словарь** `i18n/locales/en.ts`:
+   ```ts
+   export const en = {
+     home: {
+       title: 'AI Budget',
+       description: 'This is the home screen. Here you can see your budget and your operations.',
+     },
+     // ...
+   } as const;
+   ```
+3. **Продублируй ключи** в `i18n/locales/es.ts` и `i18n/locales/uk.ts` (можно временно оставить английский текст и пометить TODO для переводов).
+
+### Как использовать словарь в компоненте
+
+1. Импортируй хук `useTranslation`:
+   ```ts
+   import { useTranslation } from 'react-i18next';
+   ```
+2. Получи функцию `t` внутри компонента:
+   ```ts
+   const { t } = useTranslation();
+   ```
+3. Используй ключи вместо хардкода:
+   ```tsx
+   <ThemedText type="title">
+     {t('home.title')}
+   </ThemedText>
+   <ThemedText>
+     {t('home.description')}
+   </ThemedText>
+   ```
+
+### Правила
+
+- **Все пользовательские тексты** (заголовки экранов, описания, подписи на кнопках, навигация и т.д.) должны идти **через словарь**, а не как захардкоженные строки.
+- **Английский словарь (`en`) — источник истины**: сначала добавляем ключ туда, затем синхронизируем `es` и `uk`.
