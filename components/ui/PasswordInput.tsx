@@ -1,6 +1,7 @@
-import React from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 
 export interface PasswordInputProps extends Omit<TextInputProps, 'value' | 'onChangeText'> {
@@ -21,46 +22,85 @@ export function PasswordInput({
   editable = true,
   ...rest
 }: PasswordInputProps) {
+  const [visible, setVisible] = useState(false);
+
   return (
-    <>
+    <View style={styles.container}>
       {label ? <ThemedText style={styles.label}>{label}</ThemedText> : null}
-      <TextInput
-        style={[styles.input, error ? styles.inputError : null]}
-        placeholder={placeholder}
-        placeholderTextColor={Colors.grey}
-        value={value}
-        onChangeText={onChangeText}
-        secureTextEntry
-        editable={editable}
-        {...rest}
-      />
-      {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
-    </>
+      <View style={[styles.inputWrapper, error ? styles.inputError : null]}>
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={Colors.grey}
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={!visible}
+          editable={editable}
+          {...rest}
+        />
+        <Pressable
+          onPress={() => setVisible((v) => !v)}
+          style={styles.toggle}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={visible ? 'Hide password' : 'Show password'}
+        >
+          <IconSymbol
+            name={visible ? 'eye.slash.fill' : 'eye.fill'}
+            size={20}
+            color={Colors.grey}
+          />
+        </Pressable>
+      </View>
+      <View style={styles.errorSlot}>
+        {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
+      </View>
+    </View>
   );
 }
 
+const ERROR_SLOT_HEIGHT = 20;
+
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 0,
+  },
   label: {
     fontSize: 14,
     fontWeight: '600',
     marginBottom: 4,
   },
-  input: {
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.greyHover,
     borderRadius: 12,
+    backgroundColor: Colors.white,
+  },
+  input: {
+    flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    backgroundColor: Colors.white,
     color: Colors.black,
   },
   inputError: {
     borderColor: Colors.error,
   },
+  toggle: {
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorSlot: {
+    height: ERROR_SLOT_HEIGHT,
+    justifyContent: 'center',
+  },
   errorText: {
-    fontSize: 14,
+    position: 'absolute',
+    fontSize: 12,
     color: Colors.error,
-    marginTop: 4,
+    left: 0,
   },
 });

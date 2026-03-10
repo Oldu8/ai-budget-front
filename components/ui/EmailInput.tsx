@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
+
+const ERROR_SLOT_HEIGHT = 20;
 
 export interface EmailInputProps extends Omit<TextInputProps, 'value' | 'onChangeText'> {
   value: string;
@@ -22,7 +24,7 @@ export function EmailInput({
   ...rest
 }: EmailInputProps) {
   return (
-    <>
+    <View style={styles.container}>
       {label ? <ThemedText style={styles.label}>{label}</ThemedText> : null}
       <TextInput
         style={[styles.input, error ? styles.inputError : null]}
@@ -36,12 +38,17 @@ export function EmailInput({
         editable={editable}
         {...rest}
       />
-      {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
-    </>
+      <View style={styles.errorSlot}>
+        {error ? <ThemedText style={styles.errorText}>{error}</ThemedText> : null}
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 0,
+  },
   label: {
     fontSize: 14,
     fontWeight: '600',
@@ -60,9 +67,14 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: Colors.error,
   },
+  errorSlot: {
+    height: ERROR_SLOT_HEIGHT,
+    justifyContent: 'center',
+  },
   errorText: {
-    fontSize: 14,
+    position: 'absolute',
+    fontSize: 12,
     color: Colors.error,
-    marginTop: 4,
+    left: 0,
   },
 });
