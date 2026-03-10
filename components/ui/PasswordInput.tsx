@@ -56,11 +56,11 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   inputError: {
-    borderColor: '#b91c1c',
+    borderColor: Colors.error,
   },
   errorText: {
     fontSize: 14,
-    color: '#b91c1c',
+    color: Colors.error,
     marginTop: 4,
   },
 });

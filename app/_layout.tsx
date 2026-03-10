@@ -10,7 +10,7 @@ import '@/i18n';
 import { AuthProvider } from '@/providers/AuthProvider';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  initialRouteName: '(tabs)',
 };
 
 const queryClient = new QueryClient();

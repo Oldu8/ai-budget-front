@@ -4,11 +4,13 @@ module.exports = {
     "./App.{js,jsx,ts,tsx}",
     "./app/**/*.{js,jsx,ts,tsx}",
     "./components/**/*.{js,jsx,ts,tsx}",
+    "./providers/**/*.{js,jsx,ts,tsx}",
+    "./hooks/**/*.{js,jsx,ts,tsx}",
   ],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
-      // Своя палитра — используй как bg-app-bg, text-app-text, bg-tint и т.д.
+      // Custom palette — use as bg-app-bg, text-app-text, bg-tint, etc.
       colors: {
         app: {
           bg: "#fff",

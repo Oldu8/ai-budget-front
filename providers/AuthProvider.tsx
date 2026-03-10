@@ -25,10 +25,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    setAuthErrorHandler(() => {
-      clearTokens();
+    setAuthErrorHandler(async () => {
+      await clearTokens();
       useUserStore.getState().resetAuth();
-      routerRef.current.replace('/(auth)/login' as never);
+      routerRef.current.replace('/(auth)/login');
     });
     return () => setAuthErrorHandler(null);
   }, []);
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const firstSegment = segments[0] as string | undefined;
     const inAuthGroup = firstSegment === '(auth)';
     if (status === 'unauthenticated' && !inAuthGroup) {
-      router.replace('/(auth)/login' as never);
+      router.replace('/(auth)/login');
     } else if (status === 'authenticated' && inAuthGroup) {
       router.replace('/(tabs)');
     }
