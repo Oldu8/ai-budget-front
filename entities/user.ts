@@ -1,5 +1,5 @@
 /**
- * Auth-related types aligned with backend API (app_users, app_user_settings, subscriptions, etc.).
+ * Domain entity types aligned with backend API (app_users, app_user_settings, subscriptions, etc.).
  */
 
 export interface AppUser {
@@ -49,38 +49,4 @@ export interface ScanUsage {
   scans_remaining: number;
   scans_limit: number;
   period_end: string | null;
-}
-
-export interface AuthTokens {
-  accessToken: string;
-  refreshToken: string;
-}
-
-/** POST /api/auth/register response (201) */
-export interface RegisterResponse {
-  access_token: string;
-  refresh_token: string;
-  user: AppUser;
-}
-
-/** POST /api/auth/login response (200) */
-export interface LoginResponse {
-  access_token: string;
-  refresh_token: string;
-  user: AppUser;
-  settings?: AppUserSettings;
-}
-
-/** POST /api/auth/refresh response (200) */
-export interface RefreshResponse {
-  access_token: string;
-  refresh_token: string;
-}
-
-/** GET /api/me response (200) */
-export interface MeResponse {
-  user: AppUser;
-  subscription: UserSubscription | null;
-  scan_usage: ScanUsage;
-  settings?: AppUserSettings;
 }

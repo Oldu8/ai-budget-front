@@ -1,0 +1,236 @@
+---
+description: Enforce feature-first modular architecture for frontend codebase
+globs:
+  - "**/*.{ts,tsx}"
+alwaysApply: true
+---
+
+# Feature-First Modular Architecture
+
+This project uses a feature-first modular architecture.
+
+## Core principle
+
+Organize code by business feature, not by file type.
+
+Prefer this:
+
+- `features/auth`
+- `features/transactions`
+- `features/receipt-scan`
+- `features/settings`
+
+Instead of large global folders like:
+
+- `components/`
+- `hooks/`
+- `api/`
+- `utils/`
+
+Global folders are allowed only for truly shared, cross-feature code.
+
+---
+
+## Top-level frontend structure
+
+The project should follow this structure:
+
+- `app/` — app-wide providers, navigation, app bootstrap, global config
+- `shared/` — reusable UI, API client, utilities, constants, storage, shared hooks
+- `entities/` — core domain entities and their shared types
+- `features/` — isolated business features
+- `screens/` — screen-level composition and orchestration
+
+---
+
+## Folder responsibilities
+
+### `app/`
+
+Contains application-wide setup only:
+
+- Query provider
+- Auth provider
+- navigation
+- root app initialization
+- global app config
+
+Do not place feature-specific business logic here.
+
+### `shared/`
+
+Contains code reused by multiple features:
+
+- base API client
+- shared UI kit
+- helper functions
+- date/currency formatting
+- secure storage
+- generic hooks
+- constants
+
+Do not place feature-specific API calls or feature-specific components here.
+
+### `entities/`
+
+Contains domain entity types and shared model definitions:
+
+- `User`
+- `Category`
+- `Transaction`
+- `TransactionItem`
+- `Subscription`
+
+Entities should be reusable across multiple features.
+
+### `features/`
+
+Contains business functionality grouped by use case or product capability.
+
+Examples:
+
+- `auth`
+- `transactions`
+- `receipt-scan`
+- `summaries`
+- `category-visibility`
+- `export-csv`
+
+Each feature may contain:
+
+- `api/` — endpoint functions
+- `model/` — React Query hooks, local state, derived logic
+- `ui/` — feature-specific UI components
+- `lib/` — internal helpers only used inside the feature
+- `types.ts` — feature-local types if needed
+
+### `screens/`
+
+Contains screen components that compose features together.
+
+Screens should stay thin:
+
+- wire data and UI together
+- call feature hooks
+- render feature components
+
+Screens should not contain large data-fetching logic, API code, or complex business rules.
+
+---
+
+## Rules for writing code
+
+### 1. Keep business logic inside features
+
+If logic belongs to one business area, place it in that feature folder.
+
+Examples:
+
+- login mutation belongs to `features/auth`
+- transaction creation belongs to `features/transactions`
+- scan confirmation belongs to `features/receipt-scan`
+
+### 2. Separate API functions from React Query hooks
+
+Do not mix raw HTTP request functions with React Query hooks in the same file unless the file is extremely small.
+
+Prefer:
+
+- `features/transactions/api/getTransactions.ts`
+- `features/transactions/model/useTransactionsQuery.ts`
+
+### 3. Keep screens thin
+
+A screen should mostly orchestrate features and layout.
+Avoid putting all state, fetching, transformations, and rendering in one screen file.
+
+### 4. Shared code must be truly shared
+
+Before placing code in `shared/`, check whether it is reused across features.
+If it is only used by one feature, keep it inside that feature.
+
+### 5. Prefer entity types over duplicated inline types
+
+Use shared entity types from `entities/` where possible.
+
+### 6. Avoid over-engineering
+
+Do not introduce:
+
+- repository pattern
+- service container
+- use-case classes
+- layered clean architecture abstractions
+  unless the project explicitly requires them.
+
+This codebase prefers pragmatic modularity over enterprise ceremony.
+
+### 7. Co-locate related code
+
+Keep related UI, hooks, API functions, and feature helpers close to one another.
+
+### 8. Respect feature boundaries
+
+A feature may use:
+
+- `shared/*`
+- `entities/*`
+
+A feature should not tightly depend on the internal files of another feature unless there is a strong reason.
+
+If cross-feature logic becomes reusable, extract it into:
+
+- `entities/`
+- `shared/`
+
+---
+
+## Recommended feature structure
+
+A typical feature should look like:
+
+`features/<feature-name>/`
+
+- `api/`
+- `model/`
+- `ui/`
+- `lib/`
+
+Example:
+
+`features/transactions/`
+
+- `api/getTransactions.ts`
+- `api/createTransaction.ts`
+- `model/useTransactionsQuery.ts`
+- `model/useCreateTransactionMutation.ts`
+- `ui/TransactionList.tsx`
+- `ui/TransactionForm.tsx`
+
+---
+
+## Naming conventions
+
+- Feature folders use kebab-case:
+  - `receipt-scan`
+  - `category-visibility`
+- React components use PascalCase
+- hooks start with `use`
+- API files use verb-based names:
+  - `getTransactions.ts`
+  - `createTransaction.ts`
+  - `updateSettings.ts`
+
+---
+
+## Architecture goal
+
+The goal is:
+
+- high cohesion inside each feature
+- low coupling between unrelated features
+- predictable file placement
+- easier scaling as the product grows
+- easier onboarding for future contributors
+
+When generating or editing code, always preserve this architecture.

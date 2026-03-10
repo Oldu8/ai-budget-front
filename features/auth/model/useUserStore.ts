@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { setAuthTokens, clearAuthTokens } from '@/lib/auth/apiClient';
+import { setAuthTokens, clearAuthTokens } from '@/shared/api/protectedClient';
 import type {
   AppUser,
   AppUserSettings,
   UserSubscription,
   ScanUsage,
-} from '@/types/auth';
+} from '@/entities/user';
 
 /** Auth status: idle = not yet checked (before bootstrap); loading = checking/restoring session; authenticated/unauthenticated = resolved. */
 export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'unauthenticated';

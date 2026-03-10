@@ -1,9 +1,9 @@
-import { api, ApiError } from "@/lib/api";
-import { clearTokens, loadTokens, saveTokens } from "@/lib/auth/tokenStorage";
-import { authApi } from "@/lib/authApi";
-import { meApi } from "@/lib/meApi";
-import { useUserStore } from "@/stores/useUserStore";
-import type { MeResponse } from "@/types/auth";
+import { api, ApiError } from "@/shared/api/client";
+import { clearTokens, loadTokens, saveTokens } from "@/shared/storage/tokenStorage";
+import { authApi } from "@/features/auth/api/authApi";
+import { meApi } from "@/features/auth/api/getMe";
+import { useUserStore } from "@/features/auth/model/useUserStore";
+import type { MeResponse } from "@/features/auth/types";
 import { useCallback } from "react";
 
 /** Translation key for the last auth error (e.g. auth.error.invalidCredentials). */
@@ -72,8 +72,7 @@ export function useAuth() {
             scanUsage: me.scan_usage,
           });
         } catch {
-          // Keep user from register response; getMe failure (e.g. network) does not surface here—
-          // we already have user from register. Outer catch only runs when register() throws.
+          // Keep user from register response; getMe failure does not surface here
         }
         setStatus("authenticated");
       } catch (err) {

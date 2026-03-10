@@ -1,5 +1,5 @@
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/shared/ui/ThemedText';
+import { ThemedView } from '@/shared/ui/ThemedView';
 import { useTranslation } from 'react-i18next';
 
 export default function AddScreen() {
@@ -16,4 +16,3 @@ export default function AddScreen() {
     </ThemedView>
   );
 }
-

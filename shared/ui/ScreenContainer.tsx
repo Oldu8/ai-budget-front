@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ThemedView } from '@/components/themed-view';
+import { ThemedView } from '@/shared/ui/ThemedView';
 
 type ScreenContainerVariant = 'default' | 'fullWidth';
 

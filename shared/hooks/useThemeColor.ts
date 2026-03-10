@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/theme';
+import { Colors } from '@/shared/constants/theme';
 
 type ThemeColorProps = {
   light?: string;

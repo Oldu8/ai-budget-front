@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
+import { ThemedText } from '@/shared/ui/ThemedText';
+import { IconSymbol } from '@/shared/ui/IconSymbol';
+import { Colors } from '@/shared/constants/theme';
 
 export interface PasswordInputProps extends Omit<TextInputProps, 'value' | 'onChangeText'> {
   value: string;

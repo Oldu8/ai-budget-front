@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TextInput, TextInputProps, View } from 'react-native';
-import { ThemedText } from '@/components/themed-text';
-import { Colors } from '@/constants/theme';
+import { ThemedText } from '@/shared/ui/ThemedText';
+import { Colors } from '@/shared/constants/theme';
 
 const ERROR_SLOT_HEIGHT = 20;
 

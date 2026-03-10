@@ -1,4 +1,4 @@
-import { env } from '@/constants/env';
+import { env } from '@/shared/constants/env';
 
 /** API error with status and optional parsed body for handling auth/validation errors. */
 export class ApiError extends Error {
@@ -21,7 +21,7 @@ export type RequestOptions = RequestInit & {
 
 /**
  * General-purpose API request. Use for public calls or when passing a token explicitly.
- * For protected calls with automatic 401 refresh/retry, use the auth client (lib/auth/apiClient).
+ * For protected calls with automatic 401 refresh/retry, use the protected client (shared/api/protectedClient).
  */
 async function request<T = unknown>(path: string, options: RequestOptions = {}): Promise<T> {
   const { skipJsonParse, accessToken, headers, ...rest } = options;

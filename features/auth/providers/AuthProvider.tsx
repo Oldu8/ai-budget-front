@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useEffect, useRef } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
-import { setAuthErrorHandler } from '@/lib/auth/apiClient';
-import { clearTokens } from '@/lib/auth/tokenStorage';
-import { useAuth } from '@/hooks/useAuth';
-import { useUserStore } from '@/stores/useUserStore';
-import { ThemedView } from '@/components/themed-view';
-import { Colors } from '@/constants/theme';
+import { setAuthErrorHandler } from '@/shared/api/protectedClient';
+import { clearTokens } from '@/shared/storage/tokenStorage';
+import { useAuth } from '@/features/auth/model/useAuth';
+import { useUserStore } from '@/features/auth/model/useUserStore';
+import { ThemedView } from '@/shared/ui/ThemedView';
+import { Colors } from '@/shared/constants/theme';
 
 type AuthContextValue = ReturnType<typeof useAuth>;
 
@@ -44,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [status, segments]);
 
-  // Full-screen loader while bootstrapAuth runs so we don't flash auth vs app stack.
   if (status === 'idle' || status === 'loading') {
     return (
       <ThemedView style={styles.loadingContainer}>

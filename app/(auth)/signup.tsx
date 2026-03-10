@@ -13,13 +13,13 @@ import {
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { EmailInput } from '@/components/ui/EmailInput';
-import { PasswordInput } from '@/components/ui/PasswordInput';
-import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { useAuthContext } from '@/providers/AuthProvider';
-import { Colors } from '@/constants/theme';
+import { ThemedText } from '@/shared/ui/ThemedText';
+import { ThemedView } from '@/shared/ui/ThemedView';
+import { EmailInput } from '@/features/auth/ui/EmailInput';
+import { PasswordInput } from '@/features/auth/ui/PasswordInput';
+import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { useAuthContext } from '@/features/auth/providers/AuthProvider';
+import { Colors } from '@/shared/constants/theme';
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email format'),

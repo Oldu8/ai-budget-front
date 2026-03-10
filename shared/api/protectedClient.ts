@@ -1,6 +1,6 @@
-import { env } from '@/constants/env';
-import { ApiError, api } from '@/lib/api';
-import { saveTokens as persistTokens } from '@/lib/auth/tokenStorage';
+import { env } from '@/shared/constants/env';
+import { ApiError, api } from '@/shared/api/client';
+import { saveTokens as persistTokens } from '@/shared/storage/tokenStorage';
 
 let inMemoryAccessToken: string | null = null;
 let inMemoryRefreshToken: string | null = null;

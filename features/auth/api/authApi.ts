@@ -1,6 +1,6 @@
-import { api } from '@/lib/api';
-import { protectedPost } from '@/lib/auth/apiClient';
-import type { LoginResponse, RegisterResponse, RefreshResponse } from '@/types/auth';
+import { api } from '@/shared/api/client';
+import { protectedPost } from '@/shared/api/protectedClient';
+import type { LoginResponse, RegisterResponse, RefreshResponse } from '@/features/auth/types';
 
 /** Public auth endpoints (no token). */
 export const authApi = {
