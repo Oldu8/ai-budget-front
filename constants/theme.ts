@@ -21,6 +21,7 @@ export const Colors = {
   greyHover: "#EDE7DF",
   greyLow: "#F7F5F3",
   white: "#FFFFFF",
+  error: "#b91c1c",
 } as const;
 
 export const Fonts = Platform.select({

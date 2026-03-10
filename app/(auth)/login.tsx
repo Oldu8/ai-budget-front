@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
 } from 'react-native';
 import { router } from 'expo-router';
@@ -65,11 +66,17 @@ export default function LoginScreen() {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboard}
       >
-        <ThemedText type="title" style={styles.title}>
-          {t('auth.loginTitle')}
-        </ThemedText>
+        <ScrollView
+          bounces={false}
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <ThemedText type="title" style={styles.title}>
+            {t('auth.loginTitle')}
+          </ThemedText>
 
-        <ThemedView style={styles.form}>
+          <ThemedView style={styles.form}>
           <EmailInput
             label={t('auth.emailLabel')}
             placeholder={t('auth.emailPlaceholder')}
@@ -106,12 +113,13 @@ export default function LoginScreen() {
 
           <Pressable
             style={styles.link}
-            onPress={() => router.push('/(auth)/signup' as never)}
+            onPress={() => router.push('/(auth)/signup')}
             disabled={loading}
           >
             <ThemedText type="link">{t('auth.toSignup')}</ThemedText>
           </Pressable>
-        </ThemedView>
+          </ThemedView>
+        </ScrollView>
       </KeyboardAvoidingView>
     </ScreenContainer>
   );
@@ -120,6 +128,9 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   keyboard: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   title: {
     marginTop: 48,
@@ -130,7 +141,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: '#b91c1c',
+    color: Colors.error,
     marginTop: -4,
   },
   button: {

@@ -1,8 +1,9 @@
-import { ApiError } from "@/lib/api";
+import { api, ApiError } from "@/lib/api";
 import { clearTokens, loadTokens, saveTokens } from "@/lib/auth/tokenStorage";
 import { authApi } from "@/lib/authApi";
 import { meApi } from "@/lib/meApi";
 import { useUserStore } from "@/stores/useUserStore";
+import type { MeResponse } from "@/types/auth";
 import { useCallback } from "react";
 
 /** Translation key for the last auth error (e.g. auth.error.invalidCredentials). */
@@ -142,7 +143,30 @@ export function useAuth() {
         return;
       }
       setTokens(tokens);
-      const me = await meApi.getMe();
+
+      let me: MeResponse;
+      try {
+        me = await api.get<MeResponse>("/api/me", {
+          accessToken: tokens.accessToken,
+        });
+      } catch (err) {
+        if (!(err instanceof ApiError && err.status === 401)) throw err;
+
+        const refreshData = await authApi.refresh({
+          refresh_token: tokens.refreshToken,
+        });
+        const newTokens = {
+          accessToken: refreshData.access_token,
+          refreshToken: refreshData.refresh_token,
+        };
+        setTokens(newTokens);
+        await saveTokens(newTokens);
+
+        me = await api.get<MeResponse>("/api/me", {
+          accessToken: newTokens.accessToken,
+        });
+      }
+
       setUserData({
         user: me.user,
         settings: me.settings,
@@ -150,32 +174,7 @@ export function useAuth() {
         scanUsage: me.scan_usage,
       });
       setStatus("authenticated");
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
-        try {
-          const refreshToken = useUserStore.getState().refreshToken;
-          if (refreshToken) {
-            const data = await authApi.refresh({ refresh_token: refreshToken });
-            const newTokens = {
-              accessToken: data.access_token,
-              refreshToken: data.refresh_token,
-            };
-            setTokens(newTokens);
-            await saveTokens(newTokens);
-            const me = await meApi.getMe();
-            setUserData({
-              user: me.user,
-              settings: me.settings,
-              subscription: me.subscription,
-              scanUsage: me.scan_usage,
-            });
-            setStatus("authenticated");
-            return;
-          }
-        } catch {
-          // Fall through to clear
-        }
-      }
+    } catch {
       await clearTokens();
       resetAuth();
     }

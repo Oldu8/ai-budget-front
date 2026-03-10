@@ -4,7 +4,7 @@ import { saveTokens as persistTokens } from '@/lib/auth/tokenStorage';
 
 let inMemoryAccessToken: string | null = null;
 let inMemoryRefreshToken: string | null = null;
-let authErrorHandler: (() => void) | null = null;
+let authErrorHandler: (() => void | Promise<void>) | null = null;
 let onTokensRefreshed: ((tokens: { accessToken: string; refreshToken: string }) => void) | null = null;
 
 export function setAuthTokens(tokens: { accessToken: string; refreshToken: string } | null): void {
@@ -29,7 +29,7 @@ export function getAuthTokens(): { accessToken: string; refreshToken: string } |
   return null;
 }
 
-export function setAuthErrorHandler(handler: (() => void) | null): void {
+export function setAuthErrorHandler(handler: (() => void | Promise<void>) | null): void {
   authErrorHandler = handler;
 }
 
@@ -86,7 +86,7 @@ export async function protectedGet<T = unknown>(
         onTokensRefreshed?.(pair);
         return protectedGet<T>(path, true);
       } catch {
-        authErrorHandler?.();
+        await authErrorHandler?.();
         throw err;
       }
     }
@@ -118,7 +118,7 @@ export async function protectedPost<T = unknown>(
         onTokensRefreshed?.(pair);
         return protectedPost<T>(path, body, true);
       } catch {
-        authErrorHandler?.();
+        await authErrorHandler?.();
         throw err;
       }
     }
