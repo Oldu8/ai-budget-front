@@ -11,6 +11,7 @@ export const es = {
   profile: {
     title: 'Perfil',
     description: 'Esta es la pantalla de perfil. Aquí aparecerán más adelante los ajustes de la cuenta.',
+    logout: 'Cerrar sesión',
   },
   nav: {
     home: 'Inicio',
@@ -21,6 +22,25 @@ export const es = {
     save: 'Guardar',
     cancel: 'Cancelar',
     addOperation: 'Agregar operación',
+  },
+  auth: {
+    loginTitle: 'Iniciar sesión',
+    signupTitle: 'Crear cuenta',
+    emailLabel: 'Correo electrónico',
+    passwordLabel: 'Contraseña',
+    emailPlaceholder: 'tu@ejemplo.com',
+    passwordPlaceholder: '••••••••',
+    loginButton: 'Iniciar sesión',
+    signupButton: 'Crear cuenta',
+    toSignup: 'Crear cuenta',
+    toLogin: '¿Ya tienes cuenta? Iniciar sesión',
+    error: {
+      invalidCredentials: 'Correo o contraseña incorrectos.',
+      emailTaken: 'Este correo ya está registrado.',
+      weakPassword: 'La contraseña es demasiado débil.',
+      network: 'Error de red. Comprueba tu conexión.',
+      generic: 'Algo ha ido mal. Inténtalo de nuevo.',
+    },
   },
 } as const;
 
