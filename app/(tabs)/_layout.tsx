@@ -3,9 +3,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
+import { HapticTab } from '@/shared/ui/HapticTab';
+import { IconSymbol } from '@/shared/ui/IconSymbol';
+import { Colors } from '@/shared/constants/theme';
 
 export default function TabLayout() {
   const { t } = useTranslation();

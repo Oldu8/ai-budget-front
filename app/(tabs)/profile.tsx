@@ -1,7 +1,7 @@
-import { ThemedText } from '@/components/themed-text';
-import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { Colors } from '@/constants/theme';
-import { useAuthContext } from '@/providers/AuthProvider';
+import { ThemedText } from '@/shared/ui/ThemedText';
+import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { Colors } from '@/shared/constants/theme';
+import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';

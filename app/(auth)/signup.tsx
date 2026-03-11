@@ -13,13 +13,13 @@ import {
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { EmailInput } from '@/components/ui/EmailInput';
-import { PasswordInput } from '@/components/ui/PasswordInput';
-import { ScreenContainer } from '@/components/ui/ScreenContainer';
-import { useAuthContext } from '@/providers/AuthProvider';
-import { Colors } from '@/constants/theme';
+import { ThemedText } from '@/shared/ui/ThemedText';
+import { ThemedView } from '@/shared/ui/ThemedView';
+import { EmailInput } from '@/features/auth/ui/EmailInput';
+import { PasswordInput } from '@/features/auth/ui/PasswordInput';
+import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { useAuthContext } from '@/features/auth/providers/AuthProvider';
+import { Colors } from '@/shared/constants/theme';
 
 const schema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email format'),
@@ -38,6 +38,7 @@ export default function SignupScreen() {
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { email: '', password: '' },
@@ -45,6 +46,12 @@ export default function SignupScreen() {
 
   const email = watch('email');
   const password = watch('password');
+
+  const handleChange = (field: keyof FormData, value: string) => {
+    setValue(field, value);
+    clearErrors(field);
+    if (error) setError(null);
+  };
 
   const onSubmit = async (data: FormData) => {
     setError(null);
@@ -81,7 +88,7 @@ export default function SignupScreen() {
             label={t('auth.emailLabel')}
             placeholder={t('auth.emailPlaceholder')}
             value={email}
-            onChangeText={(v) => setValue('email', v, { shouldValidate: true })}
+            onChangeText={(v) => handleChange('email', v)}
             error={errors.email?.message}
             editable={!loading}
           />
@@ -90,7 +97,7 @@ export default function SignupScreen() {
             label={t('auth.passwordLabel')}
             placeholder={t('auth.passwordPlaceholder')}
             value={password}
-            onChangeText={(v) => setValue('password', v, { shouldValidate: true })}
+            onChangeText={(v) => handleChange('password', v)}
             error={errors.password?.message}
             editable={!loading}
           />

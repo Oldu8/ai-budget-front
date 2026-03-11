@@ -5,9 +5,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import 'react-native-reanimated';
-import '@/i18n';
+import '@/shared/i18n';
 
-import { AuthProvider } from '@/providers/AuthProvider';
+import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
