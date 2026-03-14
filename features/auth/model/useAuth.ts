@@ -3,7 +3,7 @@ import { clearTokens, loadTokens, saveTokens } from "@/shared/storage/tokenStora
 import { authApi } from "@/features/auth/api/authApi";
 import { meApi } from "@/features/auth/api/getMe";
 import { useUserStore } from "@/features/auth/model/useUserStore";
-import type { MeResponse } from "@/features/auth/types";
+import { type MeResponse, mapAuthUserToAppUser } from "@/features/auth/types";
 import { useCallback } from "react";
 
 /** Translation key for the last auth error (e.g. auth.error.invalidCredentials). */
@@ -62,7 +62,7 @@ export function useAuth() {
         };
         setTokens(tokens);
         await saveTokens(tokens);
-        setUserData({ user: data.user });
+        setUserData({ user: mapAuthUserToAppUser(data.user) });
         try {
           const me = await meApi.getMe();
           setUserData({
@@ -97,7 +97,7 @@ export function useAuth() {
         setTokens(tokens);
         await saveTokens(tokens);
         setUserData({
-          user: data.user,
+          user: mapAuthUserToAppUser(data.user),
           settings: data.settings ?? undefined,
         });
         try {

@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, TextInput, TextInputProps, View } from 'react-native';
+import {
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TextInputProps,
+  View,
+} from 'react-native';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { Colors } from '@/shared/constants/theme';
@@ -20,14 +27,33 @@ export function PasswordInput({
   placeholder,
   error,
   editable = true,
+  onFocus,
+  onBlur,
   ...rest
 }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
+  const [focused, setFocused] = useState(false);
+
+  const handleFocus = (e: Parameters<NonNullable<TextInputProps['onFocus']>>[0]) => {
+    setFocused(true);
+    onFocus?.(e);
+  };
+
+  const handleBlur = (e: Parameters<NonNullable<TextInputProps['onBlur']>>[0]) => {
+    setFocused(false);
+    onBlur?.(e);
+  };
+
+  const wrapperStyle = [
+    styles.inputWrapper,
+    error ? styles.inputError : null,
+    focused && !error ? styles.inputFocused : null,
+  ];
 
   return (
     <View style={styles.container}>
       {label ? <ThemedText style={styles.label}>{label}</ThemedText> : null}
-      <View style={[styles.inputWrapper, error ? styles.inputError : null]}>
+      <View style={wrapperStyle}>
         <TextInput
           style={styles.input}
           placeholder={placeholder}
@@ -36,6 +62,8 @@ export function PasswordInput({
           onChangeText={onChangeText}
           secureTextEntry={!visible}
           editable={editable}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...rest}
         />
         <Pressable
@@ -84,9 +112,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     fontSize: 16,
     color: Colors.black,
+    ...(Platform.OS === 'web' && { outlineStyle: 'none' }),
   },
   inputError: {
     borderColor: Colors.error,
+  },
+  inputFocused: {
+    borderColor: Colors.primary,
   },
   toggle: {
     paddingHorizontal: 12,

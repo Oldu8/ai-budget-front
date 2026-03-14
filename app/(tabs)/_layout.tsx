@@ -1,11 +1,11 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
+import { Colors } from '@/shared/constants/theme';
 import { HapticTab } from '@/shared/ui/HapticTab';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
-import { Colors } from '@/shared/constants/theme';
 
 export default function TabLayout() {
   const { t } = useTranslation();
