@@ -90,4 +90,11 @@ export const api = {
       ...(options ?? {}),
     });
   },
+  patch<T = unknown>(path: string, body?: unknown, options?: Omit<RequestOptions, 'method' | 'body'>) {
+    return request<T>(path, {
+      method: 'PATCH',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      ...(options ?? {}),
+    });
+  },
 };

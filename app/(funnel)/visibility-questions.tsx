@@ -1,23 +1,15 @@
 import React from 'react';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-} from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
 
-import { ThemedText } from '@/shared/ui/ThemedText';
-import { ScreenContainer } from '@/shared/ui/ScreenContainer';
-import { useVisibilityQuestionsQuery } from '@/features/funnel/model/useVisibilityQuestionsQuery';
+import { PreferencesForm } from '@/features/funnel/ui/PreferencesForm';
 import { Colors } from '@/shared/constants/theme';
+import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { ThemedText } from '@/shared/ui/ThemedText';
 
 export default function VisibilityQuestionsScreen() {
-  const { data, isLoading, error } = useVisibilityQuestionsQuery();
-
-  const handleFinish = () => {
-    router.replace('/(tabs)');
-  };
+  const { t } = useTranslation();
 
   return (
     <ScreenContainer variant="default">
@@ -27,28 +19,19 @@ export default function VisibilityQuestionsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ThemedText type="title" style={styles.title}>
-          Visibility Questions
+          {t('onboarding.preferences.title')}
+        </ThemedText>
+        <ThemedText style={styles.description}>
+          {t('onboarding.preferences.description')}
         </ThemedText>
 
-        {isLoading ? (
-          <ActivityIndicator size="large" color={Colors.primary} style={styles.loader} />
-        ) : error ? (
-          <ThemedText style={styles.error}>
-            {error instanceof Error ? error.message : 'Failed to load questions'}
-          </ThemedText>
-        ) : data ? (
-          <ThemedText style={styles.content}>
-            {typeof data === 'string'
-              ? data
-              : Array.isArray(data)
-                ? JSON.stringify(data, null, 2)
-                : JSON.stringify(data, null, 2)}
-          </ThemedText>
-        ) : null}
-
-        <Pressable style={styles.button} onPress={handleFinish}>
-          <ThemedText style={styles.buttonText}>Finish</ThemedText>
-        </Pressable>
+        <PreferencesForm
+          submitLabel={t('onboarding.preferences.continue')}
+          showSkip
+          skipLabel={t('onboarding.preferences.skip')}
+          onSuccess={() => router.replace('/(tabs)')}
+          onSkip={() => router.replace('/(tabs)')}
+        />
       </ScrollView>
     </ScreenContainer>
   );
@@ -57,36 +40,16 @@ export default function VisibilityQuestionsScreen() {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 24,
   },
   title: {
-    marginTop: 48,
-    marginBottom: 32,
+    marginTop: 40,
+    marginBottom: 12,
   },
-  loader: {
-    marginVertical: 24,
-  },
-  error: {
+  description: {
     fontSize: 16,
-    color: Colors.error,
+    lineHeight: 24,
+    color: Colors.grey,
     marginBottom: 24,
-  },
-  content: {
-    fontSize: 14,
-    marginBottom: 24,
-    fontFamily: 'monospace',
-  },
-  button: {
-    backgroundColor: Colors.primary,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
-    marginTop: 8,
-  },
-  buttonText: {
-    color: Colors.white,
-    fontSize: 16,
-    fontWeight: '600',
   },
 });

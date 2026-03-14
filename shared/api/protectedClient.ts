@@ -166,3 +166,35 @@ export async function protectedPut<T = unknown>(
     throw err;
   }
 }
+
+/**
+ * Protected PATCH: sends Bearer token, on 401 attempts refresh and retries once.
+ */
+export async function protectedPatch<T = unknown>(
+  path: string,
+  body?: unknown,
+  retrying = false
+): Promise<T> {
+  const tokens = getAuthTokens();
+  try {
+    return await api.patch<T>(path, body, { accessToken: tokens?.accessToken ?? null });
+  } catch (err) {
+    if (!retrying && err instanceof ApiError && err.status === 401) {
+      try {
+        const newTokens = await performRefresh();
+        const pair = {
+          accessToken: newTokens.access_token,
+          refreshToken: newTokens.refresh_token,
+        };
+        setAuthTokens(pair);
+        await persistTokens(pair);
+        onTokensRefreshed?.(pair);
+        return protectedPatch<T>(path, body, true);
+      } catch {
+        await authErrorHandler?.();
+        throw err;
+      }
+    }
+    throw err;
+  }
+}

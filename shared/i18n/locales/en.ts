@@ -22,6 +22,51 @@ export const en = {
     cancel: 'Cancel',
     addOperation: 'Add operation',
   },
+  onboarding: {
+    preferences: {
+      title: 'Customize your budget',
+      description:
+        'Choose which sections you want to track. You can change this later in Settings.',
+      continue: 'Continue',
+      skip: 'Skip for now',
+      has_children: {
+        title: 'Child expenses',
+        description: 'Track expenses related to your child',
+      },
+      has_car: {
+        title: 'Car expenses',
+        description: 'Fuel, parking, maintenance and repairs',
+      },
+      pays_rent: {
+        title: 'Rent',
+        description: 'Monthly rent payments',
+      },
+      insurance: {
+        title: 'Insurance',
+        description: 'Health, car, home insurance',
+      },
+      has_insurance: {
+        title: 'Insurance',
+        description: 'Health, car, home insurance',
+      },
+      loan: {
+        title: 'Loans',
+        description: 'Loan repayments',
+      },
+      has_loans: {
+        title: 'Loans',
+        description: 'Loan repayments',
+      },
+      mortgage: {
+        title: 'Mortgage',
+        description: 'Mortgage payments',
+      },
+      has_mortgage: {
+        title: 'Mortgage',
+        description: 'Mortgage payments',
+      },
+    },
+  },
   auth: {
     loginTitle: 'Sign in',
     signupTitle: 'Create account',
