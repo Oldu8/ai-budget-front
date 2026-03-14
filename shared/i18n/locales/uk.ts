@@ -23,6 +23,51 @@ export const uk = {
     cancel: 'Скасувати',
     addOperation: 'Додати операцію',
   },
+  onboarding: {
+    preferences: {
+      title: 'Налаштуйте свій бюджет',
+      description:
+        'Оберіть розділи, які хочете відстежувати. Пізніше можна змінити в Налаштуваннях.',
+      continue: 'Продовжити',
+      skip: 'Пропустити зараз',
+      has_children: {
+        title: 'Витрати на дітей',
+        description: 'Відстежуйте витрати, пов\'язані з дітьми',
+      },
+      has_car: {
+        title: 'Витрати на авто',
+        description: 'Паливо, паркування, техобслуговування та ремонт',
+      },
+      pays_rent: {
+        title: 'Оренда',
+        description: 'Щомісячні платежі за оренду',
+      },
+      insurance: {
+        title: 'Страхування',
+        description: 'Медичне, авто, страхування житла',
+      },
+      has_insurance: {
+        title: 'Страхування',
+        description: 'Медичне, авто, страхування житла',
+      },
+      loan: {
+        title: 'Кредити',
+        description: 'Погашення кредитів',
+      },
+      has_loans: {
+        title: 'Кредити',
+        description: 'Погашення кредитів',
+      },
+      mortgage: {
+        title: 'Іпотека',
+        description: 'Платежі за іпотекою',
+      },
+      has_mortgage: {
+        title: 'Іпотека',
+        description: 'Платежі за іпотекою',
+      },
+    },
+  },
   auth: {
     loginTitle: 'Увійти',
     signupTitle: 'Створити обліковий запис',
