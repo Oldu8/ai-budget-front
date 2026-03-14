@@ -20,8 +20,10 @@ const MAPPING = {
   'person.fill': 'person',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'chevron.down': 'keyboard-arrow-down',
   'eye.fill': 'visibility',
   'eye.slash.fill': 'visibility-off',
+  'dollarsign.circle.fill': 'attach-money',
 } as IconMapping;
 
 /**

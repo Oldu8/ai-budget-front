@@ -16,7 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
   const segments = useSegments();
-  const { status } = auth;
+  const { status, settings } = auth;
   const routerRef = useRef(router);
   routerRef.current = router;
 
@@ -35,14 +35,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === 'idle' || status === 'loading') return;
-    const firstSegment = segments[0] as string | undefined;
-    const inAuthGroup = firstSegment === '(auth)';
+    const segs = segments as readonly string[];
+    const inAuthGroup =
+      segs[0] === '(auth)' || segs.includes('login') || segs.includes('signup');
+    const inTabsGroup = segs[0] === '(tabs)';
+
     if (status === 'unauthenticated' && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (status === 'authenticated' && inAuthGroup) {
-      router.replace('/(tabs)');
+      return;
     }
-  }, [status, segments]);
+
+    if (status === 'authenticated') {
+      if (inAuthGroup) {
+        router.replace(settings ? '/(tabs)' : '/(funnel)/settings');
+        return;
+      }
+      if (inTabsGroup && !settings) {
+        router.replace('/(funnel)/settings');
+      }
+    }
+  }, [status, segments, settings]);
 
   if (status === 'idle' || status === 'loading') {
     return (

@@ -45,12 +45,21 @@ async function performRefresh(): Promise<{ access_token: string; refresh_token: 
   if (!refreshToken) {
     throw new ApiError('No refresh token', 401);
   }
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  if (env.apiSecret) {
+    headers['X-API-Key'] = env.apiSecret;
+  }
   const response = await fetch(`${env.apiUrl}/api/auth/refresh`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ refresh_token: refreshToken }),
   });
-  const data = await response.json().catch(() => ({}));
+  const contentType = response.headers.get('content-type') ?? '';
+  const isJson = contentType.includes('application/json');
+  const data = isJson ? await response.json().catch(() => ({})) : {};
   if (!response.ok) {
     throw new ApiError(
       (data?.message as string) || `Refresh failed: ${response.status}`,
@@ -117,6 +126,38 @@ export async function protectedPost<T = unknown>(
         await persistTokens(pair);
         onTokensRefreshed?.(pair);
         return protectedPost<T>(path, body, true);
+      } catch {
+        await authErrorHandler?.();
+        throw err;
+      }
+    }
+    throw err;
+  }
+}
+
+/**
+ * Protected PUT: sends Bearer token, on 401 attempts refresh and retries once.
+ */
+export async function protectedPut<T = unknown>(
+  path: string,
+  body?: unknown,
+  retrying = false
+): Promise<T> {
+  const tokens = getAuthTokens();
+  try {
+    return await api.put<T>(path, body, { accessToken: tokens?.accessToken ?? null });
+  } catch (err) {
+    if (!retrying && err instanceof ApiError && err.status === 401) {
+      try {
+        const newTokens = await performRefresh();
+        const pair = {
+          accessToken: newTokens.access_token,
+          refreshToken: newTokens.refresh_token,
+        };
+        setAuthTokens(pair);
+        await persistTokens(pair);
+        onTokensRefreshed?.(pair);
+        return protectedPut<T>(path, body, true);
       } catch {
         await authErrorHandler?.();
         throw err;

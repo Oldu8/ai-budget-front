@@ -30,28 +30,44 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
   if (accessToken) {
     authHeader.Authorization = `Bearer ${accessToken}`;
   }
+  const apiKeyHeader: Record<string, string> = {};
+  if (env.apiSecret) {
+    apiKeyHeader['X-API-Key'] = env.apiSecret;
+  }
 
   const response = await fetch(`${env.apiUrl}${path}`, {
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...apiKeyHeader,
       ...authHeader,
       ...(headers ?? {}),
     },
     ...rest,
   });
 
+  const contentType = response.headers.get('content-type') ?? '';
+  const isJson = contentType.includes('application/json');
+
   if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new ApiError(
-      (body?.message as string) || `Request failed with status ${response.status}`,
-      response.status,
-      body,
-      response
-    );
+    const body = isJson ? await response.json().catch(() => ({})) : await response.text().then(() => ({}));
+    const message =
+      (body?.message as string) ||
+      (isJson ? `Request failed with status ${response.status}` : `Server returned ${response.status} (non-JSON). Check API URL and Accept header.`);
+    throw new ApiError(message, response.status, body, response);
   }
 
   if (skipJsonParse) {
     return response as unknown as T;
+  }
+  if (!isJson) {
+    const text = await response.text();
+    throw new ApiError(
+      `Expected JSON but got ${contentType?.slice(0, 50) ?? 'unknown'}. Response: ${text.slice(0, 100)}...`,
+      response.status,
+      undefined,
+      response
+    );
   }
   return (await response.json()) as T;
 }
@@ -63,6 +79,13 @@ export const api = {
   post<T = unknown>(path: string, body?: unknown, options?: Omit<RequestOptions, 'method' | 'body'>) {
     return request<T>(path, {
       method: 'POST',
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+      ...(options ?? {}),
+    });
+  },
+  put<T = unknown>(path: string, body?: unknown, options?: Omit<RequestOptions, 'method' | 'body'>) {
+    return request<T>(path, {
+      method: 'PUT',
       body: body !== undefined ? JSON.stringify(body) : undefined,
       ...(options ?? {}),
     });
