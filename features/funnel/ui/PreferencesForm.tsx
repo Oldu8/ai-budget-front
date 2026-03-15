@@ -47,6 +47,8 @@ export interface PreferencesFormProps {
   skipLabel?: string;
   onSuccess?: () => void;
   onSkip?: () => void;
+  /** When provided, used as initial answers instead of defaulting all to false. */
+  initialAnswers?: PreferenceAnswers;
 }
 
 export function PreferencesForm({
@@ -55,6 +57,7 @@ export function PreferencesForm({
   skipLabel,
   onSuccess,
   onSkip,
+  initialAnswers: initialAnswersProp,
 }: PreferencesFormProps) {
   const { t } = useTranslation();
   const { data: questions, isLoading, error } = useVisibilityQuestionsQuery();
@@ -62,13 +65,18 @@ export function PreferencesForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const initialAnswers = useMemo(() => {
+  const defaultInitialAnswers = useMemo(() => {
     if (!questions) return {};
     return questions.reduce<PreferenceAnswers>((acc, q) => {
       acc[q.question_key] = false;
       return acc;
     }, {});
   }, [questions]);
+
+  const initialAnswers = useMemo(
+    () => ({ ...defaultInitialAnswers, ...(initialAnswersProp ?? {}) }),
+    [defaultInitialAnswers, initialAnswersProp]
+  );
 
   const mergedAnswers = useMemo(
     () => ({ ...initialAnswers, ...answers }),
