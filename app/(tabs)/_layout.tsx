@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { Colors } from '@/shared/constants/theme';
 import { HapticTab } from '@/shared/ui/HapticTab';
@@ -32,24 +32,8 @@ export default function TabLayout() {
         name="add"
         options={{
           title: t('nav.add'),
-          tabBarLabel: '',
-          tabBarButton: (props) => (
-            <HapticTab
-              {...props}
-              style={[
-                props.style,
-                {
-                  position: 'absolute',
-                  alignSelf: 'center',
-                  top: -18,
-                },
-              ]}
-            />
-          ),
           tabBarIcon: ({ color }) => (
-            <View style={[styles.addButton, { borderColor: color }]}>
-              <IconSymbol size={28} name="plus.circle.fill" color={color} />
-            </View>
+            <IconSymbol size={24} name="plus.circle.fill" color={color} />
           ),
         }}
       />
@@ -74,15 +58,5 @@ const styles = StyleSheet.create({
   },
   tabBarLabel: {
     fontSize: 12,
-  },
-  addButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 3,
   },
 });
