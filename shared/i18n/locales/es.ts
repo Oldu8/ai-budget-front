@@ -3,6 +3,16 @@ export const es = {
   home: {
     title: 'AI Budget',
     description: 'Esta es la pantalla de inicio. Aquí puedes ver tu presupuesto y tus operaciones.',
+    monthFormat: 'MMMM yyyy',
+    previousMonth: 'Mes anterior',
+    nextMonth: 'Mes siguiente',
+    tableCategory: 'Categoría',
+    tableTotal: 'Total',
+    tableGrandTotal: 'TOTAL',
+    emptyTitle: 'Sin gastos este mes',
+    emptyDescription: 'Tus gastos aparecerán aquí cuando añadas transacciones.',
+    errorTitle: 'Algo ha ido mal',
+    errorRetry: 'Intentar de nuevo',
   },
   add: {
     title: 'Agregar operación',

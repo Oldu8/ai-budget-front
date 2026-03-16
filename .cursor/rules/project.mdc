@@ -35,3 +35,7 @@ description: Project conventions for ai-budget-front
 
 - For all namings in description, labels and so on use only english as primary language.
 - Use for all namings that we have on the project vocabular.
+
+### 6. ONLY absolute pathers for imports
+
+- Use only absolute path, not relative.

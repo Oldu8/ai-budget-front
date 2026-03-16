@@ -2,6 +2,16 @@ export const en = {
   home: {
     title: 'AI Budget',
     description: 'This is the home screen. Here you can see your budget and your operations.',
+    monthFormat: 'MMMM yyyy',
+    previousMonth: 'Previous month',
+    nextMonth: 'Next month',
+    tableCategory: 'Category',
+    tableTotal: 'Total',
+    tableGrandTotal: 'TOTAL',
+    emptyTitle: 'No expenses this month',
+    emptyDescription: 'Your expenses will appear here once you add transactions.',
+    errorTitle: 'Something went wrong',
+    errorRetry: 'Try again',
   },
   add: {
     title: 'Add operation',

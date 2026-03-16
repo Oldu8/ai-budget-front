@@ -3,6 +3,16 @@ export const uk = {
   home: {
     title: 'AI Budget',
     description: 'Це головний екран. Тут ви можете побачити свій бюджет та свої операції.',
+    monthFormat: 'MMMM yyyy',
+    previousMonth: 'Попередній місяць',
+    nextMonth: 'Наступний місяць',
+    tableCategory: 'Категорія',
+    tableTotal: 'Всього',
+    tableGrandTotal: 'ВСЬОГО',
+    emptyTitle: 'Немає витрат цього місяця',
+    emptyDescription: 'Ваші витрати зʼявляться тут після додавання транзакцій.',
+    errorTitle: 'Щось пішло не так',
+    errorRetry: 'Спробувати знову',
   },
   add: {
     title: 'Додати операцію',
