@@ -36,13 +36,14 @@ export function ExpenseMonthTable() {
       showsHorizontalScrollIndicator
       className="flex-1 bg-brand-grey-low"
     >
-      <ScrollView
-        showsVerticalScrollIndicator
-        nestedScrollEnabled
-        className="flex-1"
-      >
-        <View style={{ minWidth: tableWidth }}>
-          <ExpenseTableHeader days={days} />
+      <View style={{ minWidth: tableWidth, flex: 1 }}>
+        {/* Sticky header - stays visible when scrolling down */}
+        <ExpenseTableHeader days={days} />
+        <ScrollView
+          showsVerticalScrollIndicator
+          nestedScrollEnabled
+          className="flex-1"
+        >
           {rows.map((row) => (
             <ExpenseTableRow
               key={row.id}
@@ -73,8 +74,8 @@ export function ExpenseMonthTable() {
               </ThemedText>
             </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </ScrollView>
   );
 }
