@@ -35,7 +35,7 @@ export function SettingsSection({ title, children }: SettingsSectionProps) {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   title: {
     fontSize: 13,

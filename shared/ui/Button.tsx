@@ -11,7 +11,7 @@ import {
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
-type ButtonVariant = 'primary' | 'secondary';
+type ButtonVariant = 'primary' | 'secondary' | 'destructive';
 
 export interface ButtonProps extends Omit<PressableProps, 'children' | 'style'> {
   children: string;
@@ -29,12 +29,31 @@ export function Button({
   ...props
 }: ButtonProps) {
   const isSecondary = variant === 'secondary';
+  const isDestructive = variant === 'destructive';
+
+  const buttonStyle = isDestructive
+    ? styles.destructive
+    : isSecondary
+      ? styles.secondary
+      : styles.primary;
+
+  const textStyle = isDestructive
+    ? styles.destructiveText
+    : isSecondary
+      ? styles.secondaryText
+      : styles.primaryText;
+
+  const loaderColor = isDestructive
+    ? Colors.error
+    : isSecondary
+      ? Colors.primary
+      : Colors.white;
 
   return (
     <Pressable
       style={[
         styles.button,
-        isSecondary ? styles.secondary : styles.primary,
+        buttonStyle,
         (disabled || loading) && styles.disabled,
         style,
       ]}
@@ -44,16 +63,9 @@ export function Button({
       {...props}
     >
       {loading ? (
-        <ActivityIndicator
-          size="small"
-          color={isSecondary ? Colors.primary : Colors.white}
-        />
+        <ActivityIndicator size="small" color={loaderColor} />
       ) : (
-        <ThemedText
-          style={[styles.text, isSecondary ? styles.secondaryText : styles.primaryText]}
-        >
-          {children}
-        </ThemedText>
+        <ThemedText style={[styles.text, textStyle]}>{children}</ThemedText>
       )}
     </Pressable>
   );
@@ -75,6 +87,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primary,
   },
+  destructive: {
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.greyHover,
+  },
   disabled: {
     opacity: 0.7,
   },
@@ -87,5 +104,8 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     color: Colors.primary,
+  },
+  destructiveText: {
+    color: Colors.error,
   },
 });

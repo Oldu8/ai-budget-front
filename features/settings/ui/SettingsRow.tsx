@@ -14,6 +14,8 @@ export interface SettingsRowProps {
   value?: string;
   onPress: () => void;
   showChevron?: boolean;
+  /** Chevron for navigation, picker for modal. Default: chevron */
+  disclosureType?: 'chevron' | 'picker';
 }
 
 export function SettingsRow({
@@ -23,6 +25,7 @@ export function SettingsRow({
   value,
   onPress,
   showChevron = true,
+  disclosureType = 'chevron',
 }: SettingsRowProps) {
   return (
     <Pressable
@@ -53,7 +56,7 @@ export function SettingsRow({
           ) : null}
           {showChevron ? (
             <MaterialIcons
-              name="chevron-right"
+              name={disclosureType === 'picker' ? 'keyboard-arrow-down' : 'chevron-right'}
               size={22}
               color={Colors.grey}
               style={styles.chevron}

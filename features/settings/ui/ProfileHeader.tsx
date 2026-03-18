@@ -51,11 +51,11 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 20,
-    marginTop: 16,
-    marginBottom: 4,
+    marginTop: 20,
+    marginBottom: 6,
   },
   email: {
-    fontSize: 15,
+    fontSize: 13,
     color: Colors.grey,
   },
   emailOnly: {
