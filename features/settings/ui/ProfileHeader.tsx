@@ -46,7 +46,7 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    paddingVertical: 32,
+    paddingVertical: 16,
     paddingHorizontal: 16,
   },
   name: {
