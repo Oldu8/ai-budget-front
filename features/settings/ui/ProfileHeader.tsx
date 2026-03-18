@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import type { AppUser } from '@/entities/user';
@@ -17,7 +18,9 @@ export interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
+  const { t } = useTranslation();
   const name = user ? displayName(user.first_name, user.last_name) : '';
+  const displayNameOrFallback = name || (user ? t('profile.userFallback') : '');
   const email = user?.email ?? '';
 
   return (
@@ -26,13 +29,13 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
         firstName={user?.first_name ?? null}
         lastName={user?.last_name ?? null}
       />
-      {name ? (
+      {displayNameOrFallback ? (
         <ThemedText type="defaultSemiBold" style={styles.name}>
-          {name}
+          {displayNameOrFallback}
         </ThemedText>
       ) : null}
       {email ? (
-        <ThemedText style={[styles.email, !name && styles.emailOnly]}>
+        <ThemedText style={[styles.email, !displayNameOrFallback && styles.emailOnly]}>
           {email}
         </ThemedText>
       ) : null}

@@ -26,63 +26,72 @@ export function SettingsRow({
 }: SettingsRowProps) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+      style={({ pressed }) => [styles.pressable, pressed && styles.rowPressed]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
     >
-      <View style={styles.iconContainer}>
-        <MaterialIcons name={icon} size={22} color={Colors.primary} />
-      </View>
-      <View style={styles.content}>
-        <ThemedText style={styles.title} numberOfLines={1}>
-          {title}
-        </ThemedText>
-        {subtitle ? (
-          <ThemedText style={styles.subtitle} numberOfLines={1}>
-            {subtitle}
+      <View style={styles.row}>
+        <View style={styles.iconContainer}>
+          <MaterialIcons name={icon} size={22} color={Colors.primary} />
+        </View>
+        <View style={styles.content}>
+          <ThemedText style={styles.title} numberOfLines={1}>
+            {title}
           </ThemedText>
-        ) : null}
-      </View>
-      <View style={styles.right}>
-        {value ? (
-          <ThemedText style={styles.value} numberOfLines={1}>
-            {value}
-          </ThemedText>
-        ) : null}
-        {showChevron ? (
-          <MaterialIcons
-            name="chevron-right"
-            size={22}
-            color={Colors.grey}
-            style={styles.chevron}
-          />
-        ) : null}
+          {subtitle ? (
+            <ThemedText style={styles.subtitle} numberOfLines={1}>
+              {subtitle}
+            </ThemedText>
+          ) : null}
+        </View>
+        <View style={styles.right}>
+          {value ? (
+            <ThemedText style={styles.value} numberOfLines={1}>
+              {value}
+            </ThemedText>
+          ) : null}
+          {showChevron ? (
+            <MaterialIcons
+              name="chevron-right"
+              size={22}
+              color={Colors.grey}
+              style={styles.chevron}
+            />
+          ) : null}
+        </View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
+  pressable: {
+    width: '100%',
+    minHeight: 52,
+  },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 12,
-    minHeight: 52,
+    width: '100%',
   },
   rowPressed: {
     opacity: 0.8,
   },
   iconContainer: {
     width: 36,
+    minWidth: 36,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   content: {
     flex: 1,
     marginHorizontal: 12,
     minWidth: 0,
+    flexShrink: 1,
   },
   title: {
     fontSize: 16,
@@ -98,6 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    flexShrink: 0,
   },
   value: {
     fontSize: 15,

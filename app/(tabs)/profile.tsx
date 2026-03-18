@@ -1,7 +1,8 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect } from '@react-navigation/native';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
@@ -20,10 +21,24 @@ import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
+function isUserFallback(user: { first_name?: string | null; last_name?: string | null } | null): boolean {
+  if (!user) return true;
+  const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
+  return !name.trim();
+}
+
 export default function ProfileScreen() {
   const { t } = useTranslation();
-  const { user, settings, signOut } = useAuthContext();
+  const { user, settings, signOut, refetchMe } = useAuthContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (isUserFallback(user)) {
+        refetchMe();
+      }
+    }, [refetchMe, user])
+  );
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const handleSignOut = async () => {
@@ -42,7 +57,7 @@ export default function ProfileScreen() {
     Constants.expoConfig?.version ?? Constants.manifest?.version ?? '1.0.0';
 
   return (
-    <ScreenContainer variant="default">
+    <ScreenContainer variant="default" edges={[]}>
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}

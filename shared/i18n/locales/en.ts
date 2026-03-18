@@ -21,6 +21,7 @@ export const en = {
       "This is the screen for adding an operation. Here a form will appear later.",
   },
   profile: {
+    userFallback: "User",
     title: "Profile",
     description:
       "This is the profile screen. Here settings of account will appear later.",

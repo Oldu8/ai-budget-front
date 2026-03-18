@@ -19,6 +19,7 @@ export const es = {
     description: 'Esta es la pantalla para agregar una operación. Aquí aparecerá un formulario más adelante.',
   },
   profile: {
+    userFallback: 'Usuario',
     title: 'Perfil',
     description: 'Esta es la pantalla de perfil. Aquí aparecerán más adelante los ajustes de la cuenta.',
     editProfile: 'Editar perfil',

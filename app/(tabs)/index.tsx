@@ -15,7 +15,11 @@ export default function HomeScreen() {
   const showEmpty = !isLoading && !isError && (isEmpty || hasNoExpenses);
 
   return (
-    <ScreenContainer variant="fullWidth" style={{ backgroundColor: Colors.greyLow }}>
+    <ScreenContainer
+      variant="fullWidth"
+      edges={[]}
+      style={{ backgroundColor: Colors.greyLow }}
+    >
       <MonthSwitcher />
       {isLoading && <HomeScreenSkeleton />}
       {isError && <ErrorState onRetry={refetch} />}

@@ -20,7 +20,10 @@ export function SettingsSection({ title, children }: SettingsSectionProps) {
         {items.map((child, index) => (
           <View
             key={index}
-            style={index < items.length - 1 ? styles.rowWrapper : undefined}
+            style={[
+              styles.rowWrapperBase,
+              index < items.length - 1 && styles.rowWrapperBorder,
+            ]}
           >
             {child}
           </View>
@@ -44,13 +47,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   card: {
+    width: '100%',
     backgroundColor: Colors.white,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: Colors.greyHover,
     overflow: 'hidden',
   },
-  rowWrapper: {
+  rowWrapperBase: {
+    width: '100%',
+  },
+  rowWrapperBorder: {
     borderBottomWidth: 1,
     borderBottomColor: Colors.greyHover,
   },
