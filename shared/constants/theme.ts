@@ -20,6 +20,8 @@ export const Colors = {
   grey: "#9B938F",
   greyHover: "#EDE7DF",
   greyLow: "#F7F5F3",
+  /** Light gray for text on primary (dark) background, e.g. header */
+  headerText: "#E5E5E5",
   white: "#FFFFFF",
   error: "#b91c1c",
 } as const;

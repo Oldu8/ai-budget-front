@@ -13,7 +13,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerStyle: styles.header,
+        headerTintColor: Colors.headerText,
+        headerTitleStyle: styles.headerTitle,
         tabBarButton: HapticTab,
         tabBarActiveTintColor: Colors.tabIconSelected,
         tabBarInactiveTintColor: Colors.tabIconDefault,
@@ -24,14 +27,16 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t('nav.home'),
+          title: t('home.title'),
+          tabBarLabel: t('nav.home'),
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="add"
         options={{
-          title: t('nav.add'),
+          title: t('add.title'),
+          tabBarLabel: t('nav.add'),
           tabBarIcon: ({ color }) => (
             <IconSymbol size={24} name="plus.circle.fill" color={color} />
           ),
@@ -40,7 +45,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: t('nav.profile'),
+          title: t('profile.title'),
+          tabBarLabel: t('nav.profile'),
           tabBarIcon: ({ color }) => <IconSymbol size={24} name="person.fill" color={color} />,
         }}
       />
@@ -49,6 +55,13 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    backgroundColor: Colors.primary,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
   tabBar: {
     borderTopWidth: 0,
     elevation: 0,

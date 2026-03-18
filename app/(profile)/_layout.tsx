@@ -1,5 +1,8 @@
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet } from 'react-native';
+
+import { Colors } from '@/shared/constants/theme';
 
 export default function ProfileLayout() {
   const { t } = useTranslation();
@@ -9,6 +12,9 @@ export default function ProfileLayout() {
       screenOptions={{
         headerShown: true,
         headerShadowVisible: false,
+        headerStyle: styles.header,
+        headerTintColor: Colors.headerText,
+        headerTitleStyle: styles.headerTitle,
       }}
     >
       <Stack.Screen name="edit-profile" options={{ title: t('profile.editProfile') }} />
@@ -25,3 +31,13 @@ export default function ProfileLayout() {
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: Colors.primary,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+});

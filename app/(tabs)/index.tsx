@@ -1,18 +1,26 @@
-import { ThemedText } from '@/shared/ui/ThemedText';
-import { ThemedView } from '@/shared/ui/ThemedView';
-import { useTranslation } from 'react-i18next';
+import React from 'react';
+import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+import { Colors } from '@/shared/constants/theme';
+import { MonthSwitcher } from '@/features/home/ui/MonthSwitcher';
+import { ExpenseMonthTable } from '@/features/home/ui/ExpenseMonthTable';
+import { EmptyExpensesState } from '@/features/home/ui/EmptyExpensesState';
+import { ErrorState } from '@/features/home/ui/ErrorState';
+import { HomeScreenSkeleton } from '@/features/home/ui/HomeScreenSkeleton';
+import { useMonthlyExpenseTable } from '@/features/home/model/useMonthlyExpenseTable';
 
 export default function HomeScreen() {
-  const { t } = useTranslation();
+  const { isLoading, isError, refetch, isEmpty, hasNoExpenses } =
+    useMonthlyExpenseTable();
+
+  const showEmpty = !isLoading && !isError && (isEmpty || hasNoExpenses);
 
   return (
-    <ThemedView className="flex-1 justify-center items-center bg-brand-grey-low">
-      <ThemedText type="title" className="text-brand-primary">
-        {t('home.title')}
-      </ThemedText>
-      <ThemedText className="mt-2 text-brand-grey">
-        {t('home.description')}
-      </ThemedText>
-    </ThemedView>
+    <ScreenContainer variant="fullWidth" style={{ backgroundColor: Colors.greyLow }}>
+      <MonthSwitcher />
+      {isLoading && <HomeScreenSkeleton />}
+      {isError && <ErrorState onRetry={refetch} />}
+      {showEmpty && <EmptyExpensesState />}
+      {!isLoading && !isError && !showEmpty && <ExpenseMonthTable />}
+    </ScreenContainer>
   );
 }
