@@ -19,9 +19,6 @@ export default function ProfileLayout() {
     >
       <Stack.Screen name="edit-profile" options={{ title: t('profile.editProfile') }} />
       <Stack.Screen name="payment-plan" options={{ title: t('profile.paymentAndPlan') }} />
-      <Stack.Screen name="currency" options={{ title: t('profile.currency') }} />
-      <Stack.Screen name="language" options={{ title: t('profile.language') }} />
-      <Stack.Screen name="timezone" options={{ title: t('profile.timezone') }} />
       <Stack.Screen
         name="visibility-preferences"
         options={{ title: t('profile.visibilityPreferences') }}

@@ -1,14 +1,23 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors } from '@/shared/constants/theme';
 import { HapticTab } from '@/shared/ui/HapticTab';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 
+const TAB_BAR_HEIGHT = 72;
+
 export default function TabLayout() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
+
+  const tabBarStyle = [
+    styles.tabBar,
+    Platform.OS === 'ios' && { paddingBottom: insets.bottom, height: TAB_BAR_HEIGHT + insets.bottom },
+  ];
 
   return (
     <Tabs
@@ -21,7 +30,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.tabIconSelected,
         tabBarInactiveTintColor: Colors.tabIconDefault,
         tabBarItemStyle: { flex: 1 },
-        tabBarStyle: styles.tabBar,
+        tabBarStyle,
         tabBarLabelStyle: styles.tabBarLabel,
       }}>
       <Tabs.Screen
@@ -63,10 +72,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   tabBar: {
-    borderTopWidth: 0,
+    borderTopWidth: 1,
+    borderTopColor: Colors.greyHover,
     elevation: 0,
     shadowOpacity: 0,
-    height: 72,
+    height: TAB_BAR_HEIGHT,
     backgroundColor: Colors.background,
   },
   tabBarLabel: {

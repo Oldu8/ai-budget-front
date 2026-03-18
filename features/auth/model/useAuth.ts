@@ -1,4 +1,4 @@
-import { api, ApiError } from "@/shared/api/client";
+import { ApiError } from "@/shared/api/client";
 import { clearTokens, loadTokens, saveTokens } from "@/shared/storage/tokenStorage";
 import { authApi } from "@/features/auth/api/authApi";
 import { meApi } from "@/features/auth/api/getMe";
@@ -145,9 +145,7 @@ export function useAuth() {
 
       let me: MeResponse;
       try {
-        me = await api.get<MeResponse>("/api/me", {
-          accessToken: tokens.accessToken,
-        });
+        me = await meApi.getMe();
       } catch (err) {
         if (!(err instanceof ApiError && err.status === 401)) throw err;
 
@@ -161,9 +159,7 @@ export function useAuth() {
         setTokens(newTokens);
         await saveTokens(newTokens);
 
-        me = await api.get<MeResponse>("/api/me", {
-          accessToken: newTokens.accessToken,
-        });
+        me = await meApi.getMe();
       }
 
       setUserData({
@@ -183,6 +179,21 @@ export function useAuth() {
     useUserStore.getState().setError(message);
   }, []);
 
+  const refetchMe = useCallback(async () => {
+    if (useUserStore.getState().status !== "authenticated") return;
+    try {
+      const me = await meApi.getMe();
+      setUserData({
+        user: me.user,
+        settings: me.settings,
+        subscription: me.subscription,
+        scanUsage: me.scan_usage,
+      });
+    } catch {
+      // Silent fail; keep existing data
+    }
+  }, [setUserData]);
+
   return {
     user,
     settings,
@@ -195,5 +206,6 @@ export function useAuth() {
     signIn,
     signOut,
     bootstrapAuth,
+    refetchMe,
   };
 }

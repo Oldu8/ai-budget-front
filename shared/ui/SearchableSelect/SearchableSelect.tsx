@@ -32,6 +32,8 @@ export function SearchableSelect({
   value,
   placeholder,
   onChange,
+  autoFocusSearch = false,
+  renderTrigger,
 }: SearchableSelectProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,48 +81,56 @@ export function SearchableSelect({
     []
   );
 
+  const openModal = useCallback(() => setModalVisible(true), []);
+
+  const trigger = renderTrigger ? (
+    renderTrigger({ onPress: openModal })
+  ) : (
+    <Pressable
+      style={styles.trigger}
+      onPress={openModal}
+      accessibilityRole="combobox"
+      accessibilityLabel={
+        selectedItem ? selectedItem.label : placeholder || 'Select an option'
+      }
+    >
+      <View style={styles.triggerContent}>
+        {selectedItem?.leftIcon ? (
+          <Text style={styles.triggerLeftIcon}>{selectedItem.leftIcon}</Text>
+        ) : selectedItem?.badge ? (
+          <View style={styles.triggerBadge}>
+            <Text style={styles.triggerBadgeText}>{selectedItem.badge}</Text>
+          </View>
+        ) : null}
+        <View style={styles.triggerTextWrap}>
+          <Text
+            style={[
+              styles.triggerText,
+              !value && styles.triggerPlaceholder,
+            ]}
+            numberOfLines={1}
+          >
+            {selectedItem?.label ?? placeholder ?? ''}
+          </Text>
+          {selectedItem?.subtitle && value ? (
+            <Text style={styles.triggerSubtitle} numberOfLines={1}>
+              {selectedItem.subtitle}
+            </Text>
+          ) : null}
+        </View>
+      </View>
+      <MaterialIcons
+        name="keyboard-arrow-down"
+        size={24}
+        color={Colors.grey}
+        style={styles.chevron}
+      />
+    </Pressable>
+  );
+
   return (
     <View style={styles.container}>
-      <Pressable
-        style={styles.trigger}
-        onPress={() => setModalVisible(true)}
-        accessibilityRole="combobox"
-        accessibilityLabel={
-          selectedItem ? selectedItem.label : placeholder || 'Select an option'
-        }
-      >
-        <View style={styles.triggerContent}>
-          {selectedItem?.leftIcon ? (
-            <Text style={styles.triggerLeftIcon}>{selectedItem.leftIcon}</Text>
-          ) : selectedItem?.badge ? (
-            <View style={styles.triggerBadge}>
-              <Text style={styles.triggerBadgeText}>{selectedItem.badge}</Text>
-            </View>
-          ) : null}
-          <View style={styles.triggerTextWrap}>
-            <Text
-              style={[
-                styles.triggerText,
-                !value && styles.triggerPlaceholder,
-              ]}
-              numberOfLines={1}
-            >
-              {selectedItem?.label ?? placeholder ?? ''}
-            </Text>
-            {selectedItem?.subtitle && value ? (
-              <Text style={styles.triggerSubtitle} numberOfLines={1}>
-                {selectedItem.subtitle}
-              </Text>
-            ) : null}
-          </View>
-        </View>
-        <MaterialIcons
-          name="keyboard-arrow-down"
-          size={24}
-          color={Colors.grey}
-          style={styles.chevron}
-        />
-      </Pressable>
+      {trigger}
 
       <Modal
         visible={modalVisible}
@@ -145,7 +155,7 @@ export function SearchableSelect({
               placeholderTextColor={Colors.grey}
               value={searchQuery}
               onChangeText={setSearchQuery}
-              autoFocus
+              autoFocus={autoFocusSearch}
               autoCapitalize="none"
               autoCorrect={false}
               accessibilityLabel="Search options"
