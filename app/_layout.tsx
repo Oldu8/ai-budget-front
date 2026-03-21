@@ -1,13 +1,15 @@
 import '../global.css';
 
+import '@/shared/i18n';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { View } from 'react-native';
 import 'react-native-reanimated';
-import '@/shared/i18n';
 
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
+import { ToastOverlay, ToastProvider } from '@/shared/ui/Toast';
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -20,13 +22,19 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={DefaultTheme}>
         <AuthProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(funnel)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(profile)" options={{ headerShown: false }} />
-          </Stack>
-          <StatusBar style="dark" />
+          <ToastProvider>
+            <View style={{ flex: 1 }}>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(funnel)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen name="(profile)" options={{ headerShown: false }} />
+                <Stack.Screen name="(add)" options={{ headerShown: false }} />
+              </Stack>
+              <ToastOverlay />
+            </View>
+            <StatusBar style="dark" />
+          </ToastProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
