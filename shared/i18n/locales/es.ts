@@ -25,6 +25,8 @@ export const es = {
       addExpense: 'Agregar gasto',
       category: 'CATEGORÍA',
       saveExpense: 'Guardar gasto',
+      datePrefix: 'Fecha:',
+      dateDone: 'Listo',
     },
     toast: {
       processingTitle: 'Procesando...',

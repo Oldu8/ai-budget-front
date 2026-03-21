@@ -51,6 +51,7 @@ const MAPPING = {
   'hare': 'pets',
   'square.grid.2x2': 'apps',
   'camera.fill': 'photo-camera',
+  calendar: 'calendar-today',
 } as IconMapping;
 
 /**

@@ -27,6 +27,8 @@ export const en = {
       addExpense: "Add Expense",
       category: "CATEGORY",
       saveExpense: "Save Expense",
+      datePrefix: "Date:",
+      dateDone: "Done",
     },
     toast: {
       processingTitle: "Processing...",

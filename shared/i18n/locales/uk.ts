@@ -25,6 +25,8 @@ export const uk = {
       addExpense: 'Додати витрату',
       category: 'КАТЕГОРІЯ',
       saveExpense: 'Зберегти витрату',
+      datePrefix: 'Дата:',
+      dateDone: 'Готово',
     },
     toast: {
       processingTitle: 'Обробка...',

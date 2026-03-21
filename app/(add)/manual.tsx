@@ -9,10 +9,12 @@ import {
   View,
 } from 'react-native';
 
+import { getDefaultExpenseFormValues } from '@/features/transactions/lib/createExpenseSchema';
 import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
 import { useCreateTransaction } from '@/features/transactions/model/useCreateTransaction';
 import { AmountInput } from '@/features/transactions/ui/AmountInput';
 import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
+import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { useToast } from '@/shared/ui/Toast';
@@ -53,10 +55,7 @@ export default function ManualAddScreen() {
         text: t('add.toast.successText'),
         type: 'success',
       });
-      form.reset({
-        amount: 0,
-        subcategoryId: null,
-      });
+      form.reset(getDefaultExpenseFormValues());
       router.back();
     } catch {
       hideToast();
@@ -83,6 +82,12 @@ export default function ManualAddScreen() {
           <AmountInput
             control={form.control}
             name="amount"
+            disabled={isLoading}
+          />
+
+          <TransactionDateField
+            control={form.control}
+            name="date"
             disabled={isLoading}
           />
 

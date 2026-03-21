@@ -6,20 +6,17 @@ import { useForm } from "react-hook-form";
 import { createTransaction } from "@/features/transactions/api/createTransaction";
 import {
   createExpenseSchema,
+  getDefaultExpenseFormValues,
   type CreateExpenseFormData,
 } from "@/features/transactions/lib/createExpenseSchema";
 
-const defaultValues: CreateExpenseFormData = {
-  amount: 0,
-  subcategoryId: null,
-};
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
 
   const form = useForm<CreateExpenseFormData>({
     resolver: zodResolver(createExpenseSchema),
     mode: "onChange",
-    defaultValues,
+    defaultValues: getDefaultExpenseFormValues(),
   });
 
   const mutation = useMutation({
@@ -36,7 +33,7 @@ export function useCreateTransaction() {
       return Promise.reject(new Error("Subcategory is required"));
     }
     const total_amount = Math.round(data.amount * 100);
-    const date = format(new Date(), "yyyy-MM-dd");
+    const date = format(data.date, "yyyy-MM-dd");
     return mutation.mutateAsync({
       total_amount,
       date,

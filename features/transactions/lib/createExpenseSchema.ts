@@ -1,3 +1,4 @@
+import { startOfDay } from 'date-fns';
 import { z } from 'zod';
 
 export const createExpenseSchema = z
@@ -8,10 +9,28 @@ export const createExpenseSchema = z
       .max(1_000_000, 'Amount is too large'),
     /** Default `null` in the form; submit is blocked until a subcategory is chosen. */
     subcategoryId: z.union([z.null(), z.number()]),
+    /** Local calendar day; default today in the form. */
+    date: z.date('Date is required'),
   })
   .refine((data) => data.subcategoryId !== null && data.subcategoryId > 0, {
     message: 'Subcategory is required',
     path: ['subcategoryId'],
-  });
+  })
+  .refine(
+    (data) =>
+      startOfDay(data.date).getTime() <= startOfDay(new Date()).getTime(),
+    {
+      message: 'Date cannot be in the future',
+      path: ['date'],
+    }
+  );
 
 export type CreateExpenseFormData = z.infer<typeof createExpenseSchema>;
+
+export function getDefaultExpenseFormValues(): CreateExpenseFormData {
+  return {
+    amount: 0,
+    subcategoryId: null,
+    date: startOfDay(new Date()),
+  };
+}
