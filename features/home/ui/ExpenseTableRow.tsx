@@ -1,4 +1,4 @@
-import { getCategoryIcon } from '@/features/home/lib/categoryIcons';
+import { getCategoryIcon } from '@/shared/lib/categoryIcons';
 import type { TableRow } from '@/features/home/types';
 import { ExpenseTableCell } from '@/features/home/ui/ExpenseTableCell';
 import { Colors } from '@/shared/constants/theme';

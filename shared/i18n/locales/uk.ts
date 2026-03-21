@@ -15,8 +15,27 @@ export const uk = {
     errorRetry: 'Спробувати знову',
   },
   add: {
-    title: 'Додати операцію',
-    description: 'Це екран для додавання операції. Тут пізніше буде форма.',
+    title: 'Додати витрату',
+    addExpense: 'Додати витрату',
+    description: 'Скануйте чек з AI або додайте вручну',
+    scanReceipt: 'Сканувати чек',
+    addManually: 'Додати вручну',
+    or: 'або',
+    manual: {
+      addExpense: 'Додати витрату',
+      category: 'КАТЕГОРІЯ',
+      saveExpense: 'Зберегти витрату',
+      datePrefix: 'Дата:',
+      dateDone: 'Готово',
+    },
+    toast: {
+      processingTitle: 'Обробка...',
+      processingText: 'Будь ласка, зачекайте',
+      successTitle: 'Транзакцію створено',
+      successText: 'Успішно збережено',
+      errorTitle: 'Помилка',
+      errorText: 'Не вдалося створити транзакцію',
+    },
   },
   profile: {
     userFallback: 'Користувач',
@@ -64,6 +83,8 @@ export const uk = {
   buttons: {
     save: 'Зберегти',
     cancel: 'Скасувати',
+    done: 'Готово',
+    close: 'Закрити',
     addOperation: 'Додати операцію',
   },
   onboarding: {

@@ -16,9 +16,28 @@ export const en = {
     errorRetry: "Try again",
   },
   add: {
-    title: "Add operation",
-    description:
-      "This is the screen for adding an operation. Here a form will appear later.",
+    title: "Add Expense",
+    addExpense: "Add Expense",
+    description: "Scan a receipt with AI or add manually",
+    subtitle: "Scan a receipt with AI or add manually",
+    scanReceipt: "Scan Receipt",
+    addManually: "Add Manually",
+    or: "or",
+    manual: {
+      addExpense: "Add Expense",
+      category: "CATEGORY",
+      saveExpense: "Save Expense",
+      datePrefix: "Date:",
+      dateDone: "Done",
+    },
+    toast: {
+      processingTitle: "Processing...",
+      processingText: "Please wait",
+      successTitle: "Transaction created",
+      successText: "Successfully saved",
+      errorTitle: "Error",
+      errorText: "Could not create transaction",
+    },
   },
   profile: {
     userFallback: "User",
@@ -69,6 +88,8 @@ export const en = {
   buttons: {
     save: "Save",
     cancel: "Cancel",
+    done: "Done",
+    close: "Close",
     addOperation: "Add operation",
   },
   onboarding: {

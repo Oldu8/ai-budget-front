@@ -15,8 +15,27 @@ export const es = {
     errorRetry: 'Intentar de nuevo',
   },
   add: {
-    title: 'Agregar operación',
-    description: 'Esta es la pantalla para agregar una operación. Aquí aparecerá un formulario más adelante.',
+    title: 'Agregar gasto',
+    addExpense: 'Agregar gasto',
+    description: 'Escanea un recibo con IA o agrega manualmente',
+    scanReceipt: 'Escanear recibo',
+    addManually: 'Agregar manualmente',
+    or: 'o',
+    manual: {
+      addExpense: 'Agregar gasto',
+      category: 'CATEGORÍA',
+      saveExpense: 'Guardar gasto',
+      datePrefix: 'Fecha:',
+      dateDone: 'Listo',
+    },
+    toast: {
+      processingTitle: 'Procesando...',
+      processingText: 'Por favor espera',
+      successTitle: 'Transacción creada',
+      successText: 'Guardado correctamente',
+      errorTitle: 'Error',
+      errorText: 'No se pudo crear la transacción',
+    },
   },
   profile: {
     userFallback: 'Usuario',
@@ -64,6 +83,8 @@ export const es = {
   buttons: {
     save: 'Guardar',
     cancel: 'Cancelar',
+    done: 'Listo',
+    close: 'Cerrar',
     addOperation: 'Agregar operación',
   },
   onboarding: {
