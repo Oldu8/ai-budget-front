@@ -5,12 +5,24 @@ import {
   FieldPath,
   FieldValues,
 } from 'react-hook-form';
-import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import {
+  InputAccessoryView,
+  Keyboard,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { Colors } from '@/shared/constants/theme';
 import { getCurrencySymbol } from '@/shared/lib/getCurrencySymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
+
+/** iOS: toolbar above decimal-pad with "Done" to dismiss keyboard. */
+const IOS_AMOUNT_INPUT_ACCESSORY_ID = 'amount-input-keyboard-accessory';
 
 interface AmountInputProps<T extends FieldValues> {
   control: Control<T>;
@@ -24,7 +36,9 @@ function formatAmount(value: number): string {
 }
 
 function sanitizeAmountInput(input: string): string {
-  const cleaned = input.replace(/[^0-9.]/g, '');
+  // iOS decimal pad often only has "," — treat like "."; display stays with "."
+  const normalized = input.replace(/,/g, '.');
+  const cleaned = normalized.replace(/[^0-9.]/g, '');
   const parts = cleaned.split('.');
 
   if (parts.length === 1) return cleaned;
@@ -80,6 +94,7 @@ function AmountInputInner({
   disabled?: boolean;
   inputRef: React.RefObject<TextInput | null>;
 }) {
+  const { t } = useTranslation();
   const [rawString, setRawString] = useState(formatAmount(value));
   const [isFocused, setIsFocused] = useState(false);
 
@@ -140,6 +155,22 @@ function AmountInputInner({
         </ThemedText>
       </Pressable>
 
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={IOS_AMOUNT_INPUT_ACCESSORY_ID}>
+          <View style={styles.accessory}>
+            <Pressable
+              onPress={() => Keyboard.dismiss()}
+              hitSlop={{ top: 8, bottom: 8, left: 12, right: 12 }}
+              style={styles.accessoryBtn}
+            >
+              <ThemedText type="defaultSemiBold" style={styles.accessoryDone}>
+                {t('buttons.done')}
+              </ThemedText>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      ) : null}
+
       <TextInput
         ref={inputRef}
         value={rawString}
@@ -149,6 +180,9 @@ function AmountInputInner({
         editable={!disabled}
         keyboardType="decimal-pad"
         inputMode="decimal"
+        inputAccessoryViewID={
+          Platform.OS === 'ios' ? IOS_AMOUNT_INPUT_ACCESSORY_ID : undefined
+        }
         style={styles.hiddenInput}
       />
     </View>
@@ -180,5 +214,23 @@ const styles = StyleSheet.create({
     width: 1,
     height: 1,
     opacity: 0,
+  },
+  accessory: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: Colors.greyLow,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.greyHover,
+  },
+  accessoryBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 4,
+  },
+  accessoryDone: {
+    fontSize: 17,
+    color: Colors.primary,
   },
 });

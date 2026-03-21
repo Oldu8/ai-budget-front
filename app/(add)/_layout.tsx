@@ -1,7 +1,5 @@
-import { router, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { Colors } from '@/shared/constants/theme';
 
@@ -13,32 +11,23 @@ export default function AddLayout() {
       screenOptions={{
         headerShown: true,
         headerShadowVisible: false,
-        headerStyle: styles.header,
+        headerStyle: {
+          backgroundColor: Colors.primary,
+        },
         headerTintColor: Colors.headerText,
-        headerTitleStyle: styles.headerTitle,
+        headerTitleStyle: {
+          fontSize: 18,
+          fontWeight: '600',
+        },
         headerTitleAlign: 'center',
-        headerLeft: () => (
-          <Pressable onPress={() => router.back()} hitSlop={12} style={styles.closeButton}>
-            <MaterialIcons name="close" size={24} color={Colors.headerText} />
-          </Pressable>
-        ),
       }}
     >
-      <Stack.Screen name="manual" options={{ title: t('add.manual.addExpense') }} />
+      <Stack.Screen
+        name="manual"
+        options={{
+          title: t('add.manual.addExpense'),
+        }}
+      />
     </Stack>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: Colors.primary,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  closeButton: {
-    padding: 8,
-    marginLeft: 4,
-  },
-});

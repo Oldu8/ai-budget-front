@@ -1,3 +1,4 @@
+import { useHeaderHeight } from '@react-navigation/elements';
 import { router } from 'expo-router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,7 @@ import { useWatch } from 'react-hook-form';
 
 export default function ManualAddScreen() {
   const { t } = useTranslation();
+  const headerHeight = useHeaderHeight();
   const { showToast, hideToast } = useToast();
   const { form, onSubmit, isValid, isLoading } = useCreateTransaction();
   const categoriesQuery = useCategoriesQuery();
@@ -71,11 +73,15 @@ export default function ManualAddScreen() {
     <ScreenContainer variant="default" edges={['bottom']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
         style={styles.keyboard}
       >
         <ScrollView
           bounces={false}
-          keyboardShouldPersistTaps="always"
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={
+            Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+          }
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -120,6 +126,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 24,
+    paddingBottom: 32,
   },
 });

@@ -83,6 +83,8 @@ export const es = {
   buttons: {
     save: 'Guardar',
     cancel: 'Cancelar',
+    done: 'Listo',
+    close: 'Cerrar',
     addOperation: 'Agregar operación',
   },
   onboarding: {

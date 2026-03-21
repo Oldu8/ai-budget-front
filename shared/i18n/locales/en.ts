@@ -88,6 +88,8 @@ export const en = {
   buttons: {
     save: "Save",
     cancel: "Cancel",
+    done: "Done",
+    close: "Close",
     addOperation: "Add operation",
   },
   onboarding: {

@@ -83,6 +83,8 @@ export const uk = {
   buttons: {
     save: 'Зберегти',
     cancel: 'Скасувати',
+    done: 'Готово',
+    close: 'Закрити',
     addOperation: 'Додати операцію',
   },
   onboarding: {
