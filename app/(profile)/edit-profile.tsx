@@ -22,6 +22,7 @@ import {
   type EditProfileFormData,
 } from '@/features/settings/lib/editProfileSchema';
 import { Colors } from '@/shared/constants/theme';
+import { BackButton } from '@/shared/ui/BackButton';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -99,109 +100,115 @@ export default function EditProfileScreen() {
   };
 
   return (
-    <ScreenContainer variant="default">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboard}
-      >
-        <ScrollView
-          bounces={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+    <View style={styles.screen}>
+      <BackButton />
+      <ScreenContainer variant="default">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.keyboard}
         >
-          <View style={styles.form}>
-            <Controller
-              control={control}
-              name="first_name"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.field}>
-                  <ThemedText style={styles.label}>
-                    {t('profile.editProfileFirstName', 'First name')}
-                  </ThemedText>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      showError('first_name') && styles.inputError,
-                    ]}
-                    placeholder={t('profile.editProfileFirstNamePlaceholder', 'Enter first name')}
-                    placeholderTextColor={Colors.grey}
-                    value={value}
-                    onChangeText={(v) => {
-                      clearErrors('first_name');
-                      onChange(v);
-                    }}
-                    onBlur={onBlur}
-                    autoCapitalize="words"
-                    editable={!isSubmitting}
-                  />
-                  <View style={styles.errorSlot}>
-                    <FieldError
-                      show={!!showError('first_name')}
-                      message={errors.first_name?.message}
+          <ScrollView
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            <View style={styles.form}>
+              <Controller
+                control={control}
+                name="first_name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.field}>
+                    <ThemedText style={styles.label}>
+                      {t('profile.editProfileFirstName', 'First name')}
+                    </ThemedText>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        showError('first_name') && styles.inputError,
+                      ]}
+                      placeholder={t('profile.editProfileFirstNamePlaceholder', 'Enter first name')}
+                      placeholderTextColor={Colors.grey}
+                      value={value}
+                      onChangeText={(v) => {
+                        clearErrors('first_name');
+                        onChange(v);
+                      }}
+                      onBlur={onBlur}
+                      autoCapitalize="words"
+                      editable={!isSubmitting}
                     />
+                    <View style={styles.errorSlot}>
+                      <FieldError
+                        show={!!showError('first_name')}
+                        message={errors.first_name?.message}
+                      />
+                    </View>
                   </View>
-                </View>
-              )}
-            />
+                )}
+              />
 
-            <Controller
-              control={control}
-              name="last_name"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.field}>
-                  <ThemedText style={styles.label}>
-                    {t('profile.editProfileLastName', 'Last name')}
-                  </ThemedText>
-                  <TextInput
-                    style={[
-                      styles.input,
-                      showError('last_name') && styles.inputError,
-                    ]}
-                    placeholder={t('profile.editProfileLastNamePlaceholder', 'Enter last name')}
-                    placeholderTextColor={Colors.grey}
-                    value={value}
-                    onChangeText={(v) => {
-                      clearErrors('last_name');
-                      onChange(v);
-                    }}
-                    onBlur={onBlur}
-                    autoCapitalize="words"
-                    editable={!isSubmitting}
-                  />
-                  <View style={styles.errorSlot}>
-                    <FieldError
-                      show={!!showError('last_name')}
-                      message={errors.last_name?.message}
+              <Controller
+                control={control}
+                name="last_name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.field}>
+                    <ThemedText style={styles.label}>
+                      {t('profile.editProfileLastName', 'Last name')}
+                    </ThemedText>
+                    <TextInput
+                      style={[
+                        styles.input,
+                        showError('last_name') && styles.inputError,
+                      ]}
+                      placeholder={t('profile.editProfileLastNamePlaceholder', 'Enter last name')}
+                      placeholderTextColor={Colors.grey}
+                      value={value}
+                      onChangeText={(v) => {
+                        clearErrors('last_name');
+                        onChange(v);
+                      }}
+                      onBlur={onBlur}
+                      autoCapitalize="words"
+                      editable={!isSubmitting}
                     />
+                    <View style={styles.errorSlot}>
+                      <FieldError
+                        show={!!showError('last_name')}
+                        message={errors.last_name?.message}
+                      />
+                    </View>
                   </View>
-                </View>
-              )}
-            />
+                )}
+              />
 
-            {submitError ? (
-              <ThemedText style={styles.submitError}>{submitError}</ThemedText>
-            ) : null}
+              {submitError ? (
+                <ThemedText style={styles.submitError}>{submitError}</ThemedText>
+              ) : null}
 
-            <Pressable
-              style={[styles.button, isSubmitting && styles.buttonDisabled]}
-              onPress={handleSubmit(onSubmit)}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color={Colors.white} size="small" />
-              ) : (
-                <ThemedText style={styles.buttonText}>{t('buttons.save')}</ThemedText>
-              )}
-            </Pressable>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </ScreenContainer>
+              <Pressable
+                style={[styles.button, isSubmitting && styles.buttonDisabled]}
+                onPress={handleSubmit(onSubmit)}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator color={Colors.white} size="small" />
+                ) : (
+                  <ThemedText style={styles.buttonText}>{t('buttons.save')}</ThemedText>
+                )}
+              </Pressable>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   keyboard: {
     flex: 1,
   },
