@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { Colors } from '@/shared/constants/theme';
+import { BackButton } from '@/shared/ui/BackButton';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -10,17 +11,23 @@ export default function NotificationsScreen() {
   const { t } = useTranslation();
 
   return (
-    <ScreenContainer variant="default">
-      <View style={styles.content}>
-        <ThemedText style={styles.description}>
-          {t('profile.notificationsDescription', 'Configure push notifications and email alerts. Coming soon.')}
-        </ThemedText>
-      </View>
-    </ScreenContainer>
+    <View style={styles.screen}>
+      <BackButton />
+      <ScreenContainer variant="default">
+        <View style={styles.content}>
+          <ThemedText style={styles.description}>
+            {t('profile.notificationsDescription', 'Configure push notifications and email alerts. Coming soon.')}
+          </ThemedText>
+        </View>
+      </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
   content: {
     paddingTop: 24,
   },

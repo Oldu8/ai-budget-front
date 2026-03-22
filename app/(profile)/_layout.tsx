@@ -17,14 +17,23 @@ export default function ProfileLayout() {
         headerTitleStyle: styles.headerTitle,
       }}
     >
-      <Stack.Screen name="edit-profile" options={{ title: t('profile.editProfile') }} />
-      <Stack.Screen name="payment-plan" options={{ title: t('profile.paymentAndPlan') }} />
+      <Stack.Screen
+        name="edit-profile"
+        options={{ title: t('profile.editProfile'), headerBackVisible: false }}
+      />
+      <Stack.Screen
+        name="payment-plan"
+        options={{ title: t('profile.paymentAndPlan'), headerBackVisible: false }}
+      />
       <Stack.Screen
         name="visibility-preferences"
         options={{ title: t('profile.visibilityPreferences') }}
       />
       <Stack.Screen name="export-data" options={{ title: t('profile.exportData') }} />
-      <Stack.Screen name="notifications" options={{ title: t('profile.notifications') }} />
+      <Stack.Screen
+        name="notifications"
+        options={{ title: t('profile.notifications'), headerBackVisible: false }}
+      />
     </Stack>
   );
 }
