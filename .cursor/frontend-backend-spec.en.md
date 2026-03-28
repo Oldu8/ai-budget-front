@@ -70,8 +70,8 @@ Frontend:
 Frontend:
 
 - Visibility settings via:
-  - `GET /api/funnel/visibility-questions`
-  - `GET /api/visibility-tags`
+  - `GET /api/funnel/visibility-questions` — returns `visibility_tag`, `question_key`, `type`, `order`, `translation_key`. Use `t(translation_key + '.title')`, `t(translation_key + '.description')` for i18n.
+  - `GET /api/visibility-tags` — returns `visibility_tag`, `enabled`, `translation_key`. Use `t(translation_key)` for i18n.
   - `PATCH /api/me/category-visibility` with `{ visibility_tag, enabled }`.
 - In the UI you can simply show enabled categories: the backend already filters disabled ones out.
 
@@ -103,7 +103,7 @@ Rules:
 - AI receipt:
   - 1 `transaction` + N `transaction_items` across categories.
   - `created_by = ai`, `confirmed_at = null` initially.
-  - It only appears in lists / summaries **after** `/transactions/{id}/confirm`.
+  - It only appears in lists / summaries **after** `PUT /transactions/{id}/update` (save + confirm).
 
 Frontend:
 
@@ -198,8 +198,8 @@ Frontend:
 ### 4.2. Categories and visibility funnel
 
 - `GET /api/categories` — category tree (with disabled categories filtered out).
-- `GET /api/funnel/visibility-questions` — questions per `visibility_tag` for onboarding.
-- `GET /api/visibility-tags` — list of tags with `enabled` flag for current user.
+- `GET /api/funnel/visibility-questions` — questions per `visibility_tag` (visibility_tag, question_key, type, order, translation_key). Frontend uses i18n: `t(translation_key + '.title')`, `t(translation_key + '.description')`.
+- `GET /api/visibility-tags` — list of tags with `enabled`, `translation_key`. Frontend uses `t(translation_key)` for toggle labels.
 - `PATCH /api/me/category-visibility` — enable / disable groups of categories by tag.
 
 Frontend:
@@ -234,9 +234,9 @@ Frontend:
   - multipart with `image` (jpeg/png).
   - requires active subscription and free scan quota.
   - returns a draft transaction with categorized items.
-- `POST /api/transactions/{transaction}/confirm`:
-  - confirms AI-generated transaction.
-  - sets `confirmed_at`, after which the transaction appears in history and summaries.
+- `PUT /api/transactions/{transaction}/update`:
+  - saves edited `date` / `items[]` and sets `confirmed_at` in **one** request.
+  - after success the transaction appears in history and summaries.
 
 Frontend:
 
@@ -244,7 +244,7 @@ Frontend:
   - optionally show remaining scans using `scan_usage` from `/api/me`.
 - After scan:
   - show recognized items; allow editing categories / amounts;
-  - on confirmation call `.../confirm`.
+  - on save call `PUT .../update` with final payload.
 
 ### 4.5. Expense summaries (analytics)
 
@@ -309,7 +309,7 @@ If you need more detail:
   - `App/Http/Controllers/CategoryController.php` — `/categories`.
   - `App/Http/Controllers/CategoryVisibilityController.php` — visibility tags and onboarding.
   - `App/Http/Controllers/ManualTransactionController.php` — transaction CRUD.
-  - `App/Http/Controllers/ScanController.php` — AI scan and confirm.
+  - `App/Http/Controllers/ScanController.php` — AI scan and receipt update.
   - `App/Http/Controllers/TransactionSummaryController.php` — expense summaries.
   - `App/Http/Controllers/ExpenseExportController.php` — CSV export.
 - Models:
@@ -318,4 +318,3 @@ If you need more detail:
   - `App/Models/Plan.php`, `App/Models/UserSubscription.php`
 
 `frontend-backend-spec.en.md` together with `api-routes.json` should be enough to understand which features exist, how data is shaped, and which endpoints are available when working on the frontend.
-
