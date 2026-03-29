@@ -37,7 +37,14 @@
         }
       ],
       "expo-localization",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to scan receipts.",
+          "cameraPermission": "The app accesses your camera to scan receipts."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

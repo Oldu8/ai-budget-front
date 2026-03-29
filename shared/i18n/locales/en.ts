@@ -38,6 +38,16 @@ export const en = {
       errorTitle: "Error",
       errorText: "Could not create transaction",
     },
+    scan: {
+      title: "Scan Receipt",
+      hint: "Choose a source to capture your receipt image.",
+      takePhoto: "Take photo",
+      chooseFromGallery: "Choose from gallery",
+      cancel: "Cancel",
+      permissionDeniedTitle: "Permission required",
+      permissionDeniedMessage:
+        "Allow camera or photo library access in your device settings to scan receipts.",
+    },
   },
   profile: {
     userFallback: "User",

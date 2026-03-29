@@ -1,15 +1,26 @@
 import { router } from 'expo-router';
-import React from 'react';
-import { Pressable, View } from 'react-native';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Pressable, View } from 'react-native';
 
+import type { NormalizedReceiptImage } from '@/features/receipt-scan/lib/normalizeReceiptAsset';
+import { ReceiptSourceSheet } from '@/features/receipt-scan/ui/ReceiptSourceSheet';
 import { Colors } from '@/shared/constants/theme';
-import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { ThemedView } from '@/shared/ui/ThemedView';
 
 export default function AddScreen() {
   const { t } = useTranslation();
+
+  const handleReceiptImage = useCallback((image: NormalizedReceiptImage) => {
+    console.log('[receipt-scan] normalized image:', image);
+    console.log('[receipt-scan] metadata check:', {
+      hasUri: Boolean(image.uri),
+      fileName: image.fileName ?? null,
+      mimeType: image.mimeType ?? null,
+      fileSize: image.fileSize ?? null,
+    });
+  }, []);
 
   return (
     <ThemedView className="flex-1 bg-brand-grey-low">
@@ -22,15 +33,10 @@ export default function AddScreen() {
         </ThemedText>
 
         <View className="mt-10 items-center">
-          <Pressable
-            className="h-40 w-40 items-center justify-center rounded-2xl bg-brand-primary shadow-md"
-            style={{ shadowColor: Colors.black, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 4 }}
-          >
-            <IconSymbol name="camera.fill" size={48} color={Colors.white} />
-            <ThemedText className="mt-3 text-base font-semibold" style={{ color: Colors.white }}>
-              {t('add.scanReceipt')}
-            </ThemedText>
-          </Pressable>
+          <ReceiptSourceSheet
+            variant="primaryCard"
+            onImageSelected={handleReceiptImage}
+          />
 
           <View className="mt-10 flex-row items-center gap-3">
             <View className="h-px flex-1 bg-brand-grey" />
