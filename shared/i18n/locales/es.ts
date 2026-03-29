@@ -36,6 +36,16 @@ export const es = {
       errorTitle: 'Error',
       errorText: 'No se pudo crear la transacción',
     },
+    scan: {
+      title: 'Escanear recibo',
+      hint: 'Elige cómo añadir la imagen del recibo.',
+      takePhoto: 'Hacer foto',
+      chooseFromGallery: 'Elegir de la galería',
+      cancel: 'Cancelar',
+      permissionDeniedTitle: 'Permiso necesario',
+      permissionDeniedMessage:
+        'Permite el acceso a la cámara o a la galería en los ajustes del dispositivo para escanear recibos.',
+    },
   },
   profile: {
     userFallback: 'Usuario',

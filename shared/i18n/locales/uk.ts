@@ -36,6 +36,16 @@ export const uk = {
       errorTitle: 'Помилка',
       errorText: 'Не вдалося створити транзакцію',
     },
+    scan: {
+      title: 'Сканувати чек',
+      hint: 'Оберіть джерело для зображення чека.',
+      takePhoto: 'Зробити фото',
+      chooseFromGallery: 'Обрати з галереї',
+      cancel: 'Скасувати',
+      permissionDeniedTitle: 'Потрібен дозвіл',
+      permissionDeniedMessage:
+        'Дозвольте доступ до камери або фототеки в налаштуваннях пристрою, щоб сканувати чеки.',
+    },
   },
   profile: {
     userFallback: 'Користувач',
