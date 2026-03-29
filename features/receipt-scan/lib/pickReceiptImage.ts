@@ -5,10 +5,13 @@ import {
   type NormalizedReceiptImage,
 } from '@/features/receipt-scan/lib/normalizeReceiptAsset';
 
+// iOS Photos often return HEIC/HEIF while our receipt scan API validates jpeg/png/webp.
+// allowsEditing + quality nudges Expo/ImagePicker toward a re-encoded, more compatible image for upload
+// without running a separate transcoding pipeline.
 const imagePickerOptions: ImagePicker.ImagePickerOptions = {
   mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  allowsEditing: false,
-  quality: 1,
+  allowsEditing: true,
+  quality: 0.8,
 };
 
 export type PickReceiptImageResult =

@@ -24,6 +24,8 @@ type ReceiptSourceSheetProps = {
   onImageSelected: (image: NormalizedReceiptImage) => void;
   /** `primaryCard` = two actions inside the branded rounded card (Add tab). */
   variant?: 'default' | 'primaryCard';
+  /** When true, blocks camera/gallery (e.g. while upload is in progress). */
+  disabled?: boolean;
 };
 
 function handlePickResult(
@@ -46,9 +48,11 @@ function handlePickResult(
 export function ReceiptSourceSheet({
   onImageSelected,
   variant = 'default',
+  disabled = false,
 }: ReceiptSourceSheetProps) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState<'camera' | 'gallery' | null>(null);
+  const blocked = disabled || busy !== null;
 
   const runCamera = useCallback(async () => {
     setBusy('camera');
@@ -95,7 +99,7 @@ export function ReceiptSourceSheet({
           backgroundColor: isCard ? Colors.white : Colors.primary,
         }}
         onPress={runCamera}
-        disabled={busy !== null}
+        disabled={blocked}
       >
         {busy === 'camera' ? (
           <ActivityIndicator color={isCard ? Colors.primary : Colors.white} />
@@ -113,7 +117,7 @@ export function ReceiptSourceSheet({
         className="w-full items-center justify-center rounded-xl py-3.5"
         style={{ backgroundColor: Colors.greyLow }}
         onPress={runGallery}
-        disabled={busy !== null}
+        disabled={blocked}
       >
         {busy === 'gallery' ? (
           <ActivityIndicator color={Colors.primary} />

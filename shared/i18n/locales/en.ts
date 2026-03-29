@@ -48,6 +48,19 @@ export const en = {
       permissionDeniedMessage:
         "Allow camera or photo library access in your device settings to scan receipts.",
     },
+    receiptScan: {
+      scanning: "Scanning receipt...",
+      reviewPlaceholderTitle: "Review receipt",
+      reviewSummary: "Summary",
+      reviewTotal: "Total (minor units)",
+      reviewItems: "Line items",
+      reviewStoredJson: "Stored draft (JSON)",
+      errors: {
+        invalidReceipt: "This photo could not be processed as a receipt.",
+        aiFailed: "AI processing failed. Please try again.",
+        generic: "Something went wrong. Please try again.",
+      },
+    },
   },
   profile: {
     userFallback: "User",

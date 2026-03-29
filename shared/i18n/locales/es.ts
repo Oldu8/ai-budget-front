@@ -18,6 +18,7 @@ export const es = {
     title: 'Agregar gasto',
     addExpense: 'Agregar gasto',
     description: 'Escanea un recibo con IA o agrega manualmente',
+    subtitle: 'Escanea un recibo con IA o agrega manualmente',
     scanReceipt: 'Escanear recibo',
     addManually: 'Agregar manualmente',
     or: 'o',
@@ -45,6 +46,19 @@ export const es = {
       permissionDeniedTitle: 'Permiso necesario',
       permissionDeniedMessage:
         'Permite el acceso a la cámara o a la galería en los ajustes del dispositivo para escanear recibos.',
+    },
+    receiptScan: {
+      scanning: 'Escaneando recibo...',
+      reviewPlaceholderTitle: 'Revisar recibo',
+      reviewSummary: 'Resumen',
+      reviewTotal: 'Total (unidades menores)',
+      reviewItems: 'Líneas',
+      reviewStoredJson: 'Borrador guardado (JSON)',
+      errors: {
+        invalidReceipt: 'No se pudo procesar esta foto como recibo.',
+        aiFailed: 'Falló el procesamiento con IA. Inténtalo de nuevo.',
+        generic: 'Algo salió mal. Inténtalo de nuevo.',
+      },
     },
   },
   profile: {

@@ -28,6 +28,12 @@ export default function AddLayout() {
           title: t('add.manual.addExpense'),
         }}
       />
+      <Stack.Screen
+        name="scan-review"
+        options={{
+          title: t('add.receiptScan.reviewPlaceholderTitle'),
+        }}
+      />
     </Stack>
   );
 }

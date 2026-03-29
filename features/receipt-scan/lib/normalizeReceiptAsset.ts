@@ -8,6 +8,14 @@ export type NormalizedReceiptImage = {
   fileSize?: number;
 };
 
+function replaceHeicExtension(name: string): string {
+  const lower = name.toLowerCase();
+  if (lower.endsWith('.heic') || lower.endsWith('.heif')) {
+    return `${name.slice(0, -5)}.jpg`;
+  }
+  return name;
+}
+
 export function normalizeReceiptAsset(
   asset: ImagePickerAsset | undefined | null,
 ): NormalizedReceiptImage | null {
@@ -15,12 +23,22 @@ export function normalizeReceiptAsset(
   const uri = typeof asset.uri === 'string' ? asset.uri.trim() : '';
   if (!uri) return null;
 
-  const fileName =
+  let fileName =
     asset.fileName != null && asset.fileName !== ''
-      ? asset.fileName
-      : undefined;
-  const mimeType =
-    asset.mimeType != null && asset.mimeType !== '' ? asset.mimeType : undefined;
+      ? replaceHeicExtension(asset.fileName)
+      : `receipt-${Date.now()}.jpg`;
+
+  fileName = replaceHeicExtension(fileName);
+
+  let mimeType =
+    asset.mimeType != null && asset.mimeType !== ''
+      ? asset.mimeType
+      : 'image/jpeg';
+  const mt = mimeType.toLowerCase();
+  if (mt.includes('heic') || mt.includes('heif')) {
+    mimeType = 'image/jpeg';
+  }
+
   const fileSize =
     typeof asset.fileSize === 'number' && !Number.isNaN(asset.fileSize)
       ? asset.fileSize
@@ -28,8 +46,8 @@ export function normalizeReceiptAsset(
 
   return {
     uri,
-    ...(fileName !== undefined ? { fileName } : {}),
-    ...(mimeType !== undefined ? { mimeType } : {}),
+    fileName,
+    mimeType,
     ...(fileSize !== undefined ? { fileSize } : {}),
   };
 }
