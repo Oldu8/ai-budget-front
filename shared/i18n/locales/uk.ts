@@ -18,6 +18,7 @@ export const uk = {
     title: 'Додати витрату',
     addExpense: 'Додати витрату',
     description: 'Скануйте чек з AI або додайте вручну',
+    subtitle: 'Скануйте чек з AI або додайте вручну',
     scanReceipt: 'Сканувати чек',
     addManually: 'Додати вручну',
     or: 'або',
@@ -45,6 +46,19 @@ export const uk = {
       permissionDeniedTitle: 'Потрібен дозвіл',
       permissionDeniedMessage:
         'Дозвольте доступ до камери або фототеки в налаштуваннях пристрою, щоб сканувати чеки.',
+    },
+    receiptScan: {
+      scanning: 'Сканування чека...',
+      reviewPlaceholderTitle: 'Перегляд чека',
+      reviewSummary: 'Коротко',
+      reviewTotal: 'Всього (мінорні одиниці)',
+      reviewItems: 'Рядки',
+      reviewStoredJson: 'Чернетка зі стору (JSON)',
+      errors: {
+        invalidReceipt: 'Не вдалося обробити це фото як чек.',
+        aiFailed: 'Не вдалося обробити за допомогою ШІ. Спробуйте ще раз.',
+        generic: 'Щось пішло не так. Спробуйте ще раз.',
+      },
     },
   },
   profile: {

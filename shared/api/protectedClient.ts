@@ -136,6 +136,41 @@ export async function protectedPost<T = unknown>(
 }
 
 /**
+ * Protected POST multipart (FormData): sends Bearer token, on 401 attempts refresh and retries once.
+ * Does not set Content-Type; boundary is set by the runtime.
+ */
+export async function protectedPostMultipart<T = unknown>(
+  path: string,
+  formData: FormData,
+  retrying = false
+): Promise<T> {
+  const tokens = getAuthTokens();
+  try {
+    return await api.postFormData<T>(path, formData, {
+      accessToken: tokens?.accessToken ?? null,
+    });
+  } catch (err) {
+    if (!retrying && err instanceof ApiError && err.status === 401) {
+      try {
+        const newTokens = await performRefresh();
+        const pair = {
+          accessToken: newTokens.access_token,
+          refreshToken: newTokens.refresh_token,
+        };
+        setAuthTokens(pair);
+        await persistTokens(pair);
+        onTokensRefreshed?.(pair);
+        return protectedPostMultipart<T>(path, formData, true);
+      } catch {
+        await authErrorHandler?.();
+        throw err;
+      }
+    }
+    throw err;
+  }
+}
+
+/**
  * Protected PUT: sends Bearer token, on 401 attempts refresh and retries once.
  */
 export async function protectedPut<T = unknown>(
