@@ -7,6 +7,7 @@ import { getScanErrorToastText } from "@/features/receipt-scan/lib/getScanErrorT
 import { mapScannedDraft } from "@/features/receipt-scan/lib/mapScannedDraft";
 import type { NormalizedReceiptImage } from "@/features/receipt-scan/lib/normalizeReceiptAsset";
 import { useReceiptScanDraftStore } from "@/features/receipt-scan/model/useReceiptScanDraftStore";
+import { useReceiptReviewStore } from "@/features/receipt-scan/model/useReceiptReviewStore";
 import { useToast } from "@/shared/ui/Toast";
 
 export function useScanReceiptMutation() {
@@ -14,15 +15,16 @@ export function useScanReceiptMutation() {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const setDraft = useReceiptScanDraftStore((s) => s.setDraft);
+  const initReview = useReceiptReviewStore((s) => s.initFromDraft);
 
   const mutation = useMutation({
     mutationFn: async (image: NormalizedReceiptImage) => {
       const raw = await scanReceipt(image);
-      console.log("[receipt-scan] raw:", raw);
       return mapScannedDraft(raw);
     },
     onSuccess: (draft) => {
       setDraft(draft);
+      initReview(draft);
       replace("/(add)/scan-review" as never);
     },
     onError: (err) => {
