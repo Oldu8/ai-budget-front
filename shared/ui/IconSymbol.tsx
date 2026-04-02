@@ -52,6 +52,9 @@ const MAPPING = {
   'square.grid.2x2': 'apps',
   'camera.fill': 'photo-camera',
   calendar: 'calendar-today',
+  'receipt.fill': 'receipt',
+  'exclamationmark.triangle.fill': 'warning',
+  'checkmark.circle.fill': 'check-circle',
 } as IconMapping;
 
 /**

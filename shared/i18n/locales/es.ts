@@ -49,6 +49,16 @@ export const es = {
     },
     receiptScan: {
       scanning: 'Escaneando recibo...',
+      processing: {
+        title: 'La IA está analizando tu recibo...',
+        subtitle: 'Normalmente tarda unos segundos.',
+      },
+      error: {
+        title: 'Algo salió mal',
+        description:
+          'No pudimos completar la acción. Vuelve atrás e inténtalo de nuevo.',
+        tryAgain: 'Intentar de nuevo',
+      },
       reviewPlaceholderTitle: 'Revisar recibo',
       reviewTitle: 'Revisar recibo',
       reviewEditItemTitle: 'Editar línea',
@@ -68,8 +78,12 @@ export const es = {
         subcategoryRequired: 'Elige una categoría',
       },
       success: {
-        title: 'Gasto guardado',
+        title: '¡Gastos guardados!',
+        description:
+          'Tus gastos se han registrado y categorizado correctamente.',
         totalLabel: 'Total',
+        dateLabel: 'Fecha',
+        backHome: 'Volver al inicio',
         home: 'Inicio',
       },
       review: {

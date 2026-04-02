@@ -50,6 +50,16 @@ export const en = {
     },
     receiptScan: {
       scanning: "Scanning receipt...",
+      processing: {
+        title: "AI is analyzing your receipt...",
+        subtitle: "This usually takes a few seconds.",
+      },
+      error: {
+        title: "Something went wrong",
+        description:
+          "We couldn’t finish that action. Please go back and try again.",
+        tryAgain: "Try again",
+      },
       reviewPlaceholderTitle: "Review receipt",
       reviewTitle: "Review receipt",
       reviewEditItemTitle: "Edit line",
@@ -69,8 +79,12 @@ export const en = {
         subcategoryRequired: "Choose a category",
       },
       success: {
-        title: "Expense saved",
+        title: "Expenses saved!",
+        description:
+          "Your spending has been successfully recorded and categorized.",
         totalLabel: "Total",
+        dateLabel: "Date",
+        backHome: "Back to Home",
         home: "Home",
       },
       review: {
