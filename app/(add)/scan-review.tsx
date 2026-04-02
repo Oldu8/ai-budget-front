@@ -12,6 +12,7 @@ import {
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useScanReview } from '@/features/receipt-scan/model/useScanReview';
 import { ReceiptReviewLineItemsList } from '@/features/receipt-scan/ui/ReceiptReviewLineItemsList';
+import { ReceiptScanErrorScreen } from '@/features/receipt-scan/ui/ReceiptScanErrorScreen';
 import { ScanReviewEmptyState } from '@/features/receipt-scan/ui/ScanReviewEmptyState';
 import { ScanReviewSummaryCard } from '@/features/receipt-scan/ui/ScanReviewSummaryCard';
 import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
@@ -40,14 +41,26 @@ export default function ScanReviewScreen() {
     handleConfirm,
     handleCancelReview,
     confirmDeleteItem,
+    handleUpdateErrorRetry,
     showEmptyState,
     showContent,
+    showUpdateError,
   } = useScanReview();
 
   const busy = updateMutation.isPending || cancelReviewMutation.isPending;
 
   if (showEmptyState) {
     return <ScanReviewEmptyState />;
+  }
+
+  if (showUpdateError) {
+    return (
+      <View style={styles.screen}>
+        <ScreenContainer variant="default" edges={['bottom']}>
+          <ReceiptScanErrorScreen onTryAgain={handleUpdateErrorRetry} />
+        </ScreenContainer>
+      </View>
+    );
   }
 
   if (!showContent) {
@@ -73,7 +86,7 @@ export default function ScanReviewScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <ThemedText type="subtitle" className="mb-3 text-brand-primary">
+            <ThemedText type="subtitle" className="pt-2 mb-3 text-brand-primary">
               {t('add.receiptScan.receiptScanned')}
             </ThemedText>
 
@@ -103,7 +116,7 @@ export default function ScanReviewScreen() {
               </ThemedText>
             ) : null}
 
-            <View className="mt-4 gap-3">
+            <View className="gap-3 mt-4">
               <Button
                 variant="primary"
                 onPress={handleConfirm}

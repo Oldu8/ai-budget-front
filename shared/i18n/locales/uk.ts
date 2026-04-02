@@ -50,6 +50,16 @@ export const uk = {
     },
     receiptScan: {
       scanning: "Сканування чека...",
+      processing: {
+        title: "ШІ аналізує ваш чек...",
+        subtitle: "Зазвичай це займає кілька секунд.",
+      },
+      error: {
+        title: "Щось пішло не так",
+        description:
+          "Не вдалося завершити дію. Поверніться назад і спробуйте ще раз.",
+        tryAgain: "Спробувати знову",
+      },
       reviewPlaceholderTitle: "Перегляд чека",
       reviewTitle: "Перегляд чека",
       reviewEditItemTitle: "Редагувати рядок",
@@ -69,8 +79,12 @@ export const uk = {
         subcategoryRequired: "Оберіть категорію",
       },
       success: {
-        title: "Витрату збережено",
+        title: "Витрати збережено!",
+        description:
+          "Ваші витрати успішно записані та розподілені за категоріями.",
         totalLabel: "Всього",
+        dateLabel: "Дата",
+        backHome: "На головну",
         home: "Головна",
       },
       review: {

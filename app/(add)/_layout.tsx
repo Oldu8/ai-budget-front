@@ -29,6 +29,13 @@ export default function AddLayout() {
         }}
       />
       <Stack.Screen
+        name="scan"
+        options={{
+          headerShown: false,
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
         name="scan-review"
         options={{
           title: t('add.receiptScan.reviewTitle'),

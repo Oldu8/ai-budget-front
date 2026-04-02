@@ -21,6 +21,10 @@ import { useToast } from '@/shared/ui/Toast';
 
 type ReviewDateForm = { date: Date };
 
+function replaceToAddTab() {
+  router.replace('/(tabs)/add' as never);
+}
+
 export function useScanReview() {
   const { t } = useTranslation();
   const { showToast } = useToast();
@@ -114,40 +118,33 @@ export function useScanReview() {
       return updateReceiptTransaction(transactionId, body);
     },
     onSuccess: () => {
-      const total = sumReviewItemsMinor(
-        useReceiptReviewStore.getState().items
-      );
+      const state = useReceiptReviewStore.getState();
+      const total = sumReviewItemsMinor(state.items);
+      const savedDate = state.date;
       queryClient.invalidateQueries({ queryKey: ['home'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       clearReview();
       clearDraft();
       router.replace(
-        `/(add)/scan-success?totalMinor=${encodeURIComponent(String(total))}` as never
+        `/(add)/scan-success?totalMinor=${encodeURIComponent(String(total))}&date=${encodeURIComponent(savedDate)}` as never
       );
     },
     onError: (err: unknown) => {
       if (err instanceof ApiError && err.status === 404) {
         clearReview();
         clearDraft();
-        showToast({
-          title: t('add.toast.errorTitle'),
-          text: t('add.receiptScan.review.errors.notFound'),
-          type: 'error',
-        });
-        router.replace('/(tabs)/add' as never);
+        replaceToAddTab();
         return;
       }
-      const message =
-        err instanceof ApiError
-          ? err.message
-          : t('add.receiptScan.review.errors.updateFailed');
-      showToast({
-        title: t('add.toast.errorTitle'),
-        text: message,
-        type: 'error',
-      });
     },
   });
+
+  const handleUpdateErrorRetry = () => {
+    updateMutation.reset();
+    clearReview();
+    clearDraft();
+    replaceToAddTab();
+  };
 
   const handleConfirm = () => {
     if (confirmDisabled || transactionId == null) return;
@@ -195,6 +192,7 @@ export function useScanReview() {
 
   const showEmptyState = !draft && transactionId == null;
   const showContent = transactionId != null;
+  const showUpdateError = updateMutation.isError;
 
   return {
     draft,
@@ -210,7 +208,9 @@ export function useScanReview() {
     handleConfirm,
     handleCancelReview,
     confirmDeleteItem,
+    handleUpdateErrorRetry,
     showEmptyState,
     showContent,
+    showUpdateError,
   };
 }
