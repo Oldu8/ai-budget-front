@@ -1,81 +1,147 @@
+import { useHeaderHeight } from '@react-navigation/elements';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 
-import { useReceiptScanDraftStore } from '@/features/receipt-scan/model/useReceiptScanDraftStore';
+import { useUserStore } from '@/features/auth/model/useUserStore';
+import { useScanReview } from '@/features/receipt-scan/model/useScanReview';
+import { ReceiptReviewLineItemsList } from '@/features/receipt-scan/ui/ReceiptReviewLineItemsList';
+import { ScanReviewEmptyState } from '@/features/receipt-scan/ui/ScanReviewEmptyState';
+import { ScanReviewSummaryCard } from '@/features/receipt-scan/ui/ScanReviewSummaryCard';
+import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
 import { BackButton } from '@/shared/ui/BackButton';
+import { Button } from '@/shared/ui/Button';
+import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
-import { ThemedView } from '@/shared/ui/ThemedView';
 
+/**
+ * Receipt image preview is not wired here yet — see `ReceiptPreviewImage`
+ * (doesn't work, needs improvements).
+ */
 export default function ScanReviewScreen() {
   const { t } = useTranslation();
-  const draft = useReceiptScanDraftStore((s) => s.draft);
+  const headerHeight = useHeaderHeight();
+  const currency = useUserStore((s) => s.settings?.currency ?? 'USD');
+
+  const {
+    items,
+    categories,
+    form,
+    totalMinor,
+    confirmDisabled,
+    updateMutation,
+    cancelReviewMutation,
+    handleConfirm,
+    handleCancelReview,
+    confirmDeleteItem,
+    showEmptyState,
+    showContent,
+  } = useScanReview();
+
+  const busy = updateMutation.isPending || cancelReviewMutation.isPending;
+
+  if (showEmptyState) {
+    return <ScanReviewEmptyState />;
+  }
+
+  if (!showContent) {
+    return null;
+  }
 
   return (
-    <View className="flex-1">
+    <View style={styles.screen}>
       <BackButton />
-      <ThemedView className="flex-1 bg-brand-grey-low px-6 pt-2">
-        <ThemedText type="title" className="text-brand-primary">
-          {t('add.receiptScan.reviewPlaceholderTitle')}
-        </ThemedText>
-
-        {!draft ? (
-          <ThemedText className="mt-4 text-base">—</ThemedText>
-        ) : (
+      <ScreenContainer variant="default" edges={['bottom']}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+          style={styles.keyboard}
+        >
           <ScrollView
-            className="mt-4 flex-1"
-            contentContainerStyle={{ paddingBottom: 40 }}
+            style={styles.scroll}
+            bounces={false}
             keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator
+            keyboardDismissMode={
+              Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+            }
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
           >
-            <ThemedText type="defaultSemiBold" className="mb-2">
-              {t('add.receiptScan.reviewSummary')}
+            <ThemedText type="subtitle" className="mb-3 text-brand-primary">
+              {t('add.receiptScan.receiptScanned')}
             </ThemedText>
-            <ThemedText className="mb-1 text-base">
-              ID: {draft.id} · {draft.date} · {t('add.receiptScan.reviewTotal')}:{' '}
-              {draft.totalAmount}
-            </ThemedText>
-            <ThemedText className="mb-1 text-base text-brand-grey">
-              {draft.createdBy} · {draft.confirmedAt ?? '—'}
-            </ThemedText>
-            {draft.imgPath ? (
-              <ThemedText
-                className="mb-4 text-sm text-brand-grey"
-                numberOfLines={2}
-                ellipsizeMode="tail"
-              >
-                {draft.imgPath}
-              </ThemedText>
-            ) : (
-              <View className="mb-4" />
-            )}
 
-            {draft.items.length > 0 ? (
-              <>
-                <ThemedText type="defaultSemiBold" className="mb-2 mt-2">
-                  {t('add.receiptScan.reviewItems')}
-                </ThemedText>
-                {draft.items.map((item) => (
-                  <ThemedText key={item.id} className="mb-2 text-base leading-6">
-                    • {item.label}
-                    {'\n  '}
-                    {item.amount}
-                    {item.categoryLabel != null && item.categoryLabel !== ''
-                      ? ` · ${item.categoryLabel}`
-                      : ''}
-                  </ThemedText>
-                ))}
-              </>
+            <TransactionDateField
+              control={form.control}
+              name="date"
+              disabled={busy}
+            />
+
+            <ScanReviewSummaryCard
+              totalMinor={totalMinor}
+              itemCount={items.length}
+              currency={currency}
+            />
+
+            <ReceiptReviewLineItemsList
+              items={items}
+              categories={categories}
+              currency={currency}
+              t={t}
+              onConfirmDelete={confirmDeleteItem}
+            />
+
+            {items.length === 0 ? (
+              <ThemedText className="mb-4 text-sm text-brand-grey">
+                {t('add.receiptScan.review.minOneItemHint')}
+              </ThemedText>
             ) : null}
 
-            <ThemedText type="defaultSemiBold" className="mb-2 mt-4">
-              {t('add.receiptScan.reviewStoredJson')}
-            </ThemedText>
-            <ThemedText selectable className="text-xs leading-5">
-              {JSON.stringify(draft, null, 2)}
-            </ThemedText>
+            <View className="mt-4 gap-3">
+              <Button
+                variant="primary"
+                onPress={handleConfirm}
+                disabled={confirmDisabled || busy}
+                loading={updateMutation.isPending}
+              >
+                {t('add.receiptScan.review.confirmAll')}
+              </Button>
+              <Button
+                variant="secondary"
+                onPress={handleCancelReview}
+                disabled={busy}
+                loading={cancelReviewMutation.isPending}
+              >
+                {t('add.receiptScan.review.cancelReview')}
+              </Button>
+            </View>
           </ScrollView>
-        )}
-      </ThemedView>
+        </KeyboardAvoidingView>
+      </ScreenContainer>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  keyboard: {
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  /** Match manual add: top breathing room (see AmountInput padding) + full-height scroll. */
+  scrollContent: {
+    flexGrow: 1,
+    paddingTop: 24,
+    paddingBottom: 32,
+  },
+});

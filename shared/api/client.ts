@@ -73,6 +73,55 @@ async function request<T = unknown>(path: string, options: RequestOptions = {}):
 }
 
 /**
+ * DELETE: same auth/headers pattern as `request`. Supports 204 No Content and empty bodies.
+ */
+async function requestDelete(path: string, options: RequestOptions = {}): Promise<void> {
+  const { accessToken, headers, ...rest } = options;
+
+  const authHeader: Record<string, string> = {};
+  if (accessToken) {
+    authHeader.Authorization = `Bearer ${accessToken}`;
+  }
+  const apiKeyHeader: Record<string, string> = {};
+  if (env.apiSecret) {
+    apiKeyHeader['X-API-Key'] = env.apiSecret;
+  }
+
+  const response = await fetch(`${env.apiUrl}${path}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      ...apiKeyHeader,
+      ...authHeader,
+      ...(headers ?? {}),
+    },
+    ...rest,
+  });
+
+  const contentType = response.headers.get('content-type') ?? '';
+  const isJson = contentType.includes('application/json');
+
+  if (!response.ok) {
+    const body = isJson ? await response.json().catch(() => ({})) : await response.text().then(() => ({}));
+    const message =
+      (body?.message as string) ||
+      (isJson ? `Request failed with status ${response.status}` : `Server returned ${response.status} (non-JSON). Check API URL and Accept header.`);
+    throw new ApiError(message, response.status, body, response);
+  }
+
+  if (response.status === 204 || response.status === 205) {
+    return;
+  }
+  if (!isJson) {
+    return;
+  }
+  const text = await response.text();
+  if (!text.trim()) {
+    return;
+  }
+}
+
+/**
  * POST multipart (FormData). Does not set Content-Type; the runtime sets boundary.
  * Same JSON parsing and ApiError behavior as `request` for responses.
  */
@@ -168,5 +217,8 @@ export const api = {
     options?: Omit<RequestOptions, 'method' | 'body'>
   ) {
     return requestFormData<T>(path, body, { method: 'POST', ...(options ?? {}) });
+  },
+  delete(path: string, options?: Omit<RequestOptions, 'method' | 'body'>) {
+    return requestDelete(path, options ?? {});
   },
 };

@@ -203,6 +203,37 @@ export async function protectedPut<T = unknown>(
 }
 
 /**
+ * Protected DELETE: sends Bearer token, on 401 attempts refresh and retries once.
+ */
+export async function protectedDelete(
+  path: string,
+  retrying = false
+): Promise<void> {
+  const tokens = getAuthTokens();
+  try {
+    return await api.delete(path, { accessToken: tokens?.accessToken ?? null });
+  } catch (err) {
+    if (!retrying && err instanceof ApiError && err.status === 401) {
+      try {
+        const newTokens = await performRefresh();
+        const pair = {
+          accessToken: newTokens.access_token,
+          refreshToken: newTokens.refresh_token,
+        };
+        setAuthTokens(pair);
+        await persistTokens(pair);
+        onTokensRefreshed?.(pair);
+        return protectedDelete(path, true);
+      } catch {
+        await authErrorHandler?.();
+        throw err;
+      }
+    }
+    throw err;
+  }
+}
+
+/**
  * Protected PATCH: sends Bearer token, on 401 attempts refresh and retries once.
  */
 export async function protectedPatch<T = unknown>(

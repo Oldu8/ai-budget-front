@@ -50,6 +50,56 @@ export const es = {
     receiptScan: {
       scanning: 'Escaneando recibo...',
       reviewPlaceholderTitle: 'Revisar recibo',
+      reviewTitle: 'Revisar recibo',
+      reviewEditItemTitle: 'Editar línea',
+      receiptScanned: 'Recibo escaneado',
+      imageLoading: 'Cargando vista previa…',
+      imageError: 'Vista previa no disponible',
+      itemLabel: 'Descripción',
+      itemLabelPlaceholder: 'Nombre del artículo',
+      validation: {
+        labelRequired: 'Introduce una descripción.',
+        labelTooLong: 'La descripción es demasiado larga (máx. 120 caracteres).',
+        labelNeedsLetters: 'Incluye al menos una letra.',
+        labelInvalidChars:
+          'Usa letras, números, espacios y puntuación básica solamente.',
+        amountMin: 'El importe debe ser mayor que 0',
+        amountMax: 'El importe es demasiado grande',
+        subcategoryRequired: 'Elige una categoría',
+      },
+      success: {
+        title: 'Gasto guardado',
+        totalLabel: 'Total',
+        home: 'Inicio',
+      },
+      review: {
+        summaryHeading: 'Resumen',
+        totalLabel: 'Total',
+        itemsCount: 'Artículos',
+        itemsHeading: 'Líneas',
+        edit: 'Editar',
+        delete: 'Eliminar',
+        deleteConfirmTitle: '¿Quitar línea?',
+        deleteConfirmMessage:
+          'Esta línea se quitará del recibo antes de confirmar.',
+        confirmAll: 'Confirmar todo',
+        cancelReview: 'Cancelar',
+        cancelDirtyTitle: '¿Descartar cambios?',
+        cancelDirtyMessage: 'Se perderán las ediciones de este recibo.',
+        discard: 'Descartar',
+        minOneItemHint:
+          'Añade al menos una línea con categoría para confirmar el recibo.',
+        emptyDraftTitle: 'Nada que revisar',
+        emptyDraftMessage:
+          'Primero escanea un recibo o vuelve para añadir un gasto.',
+        emptyDraftCta: 'Volver a añadir',
+        errors: {
+          notFound:
+            'Este recibo ya no está disponible o ya se guardó.',
+          updateFailed: 'No se pudo guardar el recibo. Inténtalo de nuevo.',
+          deleteFailed: 'No se pudo descartar el recibo. Inténtalo de nuevo.',
+        },
+      },
       reviewSummary: 'Resumen',
       reviewTotal: 'Total (unidades menores)',
       reviewItems: 'Líneas',
