@@ -1,14 +1,19 @@
-import type { TFunction } from 'i18next';
 import { router } from 'expo-router';
+import type { TFunction } from 'i18next';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { Category } from '@/entities/category';
+import { getReceiptItemCategoryParts } from '@/features/receipt-scan/lib/receiptCategoryCaption';
 import type { ScannedDraftItem } from '@/features/receipt-scan/model/types';
-import { getReceiptItemCategoryCaption } from '@/features/receipt-scan/lib/receiptCategoryCaption';
-import { formatMinorAsCurrency } from '@/shared/lib/formatMinorAmount';
 import { Colors } from '@/shared/constants/theme';
+import { getCategoryIcon } from '@/shared/lib/categoryIcons';
+import { formatMinorAsCurrency } from '@/shared/lib/formatMinorAmount';
+import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
+
+/** Light mint tint for category icon tile (brand primary-active based). */
+const CATEGORY_ICON_TILE_BG = 'rgba(0, 0, 0, 0.22)';
 
 type ReceiptReviewLineItemsListProps = {
   items: ScannedDraftItem[];
@@ -16,6 +21,8 @@ type ReceiptReviewLineItemsListProps = {
   currency: string;
   t: TFunction;
   onConfirmDelete: (itemId: number) => void;
+  /** Defaults to `/(add)/scan-review-item` — pass when editing from another stack (e.g. History). */
+  buildEditItemHref?: (itemId: number) => string;
 };
 
 export function ReceiptReviewLineItemsList({
@@ -24,81 +31,100 @@ export function ReceiptReviewLineItemsList({
   currency,
   t,
   onConfirmDelete,
+  buildEditItemHref = (itemId) =>
+    `/(add)/scan-review-item?itemId=${itemId}`,
 }: ReceiptReviewLineItemsListProps) {
   const canDeleteLine = items.length > 1;
 
   return (
     <>
-      <ThemedText className="mb-3 mt-6 text-xs font-medium uppercase tracking-wider text-brand-grey">
+      <ThemedText className="mt-6 mb-3 text-xs font-medium tracking-wider uppercase text-brand-grey">
         {t('add.receiptScan.review.itemsHeading')}
       </ThemedText>
 
       {items.map((item) => {
-        const caption =
-          getReceiptItemCategoryCaption(
-            categories,
-            item.categoryId,
-            (key, opts) => t(key, opts)
-          ) ||
-          item.categoryLabel ||
-          '';
+        const parts = getReceiptItemCategoryParts(
+          categories,
+          item.categoryId,
+          (key, opts) => t(key, opts)
+        );
+        const tagLabels: string[] = [];
+        if (parts.parentLabel) tagLabels.push(parts.parentLabel);
+        if (parts.subLabel) tagLabels.push(parts.subLabel);
+        if (tagLabels.length === 0 && item.categoryLabel?.trim()) {
+          tagLabels.push(item.categoryLabel.trim());
+        }
+
+        const iconName = getCategoryIcon(parts.iconSlug);
 
         return (
-          <View
-            key={item.id}
-            className="mb-3 rounded-2xl bg-white px-4 py-3"
-            style={styles.card}
-          >
-            <View className="flex-row items-start justify-between gap-2">
-              <ThemedText
-                className="flex-1 text-base font-medium"
-                numberOfLines={2}
-                ellipsizeMode="tail"
-              >
-                {item.label}
-              </ThemedText>
-              <ThemedText type="defaultSemiBold" className="text-base">
-                {formatMinorAsCurrency(item.amount, currency)}
-              </ThemedText>
+          <View key={item.id} style={styles.card}>
+            <View style={styles.topBlock}>
+              <View style={styles.topRow}>
+                <View style={styles.iconTile}>
+                  <IconSymbol name={iconName} size={24} color={Colors.primary} />
+                </View>
+                <View style={styles.mainCol}>
+                  <View style={styles.titlePriceRow}>
+                    <ThemedText
+                      style={styles.title}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >
+                      {item.label}
+                    </ThemedText>
+                    <ThemedText
+                      lightColor={Colors.primary}
+                      style={styles.price}
+                      numberOfLines={1}
+                    >
+                      {formatMinorAsCurrency(item.amount, currency)}
+                    </ThemedText>
+                  </View>
+                  {tagLabels.length > 0 ? (
+                    <View style={styles.tagsWrap}>
+                      {tagLabels.map((label, tagIndex) => (
+                        <View key={`${item.id}-tag-${tagIndex}`} style={styles.tag}>
+                          <ThemedText style={styles.tagText} numberOfLines={2}>
+                            {label.toUpperCase()}
+                          </ThemedText>
+                        </View>
+                      ))}
+                    </View>
+                  ) : null}
+                </View>
+              </View>
             </View>
 
-            <View className="mt-2 flex-row items-start justify-between gap-2">
-              <ThemedText
-                className="flex-1 text-sm text-brand-grey"
-                numberOfLines={2}
+            <View style={styles.divider} />
+
+            <View style={styles.actionsRow}>
+              <Pressable
+                onPress={() =>
+                  router.push(buildEditItemHref(item.id) as never)
+                }
+                hitSlop={8}
+                style={styles.actionHit}
               >
-                {caption}
-              </ThemedText>
-              <View className="flex-row gap-2">
-                <Pressable
-                  onPress={() =>
-                    router.push(
-                      `/(add)/scan-review-item?itemId=${item.id}` as never
-                    )
-                  }
-                  hitSlop={8}
-                >
-                  <ThemedText
-                    type="defaultSemiBold"
-                    style={{ color: Colors.primary }}
-                  >
-                    {t('add.receiptScan.review.edit')}
-                  </ThemedText>
-                </Pressable>
-                <Pressable
-                  onPress={() => onConfirmDelete(item.id)}
-                  disabled={!canDeleteLine}
-                  hitSlop={8}
-                  style={{ opacity: canDeleteLine ? 1 : 0.4 }}
-                >
-                  <ThemedText
-                    type="defaultSemiBold"
-                    style={{ color: Colors.error }}
-                  >
-                    {t('add.receiptScan.review.delete')}
-                  </ThemedText>
-                </Pressable>
-              </View>
+                <IconSymbol name="pencil" size={18} color={Colors.grey} />
+                <ThemedText style={styles.actionLabel}>
+                  {t('add.receiptScan.review.edit').toUpperCase()}
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => onConfirmDelete(item.id)}
+                disabled={!canDeleteLine}
+                hitSlop={8}
+                style={[
+                  styles.actionHit,
+                  !canDeleteLine && styles.actionDisabled,
+                ]}
+              >
+                <IconSymbol name="trash" size={18} color={Colors.grey} />
+                <ThemedText style={styles.actionLabel}>
+                  {t('add.receiptScan.review.delete').toUpperCase()}
+                </ThemedText>
+              </Pressable>
             </View>
           </View>
         );
@@ -109,10 +135,101 @@ export function ReceiptReviewLineItemsList({
 
 const styles = StyleSheet.create({
   card: {
+    marginBottom: 12,
+    borderRadius: 16,
+    backgroundColor: Colors.white,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.greyHover,
+    overflow: 'hidden',
     shadowColor: Colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  topBlock: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 12,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  iconTile: {
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: CATEGORY_ICON_TILE_BG,
+  },
+  mainCol: {
+    flex: 1,
+    minWidth: 0,
+  },
+  titlePriceRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  title: {
+    flex: 1,
+    minWidth: 0,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.black,
+    lineHeight: 22,
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '700',
+    lineHeight: 22,
+    flexShrink: 0,
+  },
+  tagsWrap: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginTop: 8,
+  },
+  tag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: Colors.greyLow,
+    maxWidth: '100%',
+  },
+  tagText: {
+    fontSize: 10,
+    fontWeight: '600',
+    letterSpacing: 0.4,
+    color: Colors.grey,
+  },
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.greyHover,
+    marginHorizontal: 16,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  actionHit: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  actionDisabled: {
+    opacity: 0.4,
+  },
+  actionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.6,
+    color: Colors.grey,
   },
 });

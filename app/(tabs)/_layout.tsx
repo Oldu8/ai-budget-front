@@ -52,6 +52,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="history"
+        options={{
+          /** History uses its own Stack (`history/_layout.tsx`); hide tab header to avoid double bars. */
+          /** TODO: это надо проверить, может есть смысл сделать один нормальный хедер, а не отдельный для каждого экрана */
+          headerShown: false,
+          tabBarLabel: t('nav.history'),
+          tabBarIcon: ({ color }) => (
+            <IconSymbol size={24} name="list.bullet" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: t('profile.title'),

@@ -21,7 +21,7 @@ export function createReceiptItemEditSchema(t: TFunction) {
       amount: z
         .number()
         .min(0.01, t('add.receiptScan.validation.amountMin'))
-        .max(1_000_000, t('add.receiptScan.validation.amountMax')),
+        .max(1_000_000_000, t('add.receiptScan.validation.amountTooLarge')),
       subcategoryId: z.union([z.null(), z.number()]),
     })
     .refine((data) => data.subcategoryId !== null && data.subcategoryId > 0, {
