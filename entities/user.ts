@@ -39,7 +39,8 @@ export interface Plan {
 
 export interface UserSubscription {
   id: number;
-  status_id: string;
+  /** Stripe-aligned status name from API (`active`, `trialing`, …). */
+  status: string;
   used_checks_count: number;
   current_period_end: string;
   plan: Plan;

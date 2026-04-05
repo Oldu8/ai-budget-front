@@ -164,6 +164,21 @@ export const es = {
     selectLanguage: 'Seleccionar idioma',
     selectTimezone: 'Seleccionar zona horaria',
   },
+  subscription: {
+    sectionTitle: 'Suscripción',
+    freePlan: 'Plan gratuito',
+    manageBilling: 'Gestionar facturación',
+    monthlyScanLimit: 'Límite mensual de escaneos',
+    renewsOn: 'Se renueva el {{date}}',
+    status: {
+      active: 'Activa',
+      trialing: 'Prueba',
+      pending: 'Pendiente',
+      past_due: 'Pago atrasado',
+      canceled: 'Cancelada',
+      cancelled: 'Cancelada',
+    },
+  },
   nav: {
     home: 'Inicio',
     add: 'Añadir',

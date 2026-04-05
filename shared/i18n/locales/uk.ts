@@ -166,6 +166,21 @@ export const uk = {
     selectLanguage: "Оберіть мову",
     selectTimezone: "Оберіть часовий пояс",
   },
+  subscription: {
+    sectionTitle: "Підписка",
+    freePlan: "Безкоштовний план",
+    manageBilling: "Керування оплатою",
+    monthlyScanLimit: "Місячний ліміт сканувань",
+    renewsOn: "Поновлення {{date}}",
+    status: {
+      active: "Активна",
+      trialing: "Пробний період",
+      pending: "Очікує",
+      past_due: "Прострочено",
+      canceled: "Скасовано",
+      cancelled: "Скасовано",
+    },
+  },
   nav: {
     home: "Головна",
     add: "Додати",

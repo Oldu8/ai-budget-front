@@ -54,6 +54,8 @@ export interface RefreshResponse {
 export interface MeResponse {
   user: AppUser;
   subscription: UserSubscription | null;
+  /** Status name for the current subscription row when present (`active`, `trialing`, …); null if none. */
+  subscription_status: string | null;
   scan_usage: ScanUsage;
   settings?: AppUserSettings;
 }

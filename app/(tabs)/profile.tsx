@@ -7,6 +7,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
+import { SubscriptionProfileBlock } from '@/features/subscription';
 import {
   ProfileHeader,
   SettingsPickerRow,
@@ -37,7 +38,15 @@ function isUserFallback(user: { first_name?: string | null; last_name?: string |
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
-  const { user, settings, signOut, refetchMe } = useAuthContext();
+  const {
+    user,
+    settings,
+    subscription,
+    subscriptionStatus,
+    scanUsage,
+    signOut,
+    refetchMe,
+  } = useAuthContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [currencyError, setCurrencyError] = useState<string | null>(null);
   const [languageError, setLanguageError] = useState<string | null>(null);
@@ -141,18 +150,19 @@ export default function ProfileScreen() {
       >
         <ProfileHeader user={user} />
 
+        <SubscriptionProfileBlock
+          subscription={subscription}
+          subscriptionStatus={subscriptionStatus}
+          scanUsage={scanUsage}
+          onManageBilling={() => router.push('/(profile)/payment-plan')}
+        />
+
         <SettingsSection title={t('profile.sectionAccount')}>
           <SettingsRow
             icon="person"
             title={t('profile.editProfile')}
             subtitle={t('profile.editProfileSubtitle')}
             onPress={() => router.push('/(profile)/edit-profile')}
-          />
-          <SettingsRow
-            icon="credit-card"
-            title={t('profile.paymentAndPlan')}
-            subtitle={t('profile.paymentAndPlanSubtitle')}
-            onPress={() => router.push('/(profile)/payment-plan')}
           />
         </SettingsSection>
 
