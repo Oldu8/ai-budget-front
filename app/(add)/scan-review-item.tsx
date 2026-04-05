@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -18,10 +18,10 @@ import {
   type ReceiptItemEditFormData,
 } from '@/features/receipt-scan/model/createReceiptItemEditSchema';
 import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptReviewStore';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
-import { AmountInput } from '@/features/transactions/ui/AmountInput';
-import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
 import { ReceiptItemLabelField } from '@/features/receipt-scan/ui/ReceiptItemLabelField';
+import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
+import { SimplePriceInput } from '@/features/transactions/ui/SimplePriceInput';
 import { BackButton } from '@/shared/ui/BackButton';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
@@ -29,6 +29,9 @@ import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 export default function ScanReviewItemScreen() {
   const { t } = useTranslation();
   const headerHeight = useHeaderHeight();
+  const pathname = usePathname();
+  /** History stack provides native header back; add stack keeps floating BackButton. */
+  const showFloatingBack = !pathname.includes('/history/');
   const { itemId: itemIdParam } = useLocalSearchParams<{ itemId: string }>();
   const itemId = itemIdParam != null ? Number(itemIdParam) : NaN;
 
@@ -55,7 +58,8 @@ export default function ScanReviewItemScreen() {
 
   const form = useForm<ReceiptItemEditFormData>({
     resolver: zodResolver(itemEditSchema),
-    mode: 'onChange',
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues,
     values: defaultValues,
   });
@@ -97,12 +101,11 @@ export default function ScanReviewItemScreen() {
     router.back();
   });
 
-  const isValid =
-    form.formState.isValid &&
-    form.watch('amount') > 0 &&
+  const labelTrimmed = form.watch('label').trim();
+  const canSave =
     subcategoryId !== null &&
     subcategoryId > 0 &&
-    form.watch('label').trim().length > 0;
+    labelTrimmed.length > 0;
 
   if (!item) {
     return null;
@@ -110,7 +113,8 @@ export default function ScanReviewItemScreen() {
 
   return (
     <View style={styles.screen}>
-      <BackButton />
+      {/*TODO: вот это надо удалить, когда буду фиксить бек баттон */}
+      {showFloatingBack ? <BackButton /> : null}
       <ScreenContainer variant="default" edges={['bottom']}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -132,7 +136,7 @@ export default function ScanReviewItemScreen() {
               disabled={false}
             />
 
-            <AmountInput
+            <SimplePriceInput
               control={form.control}
               name="amount"
               disabled={false}
@@ -145,24 +149,20 @@ export default function ScanReviewItemScreen() {
               disabled={false}
             />
 
-            <View className="mt-8 flex-row gap-3 px-0">
-              <View className="flex-1">
-                <Button
-                  variant="secondary"
-                  onPress={() => router.back()}
-                >
-                  {t('buttons.cancel')}
-                </Button>
-              </View>
-              <View className="flex-1">
-                <Button
-                  variant="primary"
-                  onPress={handleSave}
-                  disabled={!isValid}
-                >
-                  {t('buttons.save')}
-                </Button>
-              </View>
+            <View className="mt-8 gap-3 px-0">
+              <Button
+                variant="primary"
+                onPress={handleSave}
+                disabled={!canSave}
+              >
+                {t('history.saveChanges')}
+              </Button>
+              <Button
+                variant="secondary"
+                onPress={() => router.back()}
+              >
+                {t('history.cancelEdit')}
+              </Button>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>

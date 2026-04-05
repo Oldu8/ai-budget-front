@@ -235,8 +235,10 @@ Frontend:
   - requires active subscription and free scan quota.
   - returns a draft transaction with categorized items.
 - `PUT /api/transactions/{transaction}/update`:
-  - saves edited `date` / `items[]` and sets `confirmed_at` in **one** request.
-  - after success the transaction appears in history and summaries.
+  - saves edited `date` / `items[]` (full line sync); recalculates `total_amount`.
+  - on **draft** (unconfirmed) transactions: sets `confirmed_at` on first successful save so they appear in history.
+  - on **already confirmed** transactions: updates lines without changing `confirmed_at` (same endpoint for history editing of multi-line expenses).
+- After first confirmation, the transaction appears in history and summaries.
 
 Frontend:
 
@@ -245,6 +247,7 @@ Frontend:
 - After scan:
   - show recognized items; allow editing categories / amounts;
   - on save call `PUT .../update` with final payload.
+- History / edit screens for multi-line transactions can use the same `PUT .../update` with `date` and `items[]`.
 
 ### 4.5. Expense summaries (analytics)
 
@@ -318,27 +321,3 @@ If you need more detail:
   - `App/Models/Plan.php`, `App/Models/UserSubscription.php`
 
 `frontend-backend-spec.en.md` together with `api-routes.json` should be enough to understand which features exist, how data is shaped, and which endpoints are available when working on the frontend.
-
----
-
-## 6. Expo client (`ai-budget-front`) — what is wired today
-
-This section tracks which contracts above are **already called** from the Expo app (not the full backend capability list).
-
-| Endpoint / area | Used in app | Notes |
-| --- | --- | --- |
-| `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/refresh`, `POST /api/auth/logout` | Yes | `features/auth/api/authApi.ts`, `protectedClient` |
-| `GET /api/me` | Yes | `features/auth/api/getMe.ts` — user, settings, subscription, `scan_usage` (stored in auth state; **not** shown in Profile UI yet) |
-| `POST` / `PUT /api/me/settings` | Yes | Funnel + profile settings |
-| `PUT /api/me` | Yes | Edit profile name |
-| `GET /api/categories` | Yes | Home + manual expense category grid |
-| `GET /api/funnel/visibility-questions`, `GET /api/visibility-tags`, `PATCH /api/me/category-visibility` | Yes | Funnel + visibility preferences |
-| `GET /api/transactions/summary`, `GET /api/transactions/summary/{category}` | Yes | Home month table |
-| `POST /api/transactions` | Yes | Manual expense only (`type: expense` in client) |
-| `POST /api/transactions/scan` | Yes | `features/receipt-scan/api/scanReceipt.ts` (multipart `image`) |
-| `PUT /api/transactions/{id}/update` | No | Confirm/edit receipt — **not** implemented in UI yet |
-| `GET /api/transactions/{id}/image` | No | Signed receipt URL — **not** implemented |
-| `GET /api/transactions` (list), `GET/PUT/DELETE` single transaction | No | — |
-| `GET /api/transactions/export` | No | CSV — **not** implemented |
-
-Optional **`X-API-Key`** is sent when `EXPO_PUBLIC_API_SECRET` is set (`shared/api/client.ts`), matching §3.1.

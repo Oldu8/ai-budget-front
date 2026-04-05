@@ -55,6 +55,9 @@ const MAPPING = {
   'receipt.fill': 'receipt',
   'exclamationmark.triangle.fill': 'warning',
   'checkmark.circle.fill': 'check-circle',
+  'list.bullet': 'format-list-bulleted',
+  pencil: 'edit',
+  trash: 'delete-outline',
 } as IconMapping;
 
 /**
