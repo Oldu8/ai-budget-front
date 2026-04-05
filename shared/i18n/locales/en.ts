@@ -167,6 +167,21 @@ export const en = {
     selectLanguage: "Select language",
     selectTimezone: "Select timezone",
   },
+  subscription: {
+    sectionTitle: "Subscription",
+    freePlan: "Free plan",
+    manageBilling: "Manage Billing",
+    monthlyScanLimit: "Monthly scan limit",
+    renewsOn: "Renews on {{date}}",
+    status: {
+      active: "Active",
+      trialing: "Trialing",
+      pending: "Pending",
+      past_due: "Past due",
+      canceled: "Canceled",
+      cancelled: "Canceled",
+    },
+  },
   nav: {
     home: "Home",
     add: "Add",

@@ -14,6 +14,8 @@ type UserState = {
   user: AppUser | null;
   settings: AppUserSettings | null;
   subscription: UserSubscription | null;
+  /** From GET /api/me `subscription_status` (normalized with subscription row fallback). */
+  subscriptionStatus: string | null;
   scanUsage: ScanUsage | null;
   accessToken: string | null;
   refreshToken: string | null;
@@ -25,6 +27,7 @@ type UserState = {
     user: AppUser | null;
     settings?: AppUserSettings | null;
     subscription?: UserSubscription | null;
+    subscriptionStatus?: string | null;
     scanUsage?: ScanUsage | null;
   }) => void;
   setStatus: (status: AuthStatus) => void;
@@ -36,6 +39,7 @@ export const useUserStore = create<UserState>((set) => ({
   user: null,
   settings: null,
   subscription: null,
+  subscriptionStatus: null,
   scanUsage: null,
   accessToken: null,
   refreshToken: null,
@@ -60,6 +64,8 @@ export const useUserStore = create<UserState>((set) => ({
       user: data.user !== undefined ? data.user : s.user,
       settings: data.settings !== undefined ? data.settings : s.settings,
       subscription: data.subscription !== undefined ? data.subscription : s.subscription,
+      subscriptionStatus:
+        data.subscriptionStatus !== undefined ? data.subscriptionStatus : s.subscriptionStatus,
       scanUsage: data.scanUsage !== undefined ? data.scanUsage : s.scanUsage,
     }));
   },
@@ -72,6 +78,7 @@ export const useUserStore = create<UserState>((set) => ({
       user: null,
       settings: null,
       subscription: null,
+      subscriptionStatus: null,
       scanUsage: null,
       accessToken: null,
       refreshToken: null,

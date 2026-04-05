@@ -40,6 +40,7 @@ export function useAuth() {
     user,
     settings,
     subscription,
+    subscriptionStatus,
     scanUsage,
     status,
     error,
@@ -69,6 +70,7 @@ export function useAuth() {
             user: me.user,
             settings: me.settings,
             subscription: me.subscription,
+            subscriptionStatus: me.subscription_status,
             scanUsage: me.scan_usage,
           });
         } catch {
@@ -106,6 +108,7 @@ export function useAuth() {
             user: me.user,
             settings: me.settings,
             subscription: me.subscription,
+            subscriptionStatus: me.subscription_status,
             scanUsage: me.scan_usage,
           });
         } catch {
@@ -166,6 +169,7 @@ export function useAuth() {
         user: me.user,
         settings: me.settings,
         subscription: me.subscription,
+        subscriptionStatus: me.subscription_status,
         scanUsage: me.scan_usage,
       });
       setStatus("authenticated");
@@ -187,6 +191,7 @@ export function useAuth() {
         user: me.user,
         settings: me.settings,
         subscription: me.subscription,
+        subscriptionStatus: me.subscription_status,
         scanUsage: me.scan_usage,
       });
     } catch {
@@ -198,6 +203,7 @@ export function useAuth() {
     user,
     settings,
     subscription,
+    subscriptionStatus,
     scanUsage,
     status,
     error,
