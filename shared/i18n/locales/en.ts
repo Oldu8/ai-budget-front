@@ -23,6 +23,8 @@ export const en = {
     scanReceipt: "Scan Receipt",
     addManually: "Add Manually",
     or: "or",
+    scanUsageLabelScan: "SCAN",
+    scanUsageLabelScans: "SCANS",
     manual: {
       addExpense: "Add Expense",
       category: "CATEGORY",

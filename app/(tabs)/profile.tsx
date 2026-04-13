@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
@@ -30,12 +30,6 @@ import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
-function isUserFallback(user: { first_name?: string | null; last_name?: string | null } | null): boolean {
-  if (!user) return true;
-  const name = [user.first_name, user.last_name].filter(Boolean).join(' ');
-  return !name.trim();
-}
-
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const {
@@ -51,14 +45,23 @@ export default function ProfileScreen() {
   const [currencyError, setCurrencyError] = useState<string | null>(null);
   const [languageError, setLanguageError] = useState<string | null>(null);
   const [timezoneError, setTimezoneError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
-      if (isUserFallback(user)) {
-        refetchMe();
-      }
-    }, [refetchMe, user])
+      void refetchMe();
+    }, [refetchMe])
   );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetchMe();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchMe]);
+
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const handleSignOut = async () => {
@@ -146,7 +149,14 @@ export default function ProfileScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        bounces={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={Colors.primary}
+            colors={[Colors.primary]}
+          />
+        }
       >
         <ProfileHeader user={user} />
 
