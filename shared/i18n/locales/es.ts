@@ -22,6 +22,8 @@ export const es = {
     scanReceipt: 'Escanear recibo',
     addManually: 'Agregar manualmente',
     or: 'o',
+    scanUsageLabelScan: 'ESCANEO',
+    scanUsageLabelScans: 'ESCANEOS',
     manual: {
       addExpense: 'Agregar gasto',
       category: 'CATEGORÍA',

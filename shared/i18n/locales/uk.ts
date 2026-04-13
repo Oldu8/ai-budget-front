@@ -23,6 +23,8 @@ export const uk = {
     scanReceipt: "Сканувати чек",
     addManually: "Додати вручну",
     or: "або",
+    scanUsageLabelScan: "СКАНУВАННЯ",
+    scanUsageLabelScans: "СКАНУВАНЬ",
     manual: {
       addExpense: "Додати витрату",
       category: "КАТЕГОРІЯ",

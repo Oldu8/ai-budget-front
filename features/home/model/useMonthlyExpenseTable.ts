@@ -1,5 +1,5 @@
 import { useQueries } from '@tanstack/react-query';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
 import { buildExpenseTable } from '@/features/home/lib/buildExpenseTable';
 import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
@@ -68,10 +68,13 @@ export function useMonthlyExpenseTable() {
   const isLoading =
     categoriesQuery.isLoading || monthlySummaryQuery.isLoading;
   const isError = categoriesQuery.isError || monthlySummaryQuery.isError;
-  const refetch = () => {
-    categoriesQuery.refetch();
-    monthlySummaryQuery.refetch();
-  };
+  const refetch = useCallback(async () => {
+    await Promise.all([
+      categoriesQuery.refetch(),
+      monthlySummaryQuery.refetch(),
+      ...subcategoryQueries.map((q) => q.refetch()),
+    ]);
+  }, [categoriesQuery, monthlySummaryQuery, subcategoryQueries]);
   const isEmpty =
     !isLoading &&
     !isError &&
