@@ -9,6 +9,7 @@ import { View } from 'react-native';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
+import { PaywallSheet } from '@/features/billing';
 import { ToastOverlay, ToastProvider } from '@/shared/ui/Toast';
 
 export const unstable_settings = {
@@ -31,6 +32,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(profile)" options={{ headerShown: false }} />
                 <Stack.Screen name="(add)" options={{ headerShown: false }} />
               </Stack>
+              <PaywallSheet />
               <ToastOverlay />
             </View>
             <StatusBar style="dark" />

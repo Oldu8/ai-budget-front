@@ -7,7 +7,7 @@ import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
-import { SubscriptionProfileBlock } from '@/features/subscription';
+import { usePaidFeatureGate } from '@/features/billing';
 import {
   ProfileHeader,
   SettingsPickerRow,
@@ -20,6 +20,7 @@ import {
   getLanguageDisplayValue,
   getTimezoneDisplayValue,
 } from '@/features/settings/lib/getSettingDisplayValue';
+import { SubscriptionProfileBlock } from '@/features/subscription';
 import { CURRENCY_ITEMS } from '@/shared/constants/currencies';
 import { LANGUAGE_ITEMS } from '@/shared/constants/languages';
 import { Colors } from '@/shared/constants/theme';
@@ -41,6 +42,7 @@ export default function ProfileScreen() {
     signOut,
     refetchMe,
   } = useAuthContext();
+  const { requestAccess } = usePaidFeatureGate();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [currencyError, setCurrencyError] = useState<string | null>(null);
   const [languageError, setLanguageError] = useState<string | null>(null);
@@ -160,12 +162,19 @@ export default function ProfileScreen() {
       >
         <ProfileHeader user={user} />
 
-        <SubscriptionProfileBlock
-          subscription={subscription}
-          subscriptionStatus={subscriptionStatus}
-          scanUsage={scanUsage}
-          onManageBilling={() => router.push('/(profile)/payment-plan')}
-        />
+        <View style={styles.subscriptionSection}>
+          <ThemedText style={styles.subscriptionSectionTitle}>
+            {t('subscription.sectionTitle')}
+          </ThemedText>
+          <SubscriptionProfileBlock
+            subscription={subscription}
+            subscriptionStatus={subscriptionStatus}
+            scanUsage={scanUsage}
+            onManageBilling={() => {
+              router.push('/(profile)/payment-plan');
+            }}
+          />
+        </View>
 
         <SettingsSection title={t('profile.sectionAccount')}>
           <SettingsRow
@@ -226,7 +235,19 @@ export default function ProfileScreen() {
             icon="file-download"
             title={t('profile.exportData')}
             subtitle={t('profile.exportDataSubtitle')}
-            onPress={() => router.push('/(profile)/export-data')}
+            onPress={() =>
+              requestAccess(
+                'csvExport',
+                () => router.push('/(profile)/export-data'),
+                {
+                  title: t('billing.csvUpgradeTitle', 'Upgrade to export CSV'),
+                  reasonText: t(
+                    'billing.csvUpgradeSubtitle',
+                    'CSV export is available on Basic, Plus, and Premium plans.'
+                  ),
+                }
+              )
+            }
           />
         </SettingsSection>
 
@@ -265,6 +286,18 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 8,
+  },
+  subscriptionSection: {
+    marginBottom: 20,
+  },
+  subscriptionSectionTitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: Colors.grey,
+    marginBottom: 8,
+    marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   logoutSection: {
     margin: 0,

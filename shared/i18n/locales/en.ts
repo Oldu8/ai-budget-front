@@ -15,6 +15,42 @@ export const en = {
     errorTitle: "Something went wrong",
     errorRetry: "Try again",
   },
+  billing: {
+    scanLimitReached: 'Scan limit reached',
+    scanLimitReachedMessage:
+      'Upgrade your plan to unlock more AI scans this month.',
+    addPromoTitle: 'Upgrade for unlimited tools',
+    addPromoSubtitle:
+      'Unlock recurring expenses, CSV export, and higher scan limits.',
+    viewPlans: 'View plans',
+    upgradeTitle: 'Unlock premium features',
+    upgradeMessage:
+      'Choose Basic, Plus, or Premium to keep everything running.',
+    csvUpgradeTitle: 'Upgrade to export CSV',
+    csvUpgradeSubtitle:
+      'CSV export is available on Basic, Plus, and Premium plans.',
+    perMonth: 'per month',
+    freeLabel: 'Free',
+    currentPlan: 'Current plan',
+    included: 'Included',
+    choosePlan: 'Choose plan',
+    plansTitle: 'Plans',
+    loadPlansError: 'Could not load plans',
+    retry: 'Retry',
+    upgradeSection: 'Upgrade',
+    promoTitle: 'Need more power?',
+    promoSubtitle:
+      'Upgrade to increase scans, unlock recurring expenses, CSV export, and analytics.',
+    refreshPlans: 'Refresh plans',
+    refreshPlansHint: 'Please try again.',
+    checkoutOpening: 'Opening checkout…',
+    checkoutErrorTitle: 'Unable to start checkout',
+    checkoutErrorMessage: 'Please try again.',
+    portalOpening: 'Opening billing portal…',
+    portalErrorTitle: 'Unable to open portal',
+    portalErrorMessage: 'Please try again.',
+    planFeaturesTitle: '{{planName}} includes',
+  },
   add: {
     title: "Add Expense",
     addExpense: "Add Expense",

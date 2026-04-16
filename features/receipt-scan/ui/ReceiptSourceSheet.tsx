@@ -26,6 +26,9 @@ type ReceiptSourceSheetProps = {
   variant?: 'default' | 'primaryCard';
   /** When true, blocks camera/gallery (e.g. while upload is in progress). */
   disabled?: boolean;
+  /** Optional lock state to show paywall instead of starting scan. */
+  isLocked?: boolean;
+  onLockedPress?: () => void;
 };
 
 function handlePickResult(
@@ -49,12 +52,18 @@ export function ReceiptSourceSheet({
   onImageSelected,
   variant = 'default',
   disabled = false,
+  isLocked = false,
+  onLockedPress,
 }: ReceiptSourceSheetProps) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState<'camera' | 'gallery' | null>(null);
   const blocked = disabled || busy !== null;
 
   const runCamera = useCallback(async () => {
+    if (isLocked) {
+      onLockedPress?.();
+      return;
+    }
     setBusy('camera');
     try {
       const result = await pickReceiptImageFromCamera();
@@ -65,6 +74,10 @@ export function ReceiptSourceSheet({
   }, [onImageSelected, t]);
 
   const runGallery = useCallback(async () => {
+    if (isLocked) {
+      onLockedPress?.();
+      return;
+    }
     setBusy('gallery');
     try {
       const result = await pickReceiptImageFromGallery();

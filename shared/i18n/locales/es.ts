@@ -372,4 +372,40 @@ export const es = {
       generic: 'Algo ha ido mal. Inténtalo de nuevo.',
     },
   },
+  billing: {
+    scanLimitReached: 'Límite de escaneos alcanzado',
+    scanLimitReachedMessage:
+      'Mejora tu plan para desbloquear más escaneos de IA este mes.',
+    addPromoTitle: 'Mejora para más herramientas',
+    addPromoSubtitle:
+      'Desbloquea gastos recurrentes, exportación CSV y más escaneos.',
+    viewPlans: 'Ver planes',
+    upgradeTitle: 'Desbloquea funciones premium',
+    upgradeMessage:
+      'Elige Basic, Plus o Premium para seguir sin límites.',
+    csvUpgradeTitle: 'Mejora para exportar CSV',
+    csvUpgradeSubtitle:
+      'La exportación CSV está disponible en Basic, Plus y Premium.',
+    perMonth: 'por mes',
+    freeLabel: 'Gratis',
+    currentPlan: 'Plan actual',
+    included: 'Incluido',
+    choosePlan: 'Elegir plan',
+    plansTitle: 'Planes',
+    loadPlansError: 'No se pudieron cargar los planes',
+    retry: 'Reintentar',
+    upgradeSection: 'Mejorar',
+    promoTitle: '¿Necesitas más?',
+    promoSubtitle:
+      'Mejora para más escaneos, gastos recurrentes, exportar CSV y analíticas.',
+    refreshPlans: 'Actualizar planes',
+    refreshPlansHint: 'Inténtalo de nuevo.',
+    checkoutOpening: 'Abriendo checkout…',
+    checkoutErrorTitle: 'No se pudo iniciar el checkout',
+    checkoutErrorMessage: 'Por favor inténtalo de nuevo.',
+    portalOpening: 'Abriendo portal de facturación…',
+    portalErrorTitle: 'No se pudo abrir el portal',
+    portalErrorMessage: 'Por favor inténtalo de nuevo.',
+    planFeaturesTitle: 'Qué incluye {{planName}}',
+  },
 } as const;

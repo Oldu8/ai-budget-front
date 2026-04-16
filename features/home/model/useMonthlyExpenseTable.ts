@@ -1,14 +1,18 @@
 import { useQueries } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
+
+import { useAuthContext } from '@/features/auth/providers/AuthProvider';
+import { getSubcategorySummary } from '@/features/home/api/getSubcategorySummary';
 import { buildExpenseTable } from '@/features/home/lib/buildExpenseTable';
-import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
 import { useHomeStore } from '@/features/home/model/homeStore';
+import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
 import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { useMonthlySummaryQuery } from '@/features/home/model/useMonthlySummaryQuery';
-import { getSubcategorySummary } from '@/features/home/api/getSubcategorySummary';
 
 export function useMonthlyExpenseTable() {
+  const { status } = useAuthContext();
+  const authed = status === 'authenticated';
   const { year, month } = useSelectedMonth();
   const expandedIds = useHomeStore((s) => s.expandedIds);
 
@@ -31,7 +35,7 @@ export function useMonthlyExpenseTable() {
     queries: parentIds.map((categoryId) => ({
       queryKey: ['home', 'subcategory-summary', categoryId, from, to],
       queryFn: () => getSubcategorySummary(categoryId, from, to),
-      enabled: expandedIds.has(categoryId),
+      enabled: authed && expandedIds.has(categoryId),
     })),
   });
 

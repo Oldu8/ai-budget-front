@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
+import { useBillingActions, UpgradePromoCard } from '@/features/billing';
 import type { NormalizedReceiptImage } from '@/features/receipt-scan/lib/normalizeReceiptAsset';
 import { useReceiptScanPendingImageStore } from '@/features/receipt-scan/model/useReceiptScanPendingImageStore';
 import { ReceiptSourceSheet } from '@/features/receipt-scan/ui/ReceiptSourceSheet';
@@ -15,6 +16,7 @@ import { ThemedView } from '@/shared/ui/ThemedView';
 export default function AddScreen() {
   const { t } = useTranslation();
   const { scanUsage } = useAuthContext();
+  const { openPaywall } = useBillingActions();
   const scansRemaining = scanUsage?.scans_remaining ?? 0;
   const scansLimit = scanUsage?.scans_limit ?? 0;
   const setPendingImage = useReceiptScanPendingImageStore(
@@ -28,6 +30,16 @@ export default function AddScreen() {
     },
     [setPendingImage]
   );
+
+  const handleLockedPress = useCallback(() => {
+    openPaywall({
+      title: t('billing.scanLimitReached', 'Scan limit reached'),
+      message: t(
+        'billing.scanLimitReachedMessage',
+        'Upgrade your plan to unlock more AI scans this month.'
+      ),
+    });
+  }, [openPaywall, t]);
 
   return (
     <ThemedView className="flex-1 bg-brand-grey-low">
@@ -46,6 +58,8 @@ export default function AddScreen() {
           <View className="relative w-full max-w-xs">
             <ReceiptSourceSheet
               variant="primaryCard"
+              isLocked={scansRemaining <= 0}
+              onLockedPress={handleLockedPress}
               onImageSelected={onImageSelected}
             />
           </View>
@@ -65,6 +79,26 @@ export default function AddScreen() {
               {t('add.addManually')}
             </ThemedText>
           </Pressable>
+        </View>
+
+        <View className="mt-10">
+          <UpgradePromoCard
+            title={t('billing.addPromoTitle', 'Upgrade for unlimited tools')}
+            subtitle={t(
+              'billing.addPromoSubtitle',
+              'Unlock recurring expenses, CSV export, and higher scan limits.'
+            )}
+            ctaLabel={t('billing.viewPlans', 'View plans')}
+            onPress={() =>
+              openPaywall({
+                title: t('billing.upgradeTitle', 'Unlock premium features'),
+                message: t(
+                  'billing.upgradeMessage',
+                  'Choose Basic, Plus, or Premium to keep everything running.'
+                ),
+              })
+            }
+          />
         </View>
       </View>
     </ThemedView>
