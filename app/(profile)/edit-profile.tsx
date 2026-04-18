@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -12,17 +13,15 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 import { meUpdateApi } from '@/features/auth/api/updateMe';
-import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { useUserStore } from '@/features/auth/model/useUserStore';
+import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import {
   editProfileSchema,
   type EditProfileFormData,
 } from '@/features/settings/lib/editProfileSchema';
 import { Colors } from '@/shared/constants/theme';
-import { BackButton } from '@/shared/ui/BackButton';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -101,8 +100,7 @@ export default function EditProfileScreen() {
 
   return (
     <View style={styles.screen}>
-      <BackButton />
-      <ScreenContainer variant="default">
+      <ScreenContainer variant="default" edges={[]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.keyboard}
@@ -113,6 +111,9 @@ export default function EditProfileScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
+            <ThemedText type="title" style={styles.title}>
+              {t('profile.setName', 'Set your name')}
+            </ThemedText>
             <View style={styles.form}>
               <Controller
                 control={control}
@@ -214,7 +215,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingTop: 24,
     paddingBottom: 24,
   },
   form: {
@@ -273,5 +273,11 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 16,
     fontWeight: '600',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.primary,
+    paddingVertical: 16,
   },
 });

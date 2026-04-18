@@ -16,7 +16,6 @@ import { useCreateTransaction } from '@/features/transactions/model/useCreateTra
 import { AmountInput } from '@/features/transactions/ui/AmountInput';
 import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
 import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
-import { BackButton } from '@/shared/ui/BackButton';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { useToast } from '@/shared/ui/Toast';
@@ -72,7 +71,6 @@ export default function ManualAddScreen() {
 
   return (
     <View style={styles.screen}>
-      <BackButton />
       <ScreenContainer variant="default" edges={['bottom']}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}

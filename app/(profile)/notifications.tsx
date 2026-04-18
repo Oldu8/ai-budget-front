@@ -1,9 +1,8 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
 import { Colors } from '@/shared/constants/theme';
-import { BackButton } from '@/shared/ui/BackButton';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -12,8 +11,7 @@ export default function NotificationsScreen() {
 
   return (
     <View style={styles.screen}>
-      <BackButton />
-      <ScreenContainer variant="default">
+      <ScreenContainer variant="default" edges={[]}>
         <View style={styles.content}>
           <ThemedText style={styles.description}>
             {t('profile.notificationsDescription', 'Configure push notifications and email alerts. Coming soon.')}
