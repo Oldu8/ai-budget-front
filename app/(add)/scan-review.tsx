@@ -16,7 +16,6 @@ import { ReceiptScanErrorScreen } from '@/features/receipt-scan/ui/ReceiptScanEr
 import { ScanReviewEmptyState } from '@/features/receipt-scan/ui/ScanReviewEmptyState';
 import { ScanReviewSummaryCard } from '@/features/receipt-scan/ui/ScanReviewSummaryCard';
 import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
-import { BackButton } from '@/shared/ui/BackButton';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
@@ -69,7 +68,6 @@ export default function ScanReviewScreen() {
 
   return (
     <View style={styles.screen}>
-      <BackButton />
       <ScreenContainer variant="default" edges={['bottom']}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}

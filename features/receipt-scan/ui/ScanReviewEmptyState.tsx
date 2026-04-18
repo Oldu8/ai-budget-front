@@ -19,7 +19,7 @@ export function ScanReviewEmptyState() {
           <ThemedText type="title" className="text-center text-brand-primary">
             {t('add.receiptScan.review.emptyDraftTitle')}
           </ThemedText>
-          <ThemedText className="mt-3 text-center text-base text-brand-grey">
+          <ThemedText className="mt-3 text-base text-center text-brand-grey">
             {t('add.receiptScan.review.emptyDraftMessage')}
           </ThemedText>
           <View className="mt-8">
