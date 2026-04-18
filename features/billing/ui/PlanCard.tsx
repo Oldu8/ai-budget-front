@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
 
 import { PlanType } from '@/entities/user';
 import type { PlanCopy } from '@/features/billing/lib/planMarketingCopy';
@@ -38,10 +38,14 @@ export function PlanCard({ plan, isCurrent, onSelect, loading }: PlanCardProps) 
         <ThemedText type="defaultSemiBold" style={styles.title}>
           {plan.label}
         </ThemedText>
-        <ThemedText style={styles.price}>{priceLine}</ThemedText>
-        <ThemedText style={styles.subline}>
-          {t('billing.perMonth', 'per month')}
-        </ThemedText>
+        <View style={styles.priceRow}>
+          <ThemedText style={styles.price}>{priceLine}</ThemedText>
+          {!isFree ? (
+            <ThemedText style={styles.subline}>
+              {t('billing.perMonth', 'per month')}
+            </ThemedText>
+          ) : null}
+        </View>
         {copy ? (
           <ThemedText style={styles.tagline}>{copy.tagline}</ThemedText>
         ) : null}
@@ -78,44 +82,51 @@ export function PlanCard({ plan, isCurrent, onSelect, loading }: PlanCardProps) 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 12,
+    padding: 14,
     borderWidth: 1,
     borderColor: Colors.greyHover,
-    gap: 10,
+    gap: 8,
   },
   cardCurrent: {
     borderColor: Colors.primary,
   },
   header: {
-    gap: 4,
+    gap: 2,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     color: Colors.primary,
   },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
   price: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: '700',
+    lineHeight: 26,
     color: Colors.black,
   },
   subline: {
-    fontSize: 13,
+    fontSize: 12,
     color: Colors.grey,
   },
   tagline: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.grey,
-    marginTop: 6,
+    marginTop: 4,
   },
   features: {
-    gap: 8,
-    marginTop: 8,
+    gap: 6,
+    marginTop: 4,
   },
   featureRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   dot: {
     width: 6,
@@ -124,12 +135,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
   },
   featureText: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.black,
     flex: 1,
-    lineHeight: 18,
+    lineHeight: 17,
   },
   cta: {
-    marginTop: 6,
+    marginTop: 2,
   },
 });

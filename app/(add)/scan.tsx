@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { useScanReceiptMutation } from '@/features/receipt-scan/model/useScanReceiptMutation';
 import { useReceiptScanPendingImageStore } from '@/features/receipt-scan/model/useReceiptScanPendingImageStore';
+import { useScanReceiptMutation } from '@/features/receipt-scan/model/useScanReceiptMutation';
 import { ReceiptScanErrorScreen } from '@/features/receipt-scan/ui/ReceiptScanErrorScreen';
 import { ReceiptScanLoadingScreen } from '@/features/receipt-scan/ui/ReceiptScanLoadingScreen';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';

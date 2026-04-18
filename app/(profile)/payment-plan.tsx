@@ -65,23 +65,21 @@ export default function PaymentPlanScreen() {
   return (
     <View style={styles.screen}>
       <ScreenContainer variant="default" edges={[]}>
-
-        <ThemedText type="title" style={styles.title}>
-          {t('billing.currentPlan', 'Plans')}
-        </ThemedText>
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           bounces={false}
         >
+          <ThemedText type="title" style={styles.title}>
+            {t('billing.currentPlan', 'Plans')}
+          </ThemedText>
           <SubscriptionProfileBlock
             subscription={subscription}
             subscriptionStatus={subscriptionStatus}
             scanUsage={scanUsage}
             onManageBilling={manageHandler}
             planFeatureLines={currentPlanFeatureLines ?? undefined}
-            showManageBilling={false}
           />
 
           <Section title={t('billing.plansTitle', 'Plans')}>
@@ -172,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: Colors.primary,
-    paddingVertical: 16,
+    paddingTop: 16,
     textAlign: 'center',
   },
 });
