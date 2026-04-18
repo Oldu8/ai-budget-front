@@ -19,6 +19,8 @@ export interface SubscriptionProfileBlockProps {
   scanUsage: ScanUsage | null;
   showManageBilling?: boolean;
   onManageBilling?: () => void;
+  /** Lines from GET /api/plans for the **current** plan `description` (e.g. billing page). */
+  planFeatureLines?: string[] | null;
 }
 
 export function SubscriptionProfileBlock({
@@ -27,6 +29,7 @@ export function SubscriptionProfileBlock({
   scanUsage,
   showManageBilling = true,
   onManageBilling,
+  planFeatureLines,
 }: SubscriptionProfileBlockProps) {
   const { t, i18n } = useTranslation();
 
@@ -68,85 +71,84 @@ export function SubscriptionProfileBlock({
   }, [scanUsed, scanLimit, i18n.language]);
 
   return (
-    <View style={styles.section}>
-      <ThemedText style={styles.sectionTitle}>
-        {t('subscription.sectionTitle')}
-      </ThemedText>
-
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <View style={styles.cardHeaderText}>
-            <ThemedText type="defaultSemiBold" style={styles.planName}>
-              {planLabel}
-            </ThemedText>
-            {renewalLine ? (
-              <ThemedText style={styles.renewal}>{renewalLine}</ThemedText>
-            ) : null}
-          </View>
-          {badgeLabel && badgeColors ? (
-            <View
-              style={[
-                styles.badge,
-                { backgroundColor: badgeColors.backgroundColor },
-              ]}
-            >
-              <ThemedText
-                style={[styles.badgeText, { color: badgeColors.color }]}
-              >
-                {badgeLabel.toUpperCase()}
-              </ThemedText>
-            </View>
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <View style={styles.cardHeaderText}>
+          <ThemedText type="defaultSemiBold" style={styles.planName}>
+            {planLabel}
+          </ThemedText>
+          {renewalLine ? (
+            <ThemedText style={styles.renewal}>{renewalLine}</ThemedText>
           ) : null}
         </View>
-
-        {usedDisplay != null && progressPct !== null ? (
-          <View style={styles.usageBlock}>
-            <View style={styles.usageRow}>
-              <ThemedText type="defaultSemiBold" style={styles.usageLabel}>
-                {t('subscription.monthlyScanLimit')}
-              </ThemedText>
-              <ThemedText type="defaultSemiBold" style={styles.usageValues}>
-                {usedDisplay}
-              </ThemedText>
-            </View>
-            <View style={styles.progressTrack}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${progressPct}%` as `${number}%` },
-                ]}
-              />
-            </View>
+        {badgeLabel && badgeColors ? (
+          <View
+            style={[
+              styles.badge,
+              { backgroundColor: badgeColors.backgroundColor },
+            ]}
+          >
+            <ThemedText
+              style={[styles.badgeText, { color: badgeColors.color }]}
+            >
+              {badgeLabel.toUpperCase()}
+            </ThemedText>
           </View>
         ) : null}
-
-        {showManageBilling && onManageBilling ? (
-          <Button
-            variant="primary"
-            style={styles.cta}
-            onPress={onManageBilling}
-          >
-            {t('subscription.manageBilling')}
-          </Button>
-        ) : null}
       </View>
+
+      {usedDisplay != null && progressPct !== null ? (
+        <View style={styles.usageBlock}>
+          <View style={styles.usageRow}>
+            <ThemedText type="defaultSemiBold" style={styles.usageLabel}>
+              {t('subscription.monthlyScanLimit')}
+            </ThemedText>
+            <ThemedText type="defaultSemiBold" style={styles.usageValues}>
+              {usedDisplay}
+            </ThemedText>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${progressPct}%` as `${number}%` },
+              ]}
+            />
+          </View>
+        </View>
+      ) : null}
+
+      {planFeatureLines && planFeatureLines.length > 0 ? (
+        <View style={styles.featuresBlock}>
+          <ThemedText type="defaultSemiBold" style={styles.featuresTitle}>
+            {t('billing.planFeaturesTitle', {
+              planName: planLabel,
+              defaultValue: '{{planName}} includes',
+            })}
+          </ThemedText>
+          {planFeatureLines.map((line, index) => (
+            <View key={`${index}-${line}`} style={styles.featureRow}>
+              <View style={styles.featureDot} />
+              <ThemedText style={styles.featureText}>{line}</ThemedText>
+            </View>
+          ))}
+        </View>
+      ) : null}
+
+      {showManageBilling && onManageBilling ? (
+        <Button
+          variant="primary"
+          style={styles.cta}
+          onPress={onManageBilling}
+        >
+          {t('subscription.manageBilling')}
+        </Button>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: Colors.grey,
-    marginBottom: 8,
-    marginLeft: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
   card: {
     backgroundColor: Colors.white,
     borderRadius: 16,
@@ -226,6 +228,33 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 999,
     backgroundColor: Colors.primary,
+  },
+  featuresBlock: {
+    marginTop: 20,
+    gap: 8,
+  },
+  featuresTitle: {
+    fontSize: 14,
+    color: Colors.primary,
+    marginBottom: 4,
+  },
+  featureRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  featureDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.primary,
+    marginTop: 6,
+  },
+  featureText: {
+    fontSize: 14,
+    color: Colors.grey,
+    lineHeight: 20,
+    flex: 1,
   },
   cta: {
     marginTop: 28,

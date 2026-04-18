@@ -374,4 +374,40 @@ export const uk = {
       generic: "Щось пішло не так. Спробуйте ще раз.",
     },
   },
+  billing: {
+    scanLimitReached: "Ліміт сканів вичерпано",
+    scanLimitReachedMessage:
+      "Оновіть план, щоб отримати більше AI-сканів цього місяця.",
+    addPromoTitle: "Оновіть для нових інструментів",
+    addPromoSubtitle:
+      "Розблокуйте регулярні витрати, експорт CSV та більші ліміти сканів.",
+    viewPlans: "Переглянути плани",
+    upgradeTitle: "Розблокуйте преміум-функції",
+    upgradeMessage:
+      "Обирайте Basic, Plus або Premium, щоб нічого не втрачати.",
+    csvUpgradeTitle: "Оновіть, щоб експортувати CSV",
+    csvUpgradeSubtitle:
+      "Експорт CSV доступний у планах Basic, Plus та Premium.",
+    perMonth: "на місяць",
+    freeLabel: "Безкоштовно",
+    currentPlan: "Поточний план",
+    included: "Включено",
+    choosePlan: "Обрати план",
+    plansTitle: "Плани",
+    loadPlansError: "Не вдалося завантажити плани",
+    retry: "Спробувати ще",
+    upgradeSection: "Оновлення",
+    promoTitle: "Потрібно більше?",
+    promoSubtitle:
+      "Оновіть, щоб збільшити ліміти сканів, увімкнути регулярні витрати, CSV та аналітику.",
+    refreshPlans: "Оновити плани",
+    refreshPlansHint: "Спробуйте ще раз.",
+    checkoutOpening: "Відкриваємо checkout…",
+    checkoutErrorTitle: "Не вдалося почати checkout",
+    checkoutErrorMessage: "Спробуйте ще раз.",
+    portalOpening: "Відкриваємо білінг портал…",
+    portalErrorTitle: "Не вдалося відкрити портал",
+    portalErrorMessage: "Спробуйте ще раз.",
+    planFeaturesTitle: "Що входить у {{planName}}",
+  },
 } as const;

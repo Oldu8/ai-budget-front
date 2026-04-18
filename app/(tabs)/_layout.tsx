@@ -22,6 +22,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        /** Only mount the active tab — avoids home API calls while another tab or stack is shown. */
+        lazy: true,
         headerShown: true,
         headerStyle: styles.header,
         headerTintColor: Colors.headerText,
