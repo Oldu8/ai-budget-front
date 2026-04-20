@@ -18,7 +18,7 @@ import {
   type ReceiptItemEditFormData,
 } from '@/features/receipt-scan/model/createReceiptItemEditSchema';
 import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptReviewStore';
-import { ReceiptItemLabelField } from '@/features/receipt-scan/ui/ReceiptItemLabelField';
+import { HookFormOutlinedTextField } from '@/shared/ui/HookFormOutlinedTextField';
 import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
 import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
 import { SimplePriceInput } from '@/features/transactions/ui/SimplePriceInput';
@@ -130,10 +130,13 @@ export default function ScanReviewItemScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <ReceiptItemLabelField
+            <HookFormOutlinedTextField
               control={form.control}
               name="label"
-              disabled={false}
+              label={t('add.receiptScan.itemLabel')}
+              placeholder={t('add.receiptScan.itemLabelPlaceholder')}
+              autoCapitalize="sentences"
+              autoCorrect
             />
 
             <SimplePriceInput

@@ -410,4 +410,55 @@ export const uk = {
     portalErrorMessage: "Спробуйте ще раз.",
     planFeaturesTitle: "Що входить у {{planName}}",
   },
+  recurring: {
+    entryTitle: "Регулярні витрати",
+    entrySubtitle: "Налаштуйте повторювані транзакції",
+    title: "Регулярні витрати",
+    create: "Створити",
+    newTitle: "Нова регулярна витрата",
+    editTitle: "Регулярна витрата",
+    description:
+      "Ця витрата додаватиметься автоматично за обраним графіком, доки ви не видалите її або не настане дата завершення.",
+    emptyTitle: "Ще немає регулярних витрат",
+    emptyDescription:
+      "Натисніть «Створити», щоб додати першу повторювану транзакцію.",
+    label: "Назва",
+    labelPlaceholder: "наприклад Netflix",
+    startsOn: "Початок:",
+    frequencyLabel: "ПОВТОР",
+    listNext: "Далі:",
+    untitledExpense: "Витрата",
+    notFound: "Правило не знайдено",
+    endDate: {
+      toggle: "Вказати дату завершення",
+      placeholder: "Без дати завершення",
+      prefix: "Кінець:",
+    },
+    frequency: {
+      weekly: "Щотижня",
+      monthly: "Щомісяця",
+      yearly: "Щороку",
+    },
+    save: "Зберегти",
+    delete: "Видалити",
+    deleteConfirm: {
+      title: "Видалити регулярну витрату?",
+      message:
+        "Майбутні транзакції більше не створюватимуться. Минулі залишаться.",
+      confirm: "Видалити",
+      cancel: "Скасувати",
+    },
+    paywall: {
+      title: "Оновіть план для регулярних витрат",
+      reason: "Регулярні витрати доступні в планах Plus та Premium.",
+    },
+    toast: {
+      savedTitle: "Збережено",
+      savedText: "Регулярну витрату збережено.",
+      deletedTitle: "Видалено",
+      deletedText: "Регулярну витрату видалено.",
+      errorTitle: "Щось пішло не так",
+      errorText: "Спробуйте ще раз.",
+    },
+  },
 } as const;

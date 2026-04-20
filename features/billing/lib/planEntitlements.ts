@@ -1,7 +1,7 @@
 import { PlanType } from '@/entities/user';
 
 /** Product-gated capabilities (extend as new paid surfaces are added). */
-export type PaidFeature = 'csvExport';
+export type PaidFeature = 'csvExport' | 'recurringExpenses';
 
 function normalizePlanType(plan: PlanType | string | undefined | null): PlanType {
   const raw = String(plan ?? PlanType.Free).toLowerCase();
@@ -20,6 +20,8 @@ export function planIncludesPaidFeature(
   switch (feature) {
     case 'csvExport':
       return p !== PlanType.Free;
+    case 'recurringExpenses':
+      return p === PlanType.Plus || p === PlanType.Premium;
     default:
       return false;
   }

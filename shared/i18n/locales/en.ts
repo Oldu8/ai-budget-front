@@ -51,6 +51,58 @@ export const en = {
     portalErrorMessage: 'Please try again.',
     planFeaturesTitle: '{{planName}} includes',
   },
+  recurring: {
+    entryTitle: 'Recurring Expenses',
+    entrySubtitle: 'Set up repeating transactions',
+    title: 'Recurring Expenses',
+    create: 'Create',
+    newTitle: 'New recurring expense',
+    editTitle: 'Recurring expense',
+    description:
+      'This expense will be added automatically on the schedule you choose until you delete it or reach the end date.',
+    emptyTitle: 'No recurring expenses yet',
+    emptyDescription:
+      'Tap “Create” to add your first repeating transaction.',
+    label: 'Label',
+    labelPlaceholder: 'e.g. Netflix',
+    startsOn: 'Starts on:',
+    frequencyLabel: 'REPEATS',
+    listNext: 'Next:',
+    untitledExpense: 'Expense',
+    notFound: 'Rule not found',
+    endDate: {
+      toggle: 'Set end date',
+      placeholder: 'No end date',
+      prefix: 'End date:',
+    },
+    frequency: {
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+      yearly: 'Yearly',
+    },
+    save: 'Save',
+    delete: 'Delete',
+    deleteConfirm: {
+      title: 'Delete recurring expense?',
+      message:
+        'It will stop creating future transactions. Past transactions stay.',
+      confirm: 'Delete',
+      cancel: 'Cancel',
+    },
+    paywall: {
+      title: 'Upgrade to use recurring expenses',
+      reason:
+        'Recurring expenses are available on Plus and Premium plans.',
+    },
+    toast: {
+      savedTitle: 'Saved',
+      savedText: 'Your recurring expense was saved.',
+      deletedTitle: 'Deleted',
+      deletedText: 'Recurring expense removed.',
+      errorTitle: 'Something went wrong',
+      errorText: 'Please try again.',
+    },
+  },
   add: {
     title: "Add Expense",
     addExpense: "Add Expense",
