@@ -161,40 +161,40 @@ Mobile App                     Backend API                     Supabase
 
 **Protected (requires `Authorization: Bearer <token>`):**
 
-| Method   | Route              | Action                       |
-| -------- | ------------------ | ---------------------------- |
+| Method   | Route              | Action                                                                                                         |
+| -------- | ------------------ | -------------------------------------------------------------------------------------------------------------- |
 | `GET`    | `/api/me`          | Get profile, settings, subscription, `subscription_status`, and scan_usage (scans remaining/limit, period_end) |
-| `PUT`    | `/api/me`          | Update profile               |
-| `DELETE` | `/api/me`          | Soft-delete account          |
-| `GET`    | `/api/me/settings` | Get user settings            |
-| `POST`   | `/api/me/settings` | Create settings (onboarding) |
-| `PUT`    | `/api/me/settings` | Update user settings         |
+| `PUT`    | `/api/me`          | Update profile                                                                                                 |
+| `DELETE` | `/api/me`          | Soft-delete account                                                                                            |
+| `GET`    | `/api/me/settings` | Get user settings                                                                                              |
+| `POST`   | `/api/me/settings` | Create settings (onboarding)                                                                                   |
+| `PUT`    | `/api/me/settings` | Update user settings                                                                                           |
 
-| `GET`    | `/api/categories`               | List categories and subcategories (id, slug, label, children); filtered by user's disabled list; optional `?visibility_tag=` for funnel preview     |
-| `GET`    | `/api/funnel/visibility-questions` | List funnel questions per visibility tag (visibility_tag, question_key, type, order, translation_key). Frontend uses `t(translation_key + '.title')`, `t(translation_key + '.description')` for i18n.     |
-| `GET`    | `/api/visibility-tags`         | List visibility tags with `enabled`, `translation_key` for current user (for settings toggles). Frontend uses `t(translation_key)` for i18n.     |
-| `PATCH`  | `/api/me/category-visibility`   | Set tag enabled/disabled: body `{ "visibility_tag", "enabled" }` — disabled = add all categories with tag to app_user_category_settings; enabled = delete those rows     |
-| `GET`    | `/api/transactions`             | List transactions (paginated, filters: from, to, type)            |
-| `GET`    | `/api/transactions/summary`     | Expense summary by category for date range (query: from, to)      |
-| `GET`    | `/api/transactions/summary/{category}` | Expense summary by subcategory for one category (query: from, to) |
-| `GET`    | `/api/transactions/export`     | CSV export of expenses for date range (query: from, to); Basic/Plus/Premium only |
-| `POST`   | `/api/transactions`             | Create transaction (manual, ManualTransactionController)          |
-| `GET`    | `/api/transactions/{id}`        | Get transaction — JSON envelope `{ "data": { ... } }` (same shape as scan / receipt update / show) |
-| `PUT`    | `/api/transactions/{id}`        | Update transaction                                                  |
-| `DELETE` | `/api/transactions/{id}`        | Soft-delete transaction                                             |
+| `GET` | `/api/categories` | List categories and subcategories (id, slug, label, children); filtered by user's disabled list; optional `?visibility_tag=` for funnel preview |
+| `GET` | `/api/funnel/visibility-questions` | List funnel questions per visibility tag (visibility_tag, question_key, type, order, translation_key). Frontend uses `t(translation_key + '.title')`, `t(translation_key + '.description')` for i18n. |
+| `GET` | `/api/visibility-tags` | List visibility tags with `enabled`, `translation_key` for current user (for settings toggles). Frontend uses `t(translation_key)` for i18n. |
+| `PATCH` | `/api/me/category-visibility` | Set tag enabled/disabled: body `{ "visibility_tag", "enabled" }` — disabled = add all categories with tag to app_user_category_settings; enabled = delete those rows |
+| `GET` | `/api/transactions` | List transactions (paginated, filters: from, to, type) |
+| `GET` | `/api/transactions/summary` | Expense summary by category for date range (query: from, to) |
+| `GET` | `/api/transactions/summary/{category}` | Expense summary by subcategory for one category (query: from, to) |
+| `GET` | `/api/transactions/export` | CSV export of expenses for date range (query: from, to); Basic/Plus/Premium only |
+| `POST` | `/api/transactions` | Create transaction (manual, ManualTransactionController) |
+| `GET` | `/api/transactions/{id}` | Get transaction — JSON envelope `{ "data": { ... } }` (same shape as scan / receipt update / show) |
+| `PUT` | `/api/transactions/{id}` | Update transaction |
+| `DELETE` | `/api/transactions/{id}` | Soft-delete transaction |
 
-| `POST`   | `/api/transactions/scan`               | AI scan: upload image; 201 `{ "data": { ... } }` (transaction with `items[].category`) |
-| `PUT`    | `/api/transactions/{id}/update`        | Save edited AI receipt (`date`, `items[]` …) and **confirm** in one request; server recalculates `total_amount`, sets `confirmed_at` |
-| `GET`    | `/api/transactions/{id}/image`         | Receipt preview: `{ "url", "expires_in" }` signed URL (owner, requires `img_path`) |
-| `GET`    | `/api/plans`                           | List all plans with currency-aware pricing for frontend paywall |
-| `POST`   | `/api/stripe/checkout`                 | Create Stripe Checkout Session; body `{ plan_type }` → `{ checkout_url }` |
-| `POST`   | `/api/stripe/portal`                   | Create Stripe Customer Portal Session → `{ portal_url }` |
+| `POST` | `/api/transactions/scan` | AI scan: upload image; 201 `{ "data": { ... } }` (transaction with `items[].category`) |
+| `PUT` | `/api/transactions/{id}/update` | Save edited AI receipt (`date`, `items[]` …) and **confirm** in one request; server recalculates `total_amount`, sets `confirmed_at` |
+| `GET` | `/api/transactions/{id}/image` | Receipt preview: `{ "url", "expires_in" }` signed URL (owner, requires `img_path`) |
+| `GET` | `/api/plans` | List all plans with currency-aware pricing for frontend paywall |
+| `POST` | `/api/stripe/checkout` | Create Stripe Checkout Session; body `{ plan_type }` → `{ checkout_url }` |
+| `POST` | `/api/stripe/portal` | Create Stripe Customer Portal Session → `{ portal_url }` |
 
 **No auth (Stripe signature only):**
 
-| Method | Route                  | Action                                         |
-| ------ | ---------------------- | ---------------------------------------------- |
-| `POST` | `/api/stripe/webhook`  | Stripe webhook endpoint (verified by signature) |
+| Method | Route                 | Action                                          |
+| ------ | --------------------- | ----------------------------------------------- |
+| `POST` | `/api/stripe/webhook` | Stripe webhook endpoint (verified by signature) |
 
 **Scan / receipt update / show responses** use a stable envelope: `data.id`, `data.type`, `data.created_by`, `data.confirmed_at`, `data.date`, `data.total_amount`, `data.img_path`, `data.raw_ai_data`, `data.items[]` with nested `category` `{ id, slug, label }`.
 
@@ -234,11 +234,13 @@ Mobile App                     Backend API                     Supabase
 Подтверждение почты полностью обрабатывается Supabase. Бэкенд не создаёт отдельных роутов для подтверждения.
 
 **Текущее поведение:**
+
 - `app_users.email_verified_at` — синхронизируется из Supabase `email_confirmed_at` в middleware
 - Юзер в ответах auth получает `user.email_verified_at` (null до подтверждения)
 - **Ничего не блокируется** — юзер может пользоваться приложением без подтверждения
 
 **Планируется (после реализации транзакций):**
+
 - Транзакции (создание, просмотр) будут доступны только при `email_verified_at !== null`
 - Остальные эндпоинты (профиль, настройки) — без ограничений
 
@@ -291,6 +293,7 @@ Mobile App                     Backend API                     Supabase
 - `visibility_tag` (nullable) — metadata (e.g. kids, car, pets) for bulk-toggling
 
 **Category hierarchy rules:**
+
 - **Level 1 (parent)** — категории агрегации (e.g. Housing, Food). НЕ выбираются пользователем при создании транзакции. На фронте отображают сумму всех дочерних подкатегорий.
 - **Level 2 (child)** — конкретные подкатегории (e.g. Rent, Groceries). Именно их пользователь выбирает при создании/редактировании транзакции.
 - `transaction_items.category_id` всегда ссылается на Level 2 категорию. Привязка к Level 1 запрещена на уровне клиента (parent-категории не отображаются как опции для выбора).
@@ -321,11 +324,13 @@ Mobile App                     Backend API                     Supabase
 - Indexes: (transaction_id, category_id), (category_id)
 
 **Структура:**
+
 - **Ручная:** 1 transaction с total_amount, 1 transaction_item с amount = total_amount
 - **AI-чек:** 1 transaction с общей суммой, N transaction_items по категориям
 - **Рекуррентный расход:** 1 transaction с total_amount, 1 transaction_item (amount = total_amount) по одной категории; создаётся по расписанию, всегда с `type = expense`, `created_by = 'recurring'`, `confirmed_at = now()`
 
 **confirmed_at — ключевое поле для видимости транзакции:**
+
 - **Manual:** устанавливается сразу (`now()`) при создании
 - **AI:** `null` при создании. Заполняется только когда юзер подтверждает результат сканирования
 - **Неподтверждённые транзакции (`confirmed_at IS NULL`):**
@@ -400,6 +405,7 @@ Seeding: `php artisan plans:seed`. Data: `database/data/plans.php`. Uses `update
 - Soft deletes включены
 
 **Правила:**
+
 - `category_id` всегда Level 2 (подкатегория, `categories.category_id IS NOT NULL`).
 - Категория не должна быть в `app_user_category_settings` для пользователя (скрытые категории нельзя выбирать).
 - При выключении правила (`is_active = false`) планировщик его не обрабатывает.
@@ -520,17 +526,14 @@ Seeding: `php artisan plans:seed`. Data: `database/data/plans.php`. Uses `update
 
 - Консольная команда `app:run-recurring-expenses` (`RunRecurringExpensesCommand`).
 - Планируется в `App\Console\Kernel` раз в час:
-
   - `$schedule->command('app:run-recurring-expenses')->hourly()->withoutOverlapping()->onOneServer();`
 
 - Отбирает правила:
-
   - `is_active = true`
   - `next_run_at <= now() + 14 hours` (предварительная фильтрация с учётом максимального UTC+14)
   - `deleted_at IS NULL` (через SoftDeletes)
 
 - Обработка:
-
   - Идёт по правилам чанками (`chunkById(100)`), упорядоченным по `next_run_at`.
   - Для каждого правила:
     - Открывает DB-транзакцию.
@@ -674,6 +677,7 @@ ORDER BY iim.date, cp.node_id;
 **Data:** Table `visibility_questions` — list of visibility questions (visibility_tag, question_key, type, order, translation_key, is_active). Seeded by `php artisan visibility-questions:seed`. Backend provides structure only; frontend handles translation via i18n. Used by `GET /api/funnel/visibility-questions` and `GET /api/visibility-tags`.
 
 **Rules:**
+
 - Categories (and subcategories) whose id is in `app_user_category_settings` for the user are **hidden**: excluded from `GET /api/categories`, from AI scan category list, and from transaction summary aggregation.
 - **Disable by tag** (e.g. front sends `kids` = false): insert into `app_user_category_settings` one row per category that has `visibility_tag = 'kids'` (with `visibility_tag` stored in the row). **Enable by tag:** delete all rows for that user where `visibility_tag = 'kids'`.
 - **GET /api/visibility-tags** returns each tag with `enabled: true` if the user has no rows with that tag in `app_user_category_settings`; otherwise `enabled: false`.
@@ -699,6 +703,7 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 ### 5.7. Stripe Integration (StripeController)
 
 **Checkout** (`POST /api/stripe/checkout`):
+
 - Accepts `{ plan_type: "basic"|"plus"|"premium" }`. Rejects `free`.
 - Gets or creates Stripe Customer (saves `payment_customer_id` on `app_users`).
 - Resolves `price_id` from user's currency (`app_user_settings.currency`, default `usd`) via `config('services.stripe.prices')`, fallback to USD.
@@ -706,10 +711,12 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 - Returns `{ checkout_url }`.
 
 **Customer Portal** (`POST /api/stripe/portal`):
+
 - Requires existing `payment_customer_id`; returns 400 if missing.
 - Creates `Stripe\BillingPortal\Session` and returns `{ portal_url }`.
 
 **Webhook** (`POST /api/stripe/webhook`):
+
 - Outside auth middleware; verified solely by Stripe signature (`STRIPE_WEBHOOK_SECRET`).
 - All handlers are **idempotent** (upsert by `payment_subscription_id` / `payment_invoice_id`).
 - Webhooks are the **single source of truth** for subscription state.
@@ -723,11 +730,13 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 - Missing AppUser for a customer ID is logged and reported via `ErrorNotifier`, webhook returns 200 without throwing.
 
 **Free Plan Auto-Creation** (`EnsureDefaultSubscriptionService`):
+
 - Called in `AuthController::register()` and `login()` after user creation/lookup.
 - Ensures every user has an active subscription. If no active subscription exists, creates a local-only free subscription (`payment_subscription_id = null`, `current_period_end = null`, `used_checks_count = 0`).
 - Free plan is local-only — no Stripe Product/Price. When paid subscription activates, free is canceled. When paid is deleted, free is re-created with fresh usage.
 
 **Plans** (`GET /api/plans`):
+
 - Returns all plans ordered Free → Basic → Plus → Premium with currency-aware `price_id` from config.
 
 ### 5.8. CSV export of expenses
@@ -740,28 +749,28 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 
 ## 6. Environment Variables
 
-| Variable                | Purpose                                                                               |
-| ----------------------- | ------------------------------------------------------------------------------------- |
-| `DB_CONNECTION`         | `pgsql` — использовать PostgreSQL                                                     |
-| `DB_URL`                | Connection string к Supabase PostgreSQL (Settings → Database → URI)                   |
-| `SUPABASE_URL`          | Project URL (Settings → API → Project URL)                                            |
-| `SUPABASE_ANON_KEY`     | Используется в AuthController для register/login/refresh (Supabase → anon public)     |
-| `SUPABASE_SERVICE_ROLE` | Используется в middleware и logout (валидация токена, Supabase → service_role secret) |
-| `OPENAI_API_KEY`        | OpenAI API key для AI scan                                                            |
-| `SUPABASE_STORAGE_BUCKET` | Supabase Storage bucket name (default: `receipts`)                                  |
-| `OPENAI_REQUEST_TIMEOUT`| OpenAI request timeout in seconds (default: 60)                                       |
-| `STRIPE_SECRET_KEY`     | Stripe secret key                                                                   |
-| `STRIPE_PUBLIC_KEY`     | Stripe publishable key (for frontend if needed)                                     |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret                                                       |
-| `STRIPE_SUCCESS_URL`    | Redirect after successful checkout; if unset, defaults to `{APP_URL}/stripe/checkout/success` (public test page) |
-| `STRIPE_CANCEL_URL`     | Redirect after canceled checkout; if unset, defaults to `{APP_URL}/stripe/checkout/cancel` (public test page)   |
-| `STRIPE_BASIC_PRICE_EUR` / `STRIPE_BASIC_PRICE_USD` | Stripe Price IDs для плана Basic (EUR / USD)                    |
-| `STRIPE_PLUS_PRICE_EUR` / `STRIPE_PLUS_PRICE_USD`   | Stripe Price IDs для плана Plus (EUR / USD)                   |
-| `STRIPE_PREMIUM_PRICE_EUR` / `STRIPE_PREMIUM_PRICE_USD` | Stripe Price IDs для плана Premium (EUR / USD)            |
-| `DISCORD_ERRORS_WEBHOOK_URL` | Ошибки / Stripe issues → `#error-logs` (fallback: `DISCORD_WEBHOOK_URL`) |
-| `DISCORD_REGISTRATIONS_WEBHOOK_URL` | Успешная регистрация → `#new-users` |
-| `DISCORD_PAYMENTS_WEBHOOK_URL` | Старт платной подписки / отмена подписки → `#payment-info` (не продления) |
-| `DISCORD_REGISTRATION_INCLUDE_EMAIL` | `true` — в сообщении о регистрации полный email; иначе только `app_user_id` + домен |
+| Variable                                                | Purpose                                                                                                          |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `DB_CONNECTION`                                         | `pgsql` — использовать PostgreSQL                                                                                |
+| `DB_URL`                                                | Connection string к Supabase PostgreSQL (Settings → Database → URI)                                              |
+| `SUPABASE_URL`                                          | Project URL (Settings → API → Project URL)                                                                       |
+| `SUPABASE_ANON_KEY`                                     | Используется в AuthController для register/login/refresh (Supabase → anon public)                                |
+| `SUPABASE_SERVICE_ROLE`                                 | Используется в middleware и logout (валидация токена, Supabase → service_role secret)                            |
+| `OPENAI_API_KEY`                                        | OpenAI API key для AI scan                                                                                       |
+| `SUPABASE_STORAGE_BUCKET`                               | Supabase Storage bucket name (default: `receipts`)                                                               |
+| `OPENAI_REQUEST_TIMEOUT`                                | OpenAI request timeout in seconds (default: 60)                                                                  |
+| `STRIPE_SECRET_KEY`                                     | Stripe secret key                                                                                                |
+| `STRIPE_PUBLIC_KEY`                                     | Stripe publishable key (for frontend if needed)                                                                  |
+| `STRIPE_WEBHOOK_SECRET`                                 | Stripe webhook signing secret                                                                                    |
+| `STRIPE_SUCCESS_URL`                                    | Redirect after successful checkout; if unset, defaults to `{APP_URL}/stripe/checkout/success` (public test page) |
+| `STRIPE_CANCEL_URL`                                     | Redirect after canceled checkout; if unset, defaults to `{APP_URL}/stripe/checkout/cancel` (public test page)    |
+| `STRIPE_BASIC_PRICE_EUR` / `STRIPE_BASIC_PRICE_USD`     | Stripe Price IDs для плана Basic (EUR / USD)                                                                     |
+| `STRIPE_PLUS_PRICE_EUR` / `STRIPE_PLUS_PRICE_USD`       | Stripe Price IDs для плана Plus (EUR / USD)                                                                      |
+| `STRIPE_PREMIUM_PRICE_EUR` / `STRIPE_PREMIUM_PRICE_USD` | Stripe Price IDs для плана Premium (EUR / USD)                                                                   |
+| `DISCORD_ERRORS_WEBHOOK_URL`                            | Ошибки / Stripe issues → `#error-logs` (fallback: `DISCORD_WEBHOOK_URL`)                                         |
+| `DISCORD_REGISTRATIONS_WEBHOOK_URL`                     | Успешная регистрация → `#new-users`                                                                              |
+| `DISCORD_PAYMENTS_WEBHOOK_URL`                          | Старт платной подписки / отмена подписки → `#payment-info` (не продления)                                        |
+| `DISCORD_REGISTRATION_INCLUDE_EMAIL`                    | `true` — в сообщении о регистрации полный email; иначе только `app_user_id` + домен                              |
 
 **Supabase keys:**
 

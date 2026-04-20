@@ -5,20 +5,9 @@ import { Pressable, View } from 'react-native';
 import type { Category } from '@/entities/category';
 import { Colors } from '@/shared/constants/theme';
 import { getCategoryIcon } from '@/shared/lib/categoryIcons';
+import { findParentOfSubcategory } from '@/shared/lib/categoryTree';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
-
-function findParentOfSubcategory(
-  categories: Category[],
-  subcategoryId: number
-): Category | undefined {
-  const parents = categories.filter(
-    (c) => c.category_id == null && (c.children?.length ?? 0) > 0
-  );
-  return parents.find((p) =>
-    p.children?.some((c) => c.id === subcategoryId)
-  );
-}
 
 interface CategoryGridProps {
   categories: Category[];

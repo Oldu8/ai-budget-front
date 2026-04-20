@@ -31,6 +31,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />
                 <Stack.Screen name="(profile)" options={{ headerShown: false }} />
                 <Stack.Screen name="(add)" options={{ headerShown: false }} />
+                <Stack.Screen name="(recurring)" options={{ headerShown: false }} />
               </Stack>
               <PaywallSheet />
               <ToastOverlay />

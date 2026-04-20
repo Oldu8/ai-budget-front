@@ -35,12 +35,21 @@ interface TransactionDateFieldProps<T extends FieldValues> {
   control: Control<T>;
   name: FieldPath<T>;
   disabled?: boolean;
+  /**
+   * Max selectable date. `undefined` = today (manual expense default).
+   * `null` = no upper bound (e.g. recurring start / end dates).
+   */
+  maximumDate?: Date | null;
+  /** i18n key for text before formatted date (default `add.manual.datePrefix`). */
+  datePrefixI18nKey?: string;
 }
 
 export function TransactionDateField<T extends FieldValues>({
   control,
   name,
   disabled = false,
+  maximumDate: maximumDateProp,
+  datePrefixI18nKey = 'add.manual.datePrefix',
 }: TransactionDateFieldProps<T>) {
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -50,6 +59,13 @@ export function TransactionDateField<T extends FieldValues>({
     const code = i18n.language.split(/[-_]/)[0] ?? 'en';
     return DATE_FNS_LOCALES[code] ?? enUS;
   }, [i18n.language]);
+
+  const resolvedMaximumDate =
+    maximumDateProp === undefined
+      ? new Date()
+      : maximumDateProp === null
+        ? undefined
+        : maximumDateProp;
 
   return (
     <Controller
@@ -61,7 +77,7 @@ export function TransactionDateField<T extends FieldValues>({
           raw instanceof Date && !Number.isNaN(raw.getTime())
             ? raw
             : startOfDay(new Date());
-        const line = `${t('add.manual.datePrefix')} ${format(date, 'MMM d, yyyy', {
+        const line = `${t(datePrefixI18nKey)} ${format(date, 'MMM d, yyyy', {
           locale: dateLocale,
         })}`;
 
@@ -133,7 +149,9 @@ export function TransactionDateField<T extends FieldValues>({
                 value={date}
                 mode="date"
                 display="default"
-                maximumDate={new Date()}
+                {...(resolvedMaximumDate != null
+                  ? { maximumDate: resolvedMaximumDate }
+                  : {})}
                 onChange={onPickerChange}
               />
             ) : null}
@@ -162,7 +180,9 @@ export function TransactionDateField<T extends FieldValues>({
                         mode="date"
                         display="spinner"
                         themeVariant="light"
-                        maximumDate={new Date()}
+                        {...(resolvedMaximumDate != null
+                          ? { maximumDate: resolvedMaximumDate }
+                          : {})}
                         onChange={onPickerChange}
                         style={styles.iosPicker}
                       />

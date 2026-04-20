@@ -408,4 +408,55 @@ export const es = {
     portalErrorMessage: 'Por favor inténtalo de nuevo.',
     planFeaturesTitle: 'Qué incluye {{planName}}',
   },
+  recurring: {
+    entryTitle: 'Gastos recurrentes',
+    entrySubtitle: 'Configura transacciones repetidas',
+    title: 'Gastos recurrentes',
+    create: 'Crear',
+    newTitle: 'Nuevo gasto recurrente',
+    editTitle: 'Gasto recurrente',
+    description:
+      'Este gasto se añadirá automáticamente según el calendario que elijas hasta que lo elimines o llegue la fecha de fin.',
+    emptyTitle: 'Aún no hay gastos recurrentes',
+    emptyDescription:
+      'Pulsa «Crear» para añadir tu primera transacción repetida.',
+    label: 'Etiqueta',
+    labelPlaceholder: 'p. ej. Netflix',
+    startsOn: 'Empieza:',
+    frequencyLabel: 'REPETICIÓN',
+    listNext: 'Próximo:',
+    untitledExpense: 'Gasto',
+    notFound: 'Regla no encontrada',
+    endDate: {
+      toggle: 'Establecer fecha de fin',
+      placeholder: 'Sin fecha de fin',
+      prefix: 'Fecha de fin:',
+    },
+    frequency: {
+      weekly: 'Semanal',
+      monthly: 'Mensual',
+      yearly: 'Anual',
+    },
+    save: 'Guardar',
+    delete: 'Eliminar',
+    deleteConfirm: {
+      title: '¿Eliminar gasto recurrente?',
+      message:
+        'Dejará de crear transacciones futuras. Las anteriores se mantienen.',
+      confirm: 'Eliminar',
+      cancel: 'Cancelar',
+    },
+    paywall: {
+      title: 'Mejora para usar gastos recurrentes',
+      reason: 'Los gastos recurrentes están en los planes Plus y Premium.',
+    },
+    toast: {
+      savedTitle: 'Guardado',
+      savedText: 'Tu gasto recurrente se guardó.',
+      deletedTitle: 'Eliminado',
+      deletedText: 'Gasto recurrente eliminado.',
+      errorTitle: 'Algo salió mal',
+      errorText: 'Inténtalo de nuevo.',
+    },
+  },
 } as const;
