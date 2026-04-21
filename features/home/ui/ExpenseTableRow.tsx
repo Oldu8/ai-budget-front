@@ -1,33 +1,42 @@
-import { getCategoryIcon } from '@/shared/lib/categoryIcons';
 import type { TableRow } from '@/features/home/types';
 import { ExpenseTableCell } from '@/features/home/ui/ExpenseTableCell';
+import {
+  CATEGORY_COLUMN_WIDTH,
+  EXPANDED_PARENT_ROW_TINT,
+  ROW_HEIGHT,
+} from '@/features/home/ui/expenseTableConstants';
 import { Colors } from '@/shared/constants/theme';
-import { IconSymbol } from '@/shared/ui/IconSymbol';
+import { getCategoryMaterialIconName } from '@/shared/lib/categoryIcons';
+import { CategoryIcon } from '@/shared/ui/CategoryIcon';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Pressable, View } from 'react-native';
+import { Modal, Pressable, Text, View } from 'react-native';
 
-const CATEGORY_COLUMN_WIDTH = 100;
 const TOOLTIP_DURATION_MS = 3000;
 
-interface ExpenseTableRowProps {
+interface ExpenseTableRowSharedProps {
   row: TableRow;
   days: number[];
   isExpanded: boolean;
   onToggleExpand?: () => void;
 }
 
-export const ExpenseTableRow = memo(function ExpenseTableRow({
+/** Left column: icon + label (sticky vertically). */
+export const ExpenseTableRowLabel = memo(function ExpenseTableRowLabel({
   row,
-  days,
   isExpanded,
   onToggleExpand,
-}: ExpenseTableRowProps) {
+}: Pick<ExpenseTableRowSharedProps, 'row' | 'isExpanded' | 'onToggleExpand'>) {
   const { t } = useTranslation();
   const isExpandable = row.expandable === true;
   const isParent = row.level === 'parent';
-  const iconName = getCategoryIcon(row.categorySlug ?? '');
+  const slug = row.categorySlug ?? '';
+  const materialIcon =
+    row.level === 'child'
+      ? getCategoryMaterialIconName(slug, 'child', row.parentCategorySlug)
+      : getCategoryMaterialIconName(slug, 'parent');
+
   const rawLabel = row.categorySlug
     ? t(`categories.${row.categorySlug}`, { defaultValue: row.label })
     : row.label;
@@ -35,8 +44,13 @@ export const ExpenseTableRow = memo(function ExpenseTableRow({
   const isTruncated = rawLabel.length > 12;
 
   const isChild = row.level === 'child';
-  const categoryCellBg = isChild ? 'bg-brand-white' : 'bg-brand-grey-low';
-  const rowBg = isChild ? 'bg-brand-white' : 'bg-brand-grey-low';
+  const expandedParent =
+    isParent && isExpandable && isExpanded;
+  const categoryCellBg = expandedParent
+    ? EXPANDED_PARENT_ROW_TINT
+    : isChild
+      ? Colors.white
+      : Colors.greyLow;
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [tooltipLayout, setTooltipLayout] = useState({ x: 0, y: 0 });
@@ -68,52 +82,79 @@ export const ExpenseTableRow = memo(function ExpenseTableRow({
 
   useEffect(() => () => hideTooltip(), [hideTooltip]);
 
+  const labelStyle = expandedParent
+    ? { fontSize: 12, fontWeight: '700' as const, color: Colors.primary }
+    : isChild
+      ? {
+        fontSize: 10,
+        fontStyle: 'italic' as const,
+        color: Colors.grey,
+        fontWeight: '400' as const,
+      }
+      : {
+        fontSize: 12,
+        fontWeight: '600' as const,
+        color: Colors.black,
+      };
+
   const categoryCell = (
     <View
       ref={cellRef}
       collapsable={false}
-      className={`flex-row items-center px-2 py-2 border-r border-brand-grey-hover ${categoryCellBg}`}
       style={{
         width: CATEGORY_COLUMN_WIDTH,
-        paddingLeft: isChild ? 16 : 8,
+        height: ROW_HEIGHT,
+        backgroundColor: categoryCellBg,
+        borderRightWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: Colors.greyHover,
+        paddingLeft: isChild ? 22 : 8,
+        paddingRight: 8,
+        justifyContent: 'center',
       }}
     >
-      <View className="flex-1 justify-center items-center">
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
         {isParent && (
-          <IconSymbol name={iconName} size={20} color={Colors.primary} />
+          <CategoryIcon name={materialIcon} size={16} color={Colors.primary} />
         )}
-        <ThemedText
-          className={`text-center text-xs ${isParent ? 'mt-0.5 font-semibold' : ''}`}
+        <Text
+          style={[labelStyle, { flex: 1 }]}
           numberOfLines={1}
           ellipsizeMode="tail"
         >
           {label}
-        </ThemedText>
+        </Text>
       </View>
     </View>
   );
 
   const categoryCellWithTooltip =
     isChild && isTruncated ? (
-      <Pressable style={{ width: CATEGORY_COLUMN_WIDTH }} onPress={showTooltip}>
+      <Pressable
+        style={{ width: CATEGORY_COLUMN_WIDTH }}
+        onPress={showTooltip}
+      >
         {categoryCell}
       </Pressable>
     ) : null;
 
+  const inner =
+    isExpandable ? (
+      <Pressable
+        onPress={onToggleExpand}
+        style={{ width: CATEGORY_COLUMN_WIDTH }}
+      >
+        {categoryCell}
+      </Pressable>
+    ) : categoryCellWithTooltip ? (
+      categoryCellWithTooltip
+    ) : (
+      categoryCell
+    );
+
   return (
-    <View className={`flex-row ${rowBg}`}>
-      {isExpandable ? (
-        <Pressable
-          onPress={onToggleExpand}
-          style={{ width: CATEGORY_COLUMN_WIDTH }}
-        >
-          {categoryCell}
-        </Pressable>
-      ) : categoryCellWithTooltip ? (
-        categoryCellWithTooltip
-      ) : (
-        categoryCell
-      )}
+    <View>
+      {inner}
       {tooltipVisible && (
         <Modal
           visible
@@ -121,10 +162,7 @@ export const ExpenseTableRow = memo(function ExpenseTableRow({
           animationType="fade"
           onRequestClose={hideTooltip}
         >
-          <Pressable
-            style={{ flex: 1 }}
-            onPress={hideTooltip}
-          >
+          <Pressable style={{ flex: 1 }} onPress={hideTooltip}>
             <View
               pointerEvents="none"
               style={{
@@ -149,10 +187,41 @@ export const ExpenseTableRow = memo(function ExpenseTableRow({
           </Pressable>
         </Modal>
       )}
+    </View>
+  );
+});
+
+/** Right columns: day amounts + total (scrolls with body). */
+export const ExpenseTableRowCells = memo(function ExpenseTableRowCells({
+  row,
+  days,
+  isExpanded,
+}: Pick<ExpenseTableRowSharedProps, 'row' | 'days' | 'isExpanded'>) {
+  const isParent = row.level === 'parent';
+  const isExpandable = row.expandable === true;
+  const expandedParent = isParent && isExpandable && isExpanded;
+  const tone = expandedParent ? 'primary' : 'default';
+
+  const rowBg = expandedParent
+    ? EXPANDED_PARENT_ROW_TINT
+    : row.level === 'child'
+      ? Colors.white
+      : Colors.greyLow;
+
+  return (
+    <View style={{ flexDirection: 'row', backgroundColor: rowBg }}>
       {days.map((day) => (
-        <ExpenseTableCell key={day} amount={row.amountsByDay[day] ?? 0} />
+        <ExpenseTableCell
+          key={day}
+          amount={row.amountsByDay[day] ?? 0}
+          tone={tone}
+        />
       ))}
-      <ExpenseTableCell amount={row.total} isTotalColumn />
+      <ExpenseTableCell
+        amount={row.total}
+        isTotalColumn
+        tone={tone}
+      />
     </View>
   );
 });

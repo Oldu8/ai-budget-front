@@ -1,49 +1,80 @@
-import { Colors } from '@/shared/constants/theme';
-import { ThemedText } from '@/shared/ui/ThemedText';
 import React, { memo } from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
+
+import {
+  DAY_COLUMN_WIDTH,
+  ROW_HEIGHT,
+  TOTAL_COLUMN_WIDTH,
+} from '@/features/home/ui/expenseTableConstants';
+import { Colors } from '@/shared/constants/theme';
 
 interface ExpenseTableCellProps {
   amount: number;
   isTotalColumn?: boolean;
+  /** When parent row is expanded, amounts use primary emphasis. */
+  tone?: 'default' | 'primary';
 }
 
-const DOT_SIZE = 6;
+/** Temporary crude cap until a proper abbreviation formatter exists. */
+const MAX_DAY_CHARS = 6;
+const MAX_TOTAL_CHARS = 8;
 
 function formatAmount(amount: number): string {
   if (Number.isInteger(amount)) return String(amount);
   return amount.toFixed(2);
 }
 
+const TOTAL_COLUMN_TINT = 'rgba(0, 84, 81, 0.06)';
+
 export const ExpenseTableCell = memo(function ExpenseTableCell({
   amount,
   isTotalColumn,
+  tone = 'default',
 }: ExpenseTableCellProps) {
+  const w = isTotalColumn ? TOTAL_COLUMN_WIDTH : DAY_COLUMN_WIDTH;
+
+  const baseStyle = {
+    width: w,
+    height: ROW_HEIGHT,
+    borderBottomWidth: 1,
+    borderRightWidth: isTotalColumn ? 0 : 1,
+    borderLeftWidth: isTotalColumn ? 2 : 0,
+    borderColor: Colors.greyHover,
+    borderLeftColor: Colors.primary,
+    backgroundColor: isTotalColumn ? TOTAL_COLUMN_TINT : 'transparent',
+    paddingHorizontal: 4,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  };
+
   if (amount <= 0) {
-    return (
-      <View
-        className={`min-w-[44px] items-end justify-center border-b border-r border-brand-grey-hover py-2 px-1 ${isTotalColumn ? 'border-l-2 border-l-brand-primary min-w-[72px]' : ''}`}
-      />
-    );
+    return <View style={baseStyle} />;
   }
 
   const displayValue = formatAmount(amount);
+  const capped = isTotalColumn
+    ? displayValue.slice(0, MAX_TOTAL_CHARS)
+    : displayValue.slice(0, MAX_DAY_CHARS);
+
+  const textColor = tone === 'primary' ? Colors.primary : Colors.black;
+  const fontWeight: '400' | '700' =
+    tone === 'primary' || isTotalColumn ? '700' : '400';
 
   return (
-    <View
-      className={`min-w-[44px] flex items-center justify-end gap-1 border-b border-r border-brand-grey-hover py-2 px-1 ${isTotalColumn ? 'border-l-2 border-l-brand-primary min-w-[72px]' : ''}`}
-    >
-      <View
+    <View style={baseStyle}>
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="clip"
         style={{
-          width: DOT_SIZE,
-          height: DOT_SIZE,
-          borderRadius: DOT_SIZE / 2,
-          backgroundColor: Colors.primary,
+          fontSize: 11,
+          fontWeight,
+          color: textColor,
+          textAlign: 'center',
+          maxWidth: w - 6,
         }}
-      />
-      <ThemedText className="text-sm" numberOfLines={1}>
-        {displayValue}
-      </ThemedText>
+      >
+        {capped}
+      </Text>
     </View>
   );
 });

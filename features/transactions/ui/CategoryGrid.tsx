@@ -4,9 +4,9 @@ import { Pressable, View } from 'react-native';
 
 import type { Category } from '@/entities/category';
 import { Colors } from '@/shared/constants/theme';
-import { getCategoryIcon } from '@/shared/lib/categoryIcons';
+import { getCategoryMaterialIconName } from '@/shared/lib/categoryIcons';
 import { findParentOfSubcategory } from '@/shared/lib/categoryTree';
-import { IconSymbol } from '@/shared/ui/IconSymbol';
+import { CategoryIcon } from '@/shared/ui/CategoryIcon';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
 interface CategoryGridProps {
@@ -77,8 +77,8 @@ export function CategoryGrid({
                 elevation: 2,
               }}
             >
-              <IconSymbol
-                name={getCategoryIcon(cat.name)}
+              <CategoryIcon
+                name={getCategoryMaterialIconName(cat.name, 'parent')}
                 size={24}
                 color={isSelected ? Colors.white : Colors.primary}
               />

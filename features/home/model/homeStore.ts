@@ -8,6 +8,7 @@ interface HomeState {
   setNextMonth: () => void;
   setMonth: (date: Date) => void;
   toggleExpanded: (id: number) => void;
+  collapseAll: () => void;
 }
 
 export const useHomeStore = create<HomeState>((set) => ({
@@ -32,4 +33,6 @@ export const useHomeStore = create<HomeState>((set) => ({
       }
       return { expandedIds: next };
     }),
+
+  collapseAll: () => set({ expandedIds: new Set<number>() }),
 }));

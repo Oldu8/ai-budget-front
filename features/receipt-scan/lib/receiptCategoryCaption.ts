@@ -29,8 +29,10 @@ export function getReceiptItemCategoryCaption(
 export type ReceiptCategoryParts = {
   parentLabel: string | null;
   subLabel: string | null;
-  /** Main category slug for `getCategoryIcon` (parent preferred). */
-  iconSlug: string;
+  /** Parent category `name` slug when the selection is a subcategory. */
+  parentName: string | null;
+  /** Selected category `name` slug (subcategory when nested). */
+  categoryName: string;
 };
 
 /**
@@ -42,22 +44,31 @@ export function getReceiptItemCategoryParts(
   translate: (key: string, opts?: { defaultValue?: string }) => string
 ): ReceiptCategoryParts {
   if (subcategoryId == null) {
-    return { parentLabel: null, subLabel: null, iconSlug: '' };
+    return { parentLabel: null, subLabel: null, parentName: null, categoryName: '' };
   }
   const parent = findParentOfSubcategory(categories, subcategoryId);
   const sub = findSubcategoryById(categories, subcategoryId);
   if (!sub) {
-    return { parentLabel: null, subLabel: null, iconSlug: '' };
+    return { parentLabel: null, subLabel: null, parentName: null, categoryName: '' };
   }
-  const iconSlug = parent?.name ?? sub.name;
   const subLabel = translate(`categories.${sub.name}`, {
     defaultValue: sub.label,
   });
   if (!parent) {
-    return { parentLabel: null, subLabel, iconSlug };
+    return {
+      parentLabel: null,
+      subLabel,
+      parentName: null,
+      categoryName: sub.name,
+    };
   }
   const parentLabel = translate(`categories.${parent.name}`, {
     defaultValue: parent.label,
   });
-  return { parentLabel, subLabel, iconSlug };
+  return {
+    parentLabel,
+    subLabel,
+    parentName: parent.name,
+    categoryName: sub.name,
+  };
 }

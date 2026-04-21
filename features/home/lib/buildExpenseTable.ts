@@ -90,6 +90,7 @@ export function buildExpenseTable(
           level: "child",
           categoryId: child.id,
           categorySlug: child.name,
+          parentCategorySlug: parent.name,
           amountsByDay: childAmountsByDay,
           total: childTotal,
         });
