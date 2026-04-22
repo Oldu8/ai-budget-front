@@ -1,6 +1,5 @@
 import { useHomeStore } from '@/features/home/model/homeStore';
 import { useMonthlyExpenseTable } from '@/features/home/model/useMonthlyExpenseTable';
-import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
 import {
   CATEGORY_COLUMN_WIDTH,
   DAY_COLUMN_WIDTH,
@@ -50,7 +49,6 @@ type ExpenseMonthTableProps = {
  * similar `scrollTo` sync.
  */
 export function ExpenseMonthTable({ refreshing }: ExpenseMonthTableProps) {
-  const { year, month } = useSelectedMonth();
   const { tableData } = useMonthlyExpenseTable();
   const toggleExpanded = useHomeStore((s) => s.toggleExpanded);
   const expandedIds = useHomeStore((s) => s.expandedIds);
@@ -64,10 +62,6 @@ export function ExpenseMonthTable({ refreshing }: ExpenseMonthTableProps) {
 
   const dataContentWidth =
     days.length * DAY_COLUMN_WIDTH + TOTAL_COLUMN_WIDTH;
-
-  const monthAbbr = new Date(year, month - 1)
-    .toLocaleString('en', { month: 'short' })
-    .toUpperCase();
 
   const onBodyVScroll = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -146,7 +140,7 @@ export function ExpenseMonthTable({ refreshing }: ExpenseMonthTableProps) {
                     {days.map((day) => (
                       <ExpenseTableHeaderDayCell key={day} day={day} />
                     ))}
-                    <ExpenseTableHeaderTotalCell monthAbbr={monthAbbr} />
+                    <ExpenseTableHeaderTotalCell />
                   </View>
                 </ScrollView>
               </View>

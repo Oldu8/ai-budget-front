@@ -30,11 +30,13 @@ export function ExpenseTableToolbar({
           refreshing && styles.btnDisabled,
         ]}
       >
-        <MaterialIcons
-          name="refresh"
-          size={18}
-          color={refreshing ? Colors.grey : Colors.primary}
-        />
+        <View style={styles.iconRing}>
+          <MaterialIcons
+            name="refresh"
+            size={18}
+            color={refreshing ? Colors.grey : Colors.primary}
+          />
+        </View>
       </Pressable>
       <Pressable
         accessibilityRole="button"
@@ -47,11 +49,13 @@ export function ExpenseTableToolbar({
           !hasExpanded && styles.btnDisabled,
         ]}
       >
-        <MaterialIcons
-          name="unfold-less"
-          size={18}
-          color={!hasExpanded ? Colors.grey : Colors.primary}
-        />
+        <View style={styles.iconRing}>
+          <MaterialIcons
+            name="unfold-less"
+            size={18}
+            color={!hasExpanded ? Colors.grey : Colors.primary}
+          />
+        </View>
       </Pressable>
     </View>
   );
@@ -70,10 +74,6 @@ const styles = StyleSheet.create({
   btn: {
     width: 32,
     height: 32,
-    borderRadius: 10,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderColor: Colors.greyHover,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -82,5 +82,14 @@ const styles = StyleSheet.create({
   },
   btnDisabled: {
     opacity: 0.45,
+  },
+  iconRing: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    borderColor: Colors.grey,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

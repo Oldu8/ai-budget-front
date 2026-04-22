@@ -221,6 +221,7 @@ export const ExpenseTableRowCells = memo(function ExpenseTableRowCells({
         amount={row.total}
         isTotalColumn
         tone={tone}
+        isChildRow={row.level === 'child'}
       />
     </View>
   );

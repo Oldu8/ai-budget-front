@@ -13,7 +13,8 @@ import { PaywallSheet } from '@/features/billing';
 import { ToastOverlay, ToastProvider } from '@/shared/ui/Toast';
 
 export const unstable_settings = {
-  initialRouteName: '(tabs)',
+  /** Full path: bare `(tabs)` is unreliable; see Expo Router `initialRouteName` / root stack. */
+  initialRouteName: 'index',
 };
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ export default function RootLayout() {
           <ToastProvider>
             <View style={{ flex: 1 }}>
               <Stack>
+                <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="(funnel)" options={{ headerShown: false }} />
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />

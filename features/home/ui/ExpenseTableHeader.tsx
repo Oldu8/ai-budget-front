@@ -71,12 +71,8 @@ export function ExpenseTableHeaderDayCell({ day }: { day: number }) {
   );
 }
 
-/** Total column header (TOTAL + month abbr). */
-export function ExpenseTableHeaderTotalCell({
-  monthAbbr,
-}: {
-  monthAbbr: string;
-}) {
+/** Total column header (same chrome as day cells; single "Total" label). */
+export function ExpenseTableHeaderTotalCell() {
   const { t } = useTranslation();
 
   return (
@@ -84,32 +80,25 @@ export function ExpenseTableHeaderTotalCell({
       style={{
         width: TOTAL_COLUMN_WIDTH,
         height: HEADER_ROW_HEIGHT,
-        backgroundColor: Colors.greyHover,
+        backgroundColor: Colors.white,
+        borderRightWidth: 0,
         borderBottomWidth: 1,
+        borderLeftWidth: 1,
         borderColor: Colors.greyHover,
-        paddingHorizontal: 6,
+        borderLeftColor: Colors.primary,
+        paddingHorizontal: 4,
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
       <Text
         style={{
-          fontSize: 8,
+          fontSize: 11,
           fontWeight: '700',
-          textTransform: 'uppercase',
           color: Colors.primary,
         }}
       >
         {t('home.tableTotal')}
-      </Text>
-      <Text
-        style={{
-          fontSize: 10,
-          fontWeight: '700',
-          color: Colors.primary,
-        }}
-      >
-        {monthAbbr}
       </Text>
     </View>
   );

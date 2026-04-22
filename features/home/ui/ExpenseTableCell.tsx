@@ -11,8 +11,10 @@ import { Colors } from '@/shared/constants/theme';
 interface ExpenseTableCellProps {
   amount: number;
   isTotalColumn?: boolean;
-  /** When parent row is expanded, amounts use primary emphasis. */
+  /** When parent row is expanded, day amounts use primary emphasis. */
   tone?: 'default' | 'primary';
+  /** Subcategory row: slightly lighter than parent category total. */
+  isChildRow?: boolean;
 }
 
 /** Temporary crude cap until a proper abbreviation formatter exists. */
@@ -24,12 +26,11 @@ function formatAmount(amount: number): string {
   return amount.toFixed(2);
 }
 
-const TOTAL_COLUMN_TINT = 'rgba(0, 84, 81, 0.06)';
-
 export const ExpenseTableCell = memo(function ExpenseTableCell({
   amount,
   isTotalColumn,
   tone = 'default',
+  isChildRow = false,
 }: ExpenseTableCellProps) {
   const w = isTotalColumn ? TOTAL_COLUMN_WIDTH : DAY_COLUMN_WIDTH;
 
@@ -38,10 +39,10 @@ export const ExpenseTableCell = memo(function ExpenseTableCell({
     height: ROW_HEIGHT,
     borderBottomWidth: 1,
     borderRightWidth: isTotalColumn ? 0 : 1,
-    borderLeftWidth: isTotalColumn ? 2 : 0,
+    borderLeftWidth: isTotalColumn ? 1 : 0,
     borderColor: Colors.greyHover,
     borderLeftColor: Colors.primary,
-    backgroundColor: isTotalColumn ? TOTAL_COLUMN_TINT : 'transparent',
+    backgroundColor: 'transparent',
     paddingHorizontal: 4,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
@@ -56,9 +57,14 @@ export const ExpenseTableCell = memo(function ExpenseTableCell({
     ? displayValue.slice(0, MAX_TOTAL_CHARS)
     : displayValue.slice(0, MAX_DAY_CHARS);
 
-  const textColor = tone === 'primary' ? Colors.primary : Colors.black;
-  const fontWeight: '400' | '700' =
-    tone === 'primary' || isTotalColumn ? '700' : '400';
+  const textColor =
+    isTotalColumn || tone === 'primary' ? Colors.primary : Colors.black;
+  const fontWeight: '400' | '500' | '600' | '700' = (() => {
+    if (isTotalColumn) {
+      return isChildRow ? '600' : '700';
+    }
+    return tone === 'primary' ? '700' : '400';
+  })();
 
   return (
     <View style={baseStyle}>

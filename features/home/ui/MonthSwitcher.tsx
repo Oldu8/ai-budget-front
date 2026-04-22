@@ -14,13 +14,7 @@ export function MonthSwitcher() {
   const monthYearLabel = format(date, 'MMMM yyyy');
 
   return (
-    <View className="items-center px-4 pt-4 pb-3">
-      <ThemedText
-        className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-grey mb-2"
-        style={{ letterSpacing: 2 }}
-      >
-        {t('home.performanceView')}
-      </ThemedText>
+    <View className="items-center px-4 pt-3 pb-3">
       <View className="flex-row gap-6 items-center">
         <Pressable
           onPress={setPrevMonth}
