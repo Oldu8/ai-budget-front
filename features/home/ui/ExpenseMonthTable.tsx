@@ -117,7 +117,14 @@ export function ExpenseMonthTable({ refreshing }: ExpenseMonthTableProps) {
               ref={bodyVRef}
               nestedScrollEnabled
               onScroll={onBodyVScroll}
-              scrollEventThrottle={16}
+              /** `1` ≈ per-frame — left column follows right tightly, no visible lag. */
+              scrollEventThrottle={1}
+              /** iOS: bounce on the right side can't be mirrored to the left (scrollTo clamps),
+               *  so disable rubber-banding to keep both columns aligned at the edges. */
+              bounces={false}
+              alwaysBounceVertical={false}
+              /** Android analogue of bounces=false. */
+              overScrollMode="never"
               showsVerticalScrollIndicator={false}
               stickyHeaderIndices={STICKY_INDICES}
               style={styles.flex1}
@@ -150,10 +157,12 @@ export function ExpenseMonthTable({ refreshing }: ExpenseMonthTableProps) {
                 ref={bodyHRef}
                 horizontal
                 bounces={false}
+                alwaysBounceHorizontal={false}
+                overScrollMode="never"
                 directionalLockEnabled
                 showsHorizontalScrollIndicator={false}
                 onScroll={onBodyHScroll}
-                scrollEventThrottle={16}
+                scrollEventThrottle={1}
                 style={styles.horizontalScroll}
               >
                 <View style={{ width: dataContentWidth }}>
