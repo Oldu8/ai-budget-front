@@ -1,40 +1,105 @@
-import { ThemedText } from '@/shared/ui/ThemedText';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
-interface ExpenseTableHeaderProps {
-  days: number[];
+import {
+  CATEGORY_COLUMN_WIDTH,
+  DAY_COLUMN_WIDTH,
+  HEADER_ROW_HEIGHT,
+  TOTAL_COLUMN_WIDTH,
+} from '@/features/home/ui/expenseTableConstants';
+import { Colors } from '@/shared/constants/theme';
+
+/** Top-left frozen cell: "CATEGORY" label. */
+export function ExpenseTableHeaderCorner() {
+  const { t } = useTranslation();
+  return (
+    <View
+      style={{
+        width: CATEGORY_COLUMN_WIDTH,
+        height: HEADER_ROW_HEIGHT,
+        backgroundColor: Colors.white,
+        borderRightWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: Colors.greyHover,
+        paddingHorizontal: 8,
+        justifyContent: 'center',
+      }}
+    >
+      <Text
+        numberOfLines={1}
+        style={{
+          fontSize: 9,
+          fontWeight: '700',
+          letterSpacing: 1.4,
+          textTransform: 'uppercase',
+          color: Colors.grey,
+        }}
+      >
+        {t('home.tableCategory')}
+      </Text>
+    </View>
+  );
 }
 
-const CATEGORY_COLUMN_WIDTH = 100;
+/** Single day column header — just the day number (no weekday letter). */
+export function ExpenseTableHeaderDayCell({ day }: { day: number }) {
+  return (
+    <View
+      style={{
+        width: DAY_COLUMN_WIDTH,
+        height: HEADER_ROW_HEIGHT,
+        backgroundColor: Colors.white,
+        borderRightWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: Colors.greyHover,
+        paddingHorizontal: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 11,
+          fontWeight: '700',
+          color: Colors.primary,
+        }}
+      >
+        {day}
+      </Text>
+    </View>
+  );
+}
 
-export function ExpenseTableHeader({ days }: ExpenseTableHeaderProps) {
+/** Total column header (same chrome as day cells; single "Total" label). */
+export function ExpenseTableHeaderTotalCell() {
   const { t } = useTranslation();
 
   return (
-    <View className="flex-row border-b-2 border-brand-grey bg-brand-white">
-      <View
-        className="justify-center items-center px-2 py-2 border-r border-brand-grey-hover"
-        style={{ width: CATEGORY_COLUMN_WIDTH }}
+    <View
+      style={{
+        width: TOTAL_COLUMN_WIDTH,
+        height: HEADER_ROW_HEIGHT,
+        backgroundColor: Colors.white,
+        borderRightWidth: 0,
+        borderBottomWidth: 1,
+        borderLeftWidth: 1,
+        borderColor: Colors.greyHover,
+        borderLeftColor: Colors.primary,
+        paddingHorizontal: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Text
+        style={{
+          fontSize: 11,
+          fontWeight: '700',
+          color: Colors.primary,
+        }}
       >
-        <ThemedText className="text-brand-black">
-          {t('home.tableCategory')}
-        </ThemedText>
-      </View>
-      {days.map((day) => (
-        <View
-          key={day}
-          className="min-w-[44px] items-center justify-center border-r border-brand-grey-hover py-2 px-1"
-        >
-          <ThemedText className="text-sm font-medium text-brand-grey">{day}</ThemedText>
-        </View>
-      ))}
-      <View className="min-w-[72px] items-center justify-center border-l-2 border-l-brand-primary border-r border-brand-grey-hover py-2 px-2">
-        <ThemedText type="defaultSemiBold" className="text-brand-black">
-          {t('home.tableTotal')}
-        </ThemedText>
-      </View>
+        {t('home.tableTotal')}
+      </Text>
     </View>
   );
 }

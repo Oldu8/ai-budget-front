@@ -30,7 +30,6 @@ export function buildExpenseTable(
     {} as Record<number, number>,
   );
   const totalsByDay = { ...daysObj };
-  let grandTotal = 0;
 
   const parentCategories = categories.filter((c) => c.category_id == null);
 
@@ -45,13 +44,12 @@ export function buildExpenseTable(
       if (dayData && typeof dayData === "object") {
         const cents = dayData[String(parent.id)] ?? 0;
         if (cents > 0) {
-          parentAmountsByDay[day] = cents / 100;
-          totalsByDay[day] = (totalsByDay[day] ?? 0) + cents / 100;
+          parentAmountsByDay[day] = cents;
+          totalsByDay[day] = (totalsByDay[day] ?? 0) + cents;
         }
       }
     }
     const parentTotal = sumAmounts(parentAmountsByDay);
-    grandTotal += parentTotal;
 
     const hasSubcategories = (parent.children?.length ?? 0) > 0;
 
@@ -78,7 +76,7 @@ export function buildExpenseTable(
           if (dayData && typeof dayData === "object") {
             const cents = dayData[String(child.id)];
             if (cents != null && cents > 0) {
-              childAmountsByDay[day] = cents / 100;
+              childAmountsByDay[day] = cents;
             }
           }
         }
@@ -90,6 +88,7 @@ export function buildExpenseTable(
           level: "child",
           categoryId: child.id,
           categorySlug: child.name,
+          parentCategorySlug: parent.name,
           amountsByDay: childAmountsByDay,
           total: childTotal,
         });
@@ -97,7 +96,7 @@ export function buildExpenseTable(
     }
   }
 
-  grandTotal = Object.values(totalsByDay).reduce((sum, v) => sum + v, 0);
+  const grandTotal = Object.values(totalsByDay).reduce((sum, v) => sum + v, 0);
 
   return {
     days,

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
 
-const CATEGORY_WIDTH = 120;
-const CELL_WIDTH = 44;
-const TOTAL_WIDTH = 72;
+const CATEGORY_WIDTH = 116;
+const CELL_WIDTH = 48;
+const TOTAL_WIDTH = 76;
 const ROW_HEIGHT = 40;
 const ROWS = 5;
 const DAYS = 7;
@@ -14,8 +14,14 @@ export function HomeScreenSkeleton() {
   return (
     <View className="flex-1 bg-brand-grey-low p-4">
       <View
-        className="rounded-lg border border-brand-grey-hover bg-brand-white overflow-hidden"
-        style={{ minWidth: tableWidth }}
+        style={{
+          minWidth: tableWidth,
+          borderRadius: 16,
+          borderWidth: 1,
+          borderColor: '#EDE7DF',
+          overflow: 'hidden',
+          backgroundColor: '#FFFFFF',
+        }}
       >
         <View className="flex-row border-b border-brand-grey-hover">
           <View

@@ -4,11 +4,16 @@ export const en = {
     description:
       "This is the home screen. Here you can see your budget and your operations.",
     monthFormat: "MMMM yyyy",
+    performanceView: "Performance view",
     previousMonth: "Previous month",
     nextMonth: "Next month",
     tableCategory: "Category",
     tableTotal: "Total",
     tableGrandTotal: "TOTAL",
+    tableDailyTotal: "Daily total",
+    upgradeTitle: "Master your finances with AI powered insights",
+    upgradeSubtitle: "Choose Basic, Plus, or Premium to unlock more.",
+    upgradeCta: "Upgrade",
     emptyTitle: "No expenses this month",
     emptyDescription:
       "Your expenses will appear here once you add transactions.",
