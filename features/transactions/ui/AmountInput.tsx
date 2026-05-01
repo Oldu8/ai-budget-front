@@ -193,8 +193,7 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 24,
-    paddingBottom: 28,
+    paddingVertical: 16,
   },
   displayWrapper: {
     minHeight: 56,

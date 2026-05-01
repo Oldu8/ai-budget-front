@@ -66,7 +66,7 @@ export function CategoryGrid({
               key={cat.id}
               onPress={() => handleParentPress(cat)}
               disabled={disabled}
-              className="justify-center items-center h-20 rounded-xl"
+              className="justify-center items-center py-1 rounded-xl h-19"
               style={{
                 width: '23%',
                 backgroundColor: isSelected ? Colors.primary : Colors.white,
@@ -79,7 +79,7 @@ export function CategoryGrid({
             >
               <CategoryIcon
                 name={getCategoryMaterialIconName(cat.name, 'parent')}
-                size={24}
+                size={22}
                 color={isSelected ? Colors.white : Colors.primary}
               />
               <ThemedText

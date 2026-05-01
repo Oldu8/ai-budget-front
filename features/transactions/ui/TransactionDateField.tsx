@@ -210,8 +210,7 @@ const styles = StyleSheet.create({
   wrap: {
     alignSelf: 'stretch',
     paddingHorizontal: 4,
-    marginTop: 12,
-    marginBottom: 4,
+    paddingVertical: 8,
   },
   pressable: {
     width: '100%',
