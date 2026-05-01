@@ -174,6 +174,11 @@ export function ExpenseMonthTable({ refreshing }: ExpenseMonthTableProps) {
                       isExpanded={
                         row.expandable ? expandedIds.has(row.id) : false
                       }
+                      onToggleExpand={
+                        row.expandable
+                          ? () => toggleExpanded(row.id)
+                          : undefined
+                      }
                     />
                   ))}
                   <View style={styles.row}>

@@ -27,7 +27,7 @@ export interface TableRow {
   amountsByDay: Record<number, number>;
   /** Sum of `amountsByDay` in minor units (cents) */
   total: number;
-  /** True for parent rows that have subcategories — cell is clickable to expand/collapse */
+  /** True for parent rows that have subcategories — entire row toggles expand/collapse */
   expandable?: boolean;
 }
 

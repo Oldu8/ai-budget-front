@@ -196,7 +196,11 @@ export const ExpenseTableRowCells = memo(function ExpenseTableRowCells({
   row,
   days,
   isExpanded,
-}: Pick<ExpenseTableRowSharedProps, 'row' | 'days' | 'isExpanded'>) {
+  onToggleExpand,
+}: Pick<
+  ExpenseTableRowSharedProps,
+  'row' | 'days' | 'isExpanded' | 'onToggleExpand'
+>) {
   const isParent = row.level === 'parent';
   const isExpandable = row.expandable === true;
   const expandedParent = isParent && isExpandable && isExpanded;
@@ -208,7 +212,7 @@ export const ExpenseTableRowCells = memo(function ExpenseTableRowCells({
       ? Colors.white
       : Colors.greyLow;
 
-  return (
+  const inner = (
     <View style={{ flexDirection: 'row', backgroundColor: rowBg }}>
       {days.map((day) => (
         <ExpenseTableCell
@@ -225,4 +229,10 @@ export const ExpenseTableRowCells = memo(function ExpenseTableRowCells({
       />
     </View>
   );
+
+  if (onToggleExpand) {
+    return <Pressable onPress={onToggleExpand}>{inner}</Pressable>;
+  }
+
+  return inner;
 });
