@@ -9,14 +9,12 @@ import {
   TOTAL_ROW_HEIGHT,
 } from '@/features/home/ui/expenseTableConstants';
 import { Colors } from '@/shared/constants/theme';
+import { formatCompactMinorAmount } from '@/shared/utils/formatCompactMinorAmount';
 
-const MAX_DAY_CHARS = 6;
-const MAX_TOTAL_CHARS = 8;
-
-function formatAmount(amount: number): string {
-  if (Number.isInteger(amount)) return String(amount);
-  return amount.toFixed(2);
-}
+const numeralTextStyle = {
+  fontVariant: ['tabular-nums' as const],
+  fontFeatureSettings: "'tnum'",
+};
 
 /** Left label cell of the daily-total row. */
 export function ExpenseTableFooterCorner() {
@@ -51,7 +49,7 @@ export function ExpenseTableFooterCorner() {
 
 /** Single day total cell in the footer row. */
 export function ExpenseTableFooterDayCell({ amount }: { amount: number }) {
-  const display = formatAmount(amount).slice(0, MAX_DAY_CHARS);
+  const display = formatCompactMinorAmount(amount);
   return (
     <View
       style={{
@@ -68,7 +66,14 @@ export function ExpenseTableFooterDayCell({ amount }: { amount: number }) {
       <Text
         numberOfLines={1}
         ellipsizeMode="clip"
-        style={{ fontSize: 11, fontWeight: '700', color: Colors.white }}
+        style={{
+          fontSize: 11,
+          fontWeight: '700',
+          color: Colors.white,
+          textAlign: 'center',
+          alignSelf: 'stretch',
+          ...numeralTextStyle,
+        }}
       >
         {display}
       </Text>
@@ -82,7 +87,7 @@ export function ExpenseTableFooterGrandTotalCell({
 }: {
   amount: number;
 }) {
-  const display = formatAmount(amount).slice(0, MAX_TOTAL_CHARS);
+  const display = formatCompactMinorAmount(amount);
   return (
     <View
       style={{
@@ -99,7 +104,14 @@ export function ExpenseTableFooterGrandTotalCell({
       <Text
         numberOfLines={1}
         ellipsizeMode="clip"
-        style={{ fontSize: 12, fontWeight: '800', color: Colors.white }}
+        style={{
+          fontSize: 12,
+          fontWeight: '800',
+          color: Colors.white,
+          textAlign: 'center',
+          alignSelf: 'stretch',
+          ...numeralTextStyle,
+        }}
       >
         {display}
       </Text>

@@ -23,7 +23,9 @@ export interface TableRow {
   categorySlug?: string;
   /** Parent category `name` slug — set on child rows for composite icon lookup (e.g. work vs fitness `equipment`). */
   parentCategorySlug?: string;
-  amountsByDay: Record<number, number>; // day (1-31) -> amount in currency units
+  /** day (1-31) -> amount in minor units (cents) */
+  amountsByDay: Record<number, number>;
+  /** Sum of `amountsByDay` in minor units (cents) */
   total: number;
   /** True for parent rows that have subcategories — cell is clickable to expand/collapse */
   expandable?: boolean;
@@ -32,6 +34,8 @@ export interface TableRow {
 export interface ExpenseTableData {
   days: number[];
   rows: TableRow[];
+  /** day (1-31) -> total spent that day in minor units (cents) */
   totalsByDay: Record<number, number>;
+  /** Month total in minor units (cents) */
   grandTotal: number;
 }

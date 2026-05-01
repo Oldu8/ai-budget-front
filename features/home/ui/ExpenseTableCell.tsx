@@ -7,8 +7,10 @@ import {
   TOTAL_COLUMN_WIDTH,
 } from '@/features/home/ui/expenseTableConstants';
 import { Colors } from '@/shared/constants/theme';
+import { formatCompactMinorAmount } from '@/shared/utils/formatCompactMinorAmount';
 
 interface ExpenseTableCellProps {
+  /** Amount in minor units (cents) */
   amount: number;
   isTotalColumn?: boolean;
   /** When parent row is expanded, day amounts use primary emphasis. */
@@ -17,14 +19,10 @@ interface ExpenseTableCellProps {
   isChildRow?: boolean;
 }
 
-/** Temporary crude cap until a proper abbreviation formatter exists. */
-const MAX_DAY_CHARS = 6;
-const MAX_TOTAL_CHARS = 8;
-
-function formatAmount(amount: number): string {
-  if (Number.isInteger(amount)) return String(amount);
-  return amount.toFixed(2);
-}
+const numeralTextStyle = {
+  fontVariant: ['tabular-nums' as const],
+  fontFeatureSettings: "'tnum'",
+};
 
 export const ExpenseTableCell = memo(function ExpenseTableCell({
   amount,
@@ -52,10 +50,7 @@ export const ExpenseTableCell = memo(function ExpenseTableCell({
     return <View style={baseStyle} />;
   }
 
-  const displayValue = formatAmount(amount);
-  const capped = isTotalColumn
-    ? displayValue.slice(0, MAX_TOTAL_CHARS)
-    : displayValue.slice(0, MAX_DAY_CHARS);
+  const displayValue = formatCompactMinorAmount(amount);
 
   const textColor =
     isTotalColumn || tone === 'primary' ? Colors.primary : Colors.black;
@@ -76,10 +71,12 @@ export const ExpenseTableCell = memo(function ExpenseTableCell({
           fontWeight,
           color: textColor,
           textAlign: 'center',
+          alignSelf: 'stretch',
           maxWidth: w - 6,
+          ...numeralTextStyle,
         }}
       >
-        {capped}
+        {displayValue}
       </Text>
     </View>
   );
