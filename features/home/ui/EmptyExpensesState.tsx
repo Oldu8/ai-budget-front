@@ -1,6 +1,9 @@
+import { router } from 'expo-router';
 import React from 'react';
-import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
+
+import { Button } from '@/shared/ui/Button';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
 export function EmptyExpensesState() {
@@ -14,6 +17,14 @@ export function EmptyExpensesState() {
       <ThemedText className="mt-2 text-center text-brand-grey">
         {t('home.emptyDescription')}
       </ThemedText>
+      <View className="mt-8 w-full max-w-sm">
+        <Button
+          variant="primary"
+          onPress={() => router.push('/(tabs)/add' as never)}
+        >
+          {t('add.addExpense')}
+        </Button>
+      </View>
     </View>
   );
 }
