@@ -1,23 +1,36 @@
+import { usePaidFeatureGate } from '@/features/billing';
 import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
 import { Colors } from '@/shared/constants/theme';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { format } from 'date-fns';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 export function MonthSwitcher() {
   const { t } = useTranslation();
+  const { requestAccess } = usePaidFeatureGate();
   const { year, month, setPrevMonth, setNextMonth } = useSelectedMonth();
   const date = new Date(year, month - 1);
   const monthYearLabel = format(date, 'MMMM yyyy');
+
+  const onPrevMonth = useCallback(() => {
+    requestAccess(
+      'pastMonthNavigation',
+      setPrevMonth,
+      {
+        title: t('billing.pastMonthUpgradeTitle'),
+        reasonText: t('billing.pastMonthUpgradeSubtitle'),
+      }
+    );
+  }, [requestAccess, setPrevMonth, t]);
 
   return (
     <View className="items-center px-4 pt-3 pb-3">
       <View className="flex-row gap-6 items-center">
         <Pressable
-          onPress={setPrevMonth}
+          onPress={onPrevMonth}
           hitSlop={8}
           style={styles.chevronButton}
           accessibilityRole="button"

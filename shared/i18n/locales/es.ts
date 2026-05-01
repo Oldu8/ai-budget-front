@@ -391,6 +391,9 @@ export const es = {
     csvUpgradeTitle: 'Mejora para exportar CSV',
     csvUpgradeSubtitle:
       'La exportación CSV está disponible en Basic, Plus y Premium.',
+    pastMonthUpgradeTitle: 'Mejora para ver meses anteriores',
+    pastMonthUpgradeSubtitle:
+      'Cambiar a meses anteriores está disponible en Basic, Plus y Premium.',
     perMonth: 'por mes',
     freeLabel: 'Gratis',
     currentPlan: 'Plan actual',

@@ -34,6 +34,9 @@ export const en = {
     csvUpgradeTitle: 'Upgrade to export CSV',
     csvUpgradeSubtitle:
       'CSV export is available on Basic, Plus, and Premium plans.',
+    pastMonthUpgradeTitle: 'Upgrade to browse past months',
+    pastMonthUpgradeSubtitle:
+      'Switching to previous months is available on Basic, Plus, and Premium plans.',
     perMonth: 'per month',
     freeLabel: 'Free',
     currentPlan: 'Current plan',

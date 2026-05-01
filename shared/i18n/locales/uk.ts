@@ -393,6 +393,9 @@ export const uk = {
     csvUpgradeTitle: "Оновіть, щоб експортувати CSV",
     csvUpgradeSubtitle:
       "Експорт CSV доступний у планах Basic, Plus та Premium.",
+    pastMonthUpgradeTitle: "Оновіть план для перегляду минулих місяців",
+    pastMonthUpgradeSubtitle:
+      "Перехід до попередніх місяців доступний у планах Basic, Plus та Premium.",
     perMonth: "на місяць",
     freeLabel: "Безкоштовно",
     currentPlan: "Поточний план",
