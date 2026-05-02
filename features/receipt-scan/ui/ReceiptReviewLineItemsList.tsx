@@ -7,14 +7,9 @@ import type { Category } from '@/entities/category';
 import { getReceiptItemCategoryParts } from '@/features/receipt-scan/lib/receiptCategoryCaption';
 import type { ScannedDraftItem } from '@/features/receipt-scan/model/types';
 import { Colors } from '@/shared/constants/theme';
-import { getCategoryMaterialIconName } from '@/shared/lib/categoryIcons';
 import { formatMinorAsCurrency } from '@/shared/lib/formatMinorAmount';
-import { CategoryIcon } from '@/shared/ui/CategoryIcon';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
-
-/** Light mint tint for category icon tile (brand primary-active based). */
-const CATEGORY_ICON_TILE_BG = 'rgba(0, 0, 0, 0.22)';
 
 type ReceiptReviewLineItemsListProps = {
   items: ScannedDraftItem[];
@@ -54,24 +49,12 @@ export function ReceiptReviewLineItemsList({
           tagLabels.push(item.categoryLabel.trim());
         }
 
-        const materialIcon =
-          parts.parentName != null
-            ? getCategoryMaterialIconName(
-              parts.categoryName,
-              'child',
-              parts.parentName
-            )
-            : getCategoryMaterialIconName(parts.categoryName, 'child');
-
         const trimmedLabel = item.label.trim();
 
         return (
           <View key={item.id} style={styles.card}>
             <View style={styles.topBlock}>
               <View style={styles.topRow}>
-                <View style={styles.iconTile}>
-                  <CategoryIcon name={materialIcon} size={24} color={Colors.primary} />
-                </View>
                 <View style={styles.mainCol}>
                   <View style={styles.titlePriceRow}>
                     <ThemedText
@@ -160,11 +143,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
-  },
-  iconTile: {
-    padding: 8,
-    borderRadius: 12,
-    backgroundColor: CATEGORY_ICON_TILE_BG,
   },
   mainCol: {
     flex: 1,
