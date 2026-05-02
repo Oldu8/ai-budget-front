@@ -105,6 +105,9 @@ export const uk = {
         deleteConfirmTitle: "Прибрати рядок?",
         deleteConfirmMessage:
           "Цей рядок буде вилучено з чека перед підтвердженням.",
+        deleteLastLineTitle: "Видалити весь чек?",
+        deleteLastLineMessage:
+          "Це останній рядок. Його видалення прибере цей чек.",
         confirmAll: "Підтвердити все",
         cancelReview: "Скасувати",
         cancelDirtyTitle: "Скинути зміни?",
@@ -207,6 +210,11 @@ export const uk = {
     price: "Ціна",
     saveChanges: "Зберегти зміни",
     cancelEdit: "Скасувати",
+    noLabel: "Без опису",
+    deleteExpenseSuccess: "Витрату видалено.",
+    deleteLastLineTitle: "Видалити цю витрату?",
+    deleteLastLineMessage:
+      "Прибирання останнього рядка повністю видаляє витрату.",
   },
   buttons: {
     save: "Зберегти",

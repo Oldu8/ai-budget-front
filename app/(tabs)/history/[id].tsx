@@ -1,6 +1,6 @@
 import { useHeaderHeight } from '@react-navigation/elements';
-import { router, useLocalSearchParams } from 'expo-router';
 import { format, startOfDay } from 'date-fns';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -15,21 +15,23 @@ import {
 } from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
-import { mapTransactionDetailToScannedDraft } from '@/features/transactions/lib/mapTransactionToScannedDraft';
-import { useTransactionQuery } from '@/features/transactions/model/useTransactionQuery';
-import { useUpdateReceiptTransactionMutation } from '@/features/transactions/model/useUpdateReceiptTransactionMutation';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
-import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
 import {
   sumReviewItemsMinor,
   useReceiptReviewStore,
 } from '@/features/receipt-scan/model/useReceiptReviewStore';
 import { ReceiptReviewLineItemsList } from '@/features/receipt-scan/ui/ReceiptReviewLineItemsList';
 import { ScanReviewSummaryCard } from '@/features/receipt-scan/ui/ScanReviewSummaryCard';
+import { mapTransactionDetailToScannedDraft } from '@/features/transactions/lib/mapTransactionToScannedDraft';
+import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { useDeleteTransactionMutation } from '@/features/transactions/model/useDeleteTransactionMutation';
+import { useTransactionQuery } from '@/features/transactions/model/useTransactionQuery';
+import { useUpdateReceiptTransactionMutation } from '@/features/transactions/model/useUpdateReceiptTransactionMutation';
+import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
+import { ApiError } from '@/shared/api/client';
+import { safeParseIsoDateToStartOfDay } from '@/shared/lib/parseIsoDate';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
-import { safeParseIsoDateToStartOfDay } from '@/shared/lib/parseIsoDate';
 import { useToast } from '@/shared/ui/Toast';
 
 type DateForm = { date: Date };
@@ -61,8 +63,8 @@ export default function HistoryTransactionDetailScreen() {
     values: {
       date: safeParseIsoDateToStartOfDay(
         storeDate ||
-          data?.date ||
-          format(startOfDay(new Date()), 'yyyy-MM-dd')
+        data?.date ||
+        format(startOfDay(new Date()), 'yyyy-MM-dd')
       ),
     },
   });
@@ -88,6 +90,7 @@ export default function HistoryTransactionDetailScreen() {
   const receiptUpdateMutation = useUpdateReceiptTransactionMutation(
     Number.isFinite(transactionId) ? transactionId : 0
   );
+  const deleteTransactionMutation = useDeleteTransactionMutation();
 
   const totalMinor = useMemo(() => sumReviewItemsMinor(items), [items]);
 
@@ -128,21 +131,60 @@ export default function HistoryTransactionDetailScreen() {
   };
 
   const confirmDeleteItem = (itemId: number) => {
+    const isLastLine = items.length === 1;
     Alert.alert(
-      t('add.receiptScan.review.deleteConfirmTitle'),
-      t('add.receiptScan.review.deleteConfirmMessage'),
+      isLastLine
+        ? t('history.deleteLastLineTitle')
+        : t('add.receiptScan.review.deleteConfirmTitle'),
+      isLastLine
+        ? t('history.deleteLastLineMessage')
+        : t('add.receiptScan.review.deleteConfirmMessage'),
       [
         { text: t('buttons.cancel'), style: 'cancel' },
         {
           text: t('add.receiptScan.review.delete'),
           style: 'destructive',
-          onPress: () => removeItem(itemId),
+          onPress: () => {
+            if (isLastLine) {
+              if (!Number.isFinite(transactionId)) return;
+              deleteTransactionMutation.mutate(transactionId, {
+                onSuccess: () => {
+                  clearReview();
+                  showToast({
+                    title: t('add.toast.successTitle'),
+                    text: t('history.deleteExpenseSuccess'),
+                    type: 'success',
+                  });
+                  router.back();
+                },
+                onError: (err: unknown) => {
+                  if (err instanceof ApiError && err.status === 404) {
+                    clearReview();
+                    router.back();
+                    return;
+                  }
+                  const message =
+                    err instanceof ApiError
+                      ? err.message
+                      : t('add.receiptScan.review.errors.deleteFailed');
+                  showToast({
+                    title: t('add.toast.errorTitle'),
+                    text: message,
+                    type: 'error',
+                  });
+                },
+              });
+            } else {
+              removeItem(itemId);
+            }
+          },
         },
       ]
     );
   };
 
-  const busy = receiptUpdateMutation.isPending;
+  const busy =
+    receiptUpdateMutation.isPending || deleteTransactionMutation.isPending;
 
   if (!Number.isFinite(transactionId)) {
     return null;
@@ -151,7 +193,7 @@ export default function HistoryTransactionDetailScreen() {
   if (isLoading || !data) {
     return (
       <ScreenContainer variant="default" edges={['bottom']} style={styles.screen}>
-        <View className="flex-1 items-center justify-center py-16">
+        <View className="flex-1 justify-center items-center py-16">
           <ActivityIndicator />
         </View>
       </ScreenContainer>
@@ -164,7 +206,7 @@ export default function HistoryTransactionDetailScreen() {
         <ThemedText className="px-4 pt-6 text-center text-brand-grey">
           {t('history.errorTitle')}
         </ThemedText>
-        <View className="mt-4 px-4">
+        <View className="px-4 mt-4">
           <Button variant="primary" onPress={() => refetch()}>
             {t('history.errorRetry')}
           </Button>
@@ -175,63 +217,63 @@ export default function HistoryTransactionDetailScreen() {
 
   return (
     <ScreenContainer variant="default" edges={['bottom']} style={styles.screen}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
-          style={styles.keyboard}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+        style={styles.keyboard}
+      >
+        <ScrollView
+          style={styles.scroll}
+          bounces={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode={
+            Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+          }
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          <ScrollView
-            style={styles.scroll}
-            bounces={false}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode={
-              Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+          <TransactionDateField
+            control={dateForm.control}
+            name="date"
+            disabled={busy}
+          />
+          <ScanReviewSummaryCard
+            totalMinor={totalMinor}
+            itemCount={items.length}
+            currency={currency}
+          />
+          <ReceiptReviewLineItemsList
+            items={items}
+            categories={categories}
+            currency={currency}
+            t={t}
+            onConfirmDelete={confirmDeleteItem}
+            buildEditItemHref={(itemId) =>
+              `/(tabs)/history/line-item?itemId=${itemId}`
             }
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-          >
-            <TransactionDateField
-              control={dateForm.control}
-              name="date"
+          />
+          <View className="gap-3 px-0 mt-6">
+            <Button
+              variant="primary"
+              onPress={handleSave}
+              disabled={confirmDisabled || busy}
+              loading={receiptUpdateMutation.isPending}
+            >
+              {t('history.saveChanges')}
+            </Button>
+            <Button
+              variant="secondary"
+              onPress={() => {
+                clearReview();
+                router.back();
+              }}
               disabled={busy}
-            />
-            <ScanReviewSummaryCard
-              totalMinor={totalMinor}
-              itemCount={items.length}
-              currency={currency}
-            />
-            <ReceiptReviewLineItemsList
-              items={items}
-              categories={categories}
-              currency={currency}
-              t={t}
-              onConfirmDelete={confirmDeleteItem}
-              buildEditItemHref={(itemId) =>
-                `/(tabs)/history/line-item?itemId=${itemId}`
-              }
-            />
-            <View className="mt-6 gap-3 px-0">
-              <Button
-                variant="primary"
-                onPress={handleSave}
-                disabled={confirmDisabled || busy}
-                loading={receiptUpdateMutation.isPending}
-              >
-                {t('history.saveChanges')}
-              </Button>
-              <Button
-                variant="secondary"
-                onPress={() => {
-                  clearReview();
-                  router.back();
-                }}
-                disabled={busy}
-              >
-                {t('history.cancelEdit')}
-              </Button>
-            </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
+            >
+              {t('history.cancelEdit')}
+            </Button>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ScreenContainer>
   );
 }

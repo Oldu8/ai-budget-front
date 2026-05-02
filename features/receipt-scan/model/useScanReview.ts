@@ -176,15 +176,21 @@ export function useScanReview() {
   };
 
   const confirmDeleteItem = (itemId: number) => {
+    const isLastLine = items.length === 1;
     Alert.alert(
-      t('add.receiptScan.review.deleteConfirmTitle'),
-      t('add.receiptScan.review.deleteConfirmMessage'),
+      isLastLine
+        ? t('add.receiptScan.review.deleteLastLineTitle')
+        : t('add.receiptScan.review.deleteConfirmTitle'),
+      isLastLine
+        ? t('add.receiptScan.review.deleteLastLineMessage')
+        : t('add.receiptScan.review.deleteConfirmMessage'),
       [
         { text: t('buttons.cancel'), style: 'cancel' },
         {
           text: t('add.receiptScan.review.delete'),
           style: 'destructive',
-          onPress: () => removeItem(itemId),
+          onPress: () =>
+            isLastLine ? cancelReviewMutation.mutate() : removeItem(itemId),
         },
       ]
     );

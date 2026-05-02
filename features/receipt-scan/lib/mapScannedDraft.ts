@@ -1,4 +1,7 @@
-import type { ScannedDraft, ScannedDraftItem } from '@/features/receipt-scan/model/types';
+import type {
+  ScannedDraft,
+  ScannedDraftItem,
+} from "@/features/receipt-scan/model/types";
 
 type RawItem = {
   id?: unknown;
@@ -8,7 +11,7 @@ type RawItem = {
   category?: { id?: unknown; name?: unknown; label?: unknown } | null;
 };
 
-type RawCategory = NonNullable<RawItem['category']>;
+type RawCategory = NonNullable<RawItem["category"]>;
 
 type RawTransaction = {
   id?: unknown;
@@ -22,8 +25,8 @@ type RawTransaction = {
 };
 
 function num(v: unknown): number | null {
-  if (typeof v === 'number' && !Number.isNaN(v)) return v;
-  if (typeof v === 'string' && v.trim() !== '') {
+  if (typeof v === "number" && !Number.isNaN(v)) return v;
+  if (typeof v === "string" && v.trim() !== "") {
     const n = Number(v);
     if (!Number.isNaN(n)) return n;
   }
@@ -31,7 +34,7 @@ function num(v: unknown): number | null {
 }
 
 function str(v: unknown): string {
-  return typeof v === 'string' ? v : '';
+  return typeof v === "string" ? v : "";
 }
 
 function mapItem(raw: RawItem): ScannedDraftItem | null {
@@ -40,12 +43,11 @@ function mapItem(raw: RawItem): ScannedDraftItem | null {
   const label = str(raw.label);
   const amount = num(raw.amount) ?? 0;
   const cat = raw.category as RawCategory | null | undefined;
-  const categoryId =
-    num(raw.category_id) ?? (cat ? num(cat.id) : null);
+  const categoryId = num(raw.category_id) ?? (cat ? num(cat.id) : null);
   let categoryLabel: string | null = null;
   if (cat) {
-    const n = cat.name != null ? str(cat.name) : '';
-    const l = cat.label != null ? str(cat.label) : '';
+    const n = cat.name != null ? str(cat.name) : "";
+    const l = cat.label != null ? str(cat.label) : "";
     categoryLabel = l || n || null;
   }
   return {
@@ -58,24 +60,24 @@ function mapItem(raw: RawItem): ScannedDraftItem | null {
 }
 
 export function mapScannedDraft(payload: unknown): ScannedDraft {
-  if (!payload || typeof payload !== 'object') {
-    throw new Error('Invalid scan response');
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Invalid scan response");
   }
   const root = payload as { data?: RawTransaction };
   const t = root.data;
-  if (!t || typeof t !== 'object') {
-    throw new Error('Invalid scan response: missing data');
+  if (!t || typeof t !== "object") {
+    throw new Error("Invalid scan response: missing data");
   }
 
   const id = num(t.id);
   if (id === null) {
-    throw new Error('Invalid scan response: missing transaction id');
+    throw new Error("Invalid scan response: missing transaction id");
   }
 
   const itemsRaw = Array.isArray(t.items) ? t.items : [];
   const items: ScannedDraftItem[] = [];
   for (const row of itemsRaw) {
-    if (!row || typeof row !== 'object') continue;
+    if (!row || typeof row !== "object") continue;
     const mapped = mapItem(row as RawItem);
     if (mapped) items.push(mapped);
   }
@@ -90,9 +92,7 @@ export function mapScannedDraft(payload: unknown): ScannedDraft {
         ? null
         : str(t.confirmed_at),
     imgPath:
-      t.img_path === null || t.img_path === undefined
-        ? null
-        : str(t.img_path),
+      t.img_path === null || t.img_path === undefined ? null : str(t.img_path),
     rawAiData: t.raw_ai_data,
     items,
   };

@@ -1,6 +1,9 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-import type { ScannedDraft, ScannedDraftItem } from '@/features/receipt-scan/model/types';
+import type {
+  ScannedDraft,
+  ScannedDraftItem,
+} from "@/features/receipt-scan/model/types";
 
 type ReceiptReviewState = {
   transactionId: number | null;
@@ -33,7 +36,7 @@ function cloneItems(items: ScannedDraftItem[]): ScannedDraftItem[] {
 
 export const useReceiptReviewStore = create<ReceiptReviewState>((set) => ({
   transactionId: null,
-  date: '',
+  date: "",
   items: [],
   baselineSnapshot: null,
 
@@ -53,7 +56,7 @@ export const useReceiptReviewStore = create<ReceiptReviewState>((set) => ({
   updateItem: (itemId, patch) =>
     set((s) => ({
       items: s.items.map((row) =>
-        row.id === itemId ? { ...row, ...patch } : row
+        row.id === itemId ? { ...row, ...patch } : row,
       ),
     })),
 
@@ -65,7 +68,7 @@ export const useReceiptReviewStore = create<ReceiptReviewState>((set) => ({
   clear: () =>
     set({
       transactionId: null,
-      date: '',
+      date: "",
       items: [],
       baselineSnapshot: null,
     }),

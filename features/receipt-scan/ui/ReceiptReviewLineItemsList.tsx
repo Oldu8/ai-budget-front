@@ -35,8 +35,6 @@ export function ReceiptReviewLineItemsList({
   buildEditItemHref = (itemId) =>
     `/(add)/scan-review-item?itemId=${itemId}`,
 }: ReceiptReviewLineItemsListProps) {
-  const canDeleteLine = items.length > 1;
-
   return (
     <>
       <ThemedText className="mt-6 mb-3 text-xs font-medium tracking-wider uppercase text-brand-grey">
@@ -59,11 +57,13 @@ export function ReceiptReviewLineItemsList({
         const materialIcon =
           parts.parentName != null
             ? getCategoryMaterialIconName(
-                parts.categoryName,
-                'child',
-                parts.parentName
-              )
+              parts.categoryName,
+              'child',
+              parts.parentName
+            )
             : getCategoryMaterialIconName(parts.categoryName, 'child');
+
+        const trimmedLabel = item.label.trim();
 
         return (
           <View key={item.id} style={styles.card}>
@@ -75,11 +75,11 @@ export function ReceiptReviewLineItemsList({
                 <View style={styles.mainCol}>
                   <View style={styles.titlePriceRow}>
                     <ThemedText
-                      style={styles.title}
+                      style={trimmedLabel ? styles.title : styles.titleMuted}
                       numberOfLines={2}
                       ellipsizeMode="tail"
                     >
-                      {item.label}
+                      {trimmedLabel ? trimmedLabel : t('history.noLabel')}
                     </ThemedText>
                     <ThemedText
                       lightColor={Colors.primary}
@@ -121,12 +121,8 @@ export function ReceiptReviewLineItemsList({
               </Pressable>
               <Pressable
                 onPress={() => onConfirmDelete(item.id)}
-                disabled={!canDeleteLine}
                 hitSlop={8}
-                style={[
-                  styles.actionHit,
-                  !canDeleteLine && styles.actionDisabled,
-                ]}
+                style={styles.actionHit}
               >
                 <IconSymbol name="trash" size={18} color={Colors.grey} />
                 <ThemedText style={styles.actionLabel}>
@@ -188,6 +184,14 @@ const styles = StyleSheet.create({
     color: Colors.black,
     lineHeight: 22,
   },
+  titleMuted: {
+    flex: 1,
+    minWidth: 0,
+    fontSize: 13,
+    fontWeight: '500',
+    color: Colors.grey,
+    lineHeight: 20,
+  },
   price: {
     fontSize: 16,
     fontWeight: '700',
@@ -230,9 +234,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  actionDisabled: {
-    opacity: 0.4,
   },
   actionLabel: {
     fontSize: 12,
