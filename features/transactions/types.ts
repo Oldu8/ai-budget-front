@@ -16,7 +16,7 @@ export type TransactionDetail = {
   id: number;
   date: string;
   total_amount: number;
-  type: 'expense' | 'income' | string;
+  type: "expense" | "income" | string;
   created_by: string;
   confirmed_at?: string | null;
   img_path?: string | null;

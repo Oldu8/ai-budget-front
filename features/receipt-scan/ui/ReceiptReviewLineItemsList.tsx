@@ -7,14 +7,9 @@ import type { Category } from '@/entities/category';
 import { getReceiptItemCategoryParts } from '@/features/receipt-scan/lib/receiptCategoryCaption';
 import type { ScannedDraftItem } from '@/features/receipt-scan/model/types';
 import { Colors } from '@/shared/constants/theme';
-import { getCategoryMaterialIconName } from '@/shared/lib/categoryIcons';
 import { formatMinorAsCurrency } from '@/shared/lib/formatMinorAmount';
-import { CategoryIcon } from '@/shared/ui/CategoryIcon';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
-
-/** Light mint tint for category icon tile (brand primary-active based). */
-const CATEGORY_ICON_TILE_BG = 'rgba(0, 0, 0, 0.22)';
 
 type ReceiptReviewLineItemsListProps = {
   items: ScannedDraftItem[];
@@ -35,8 +30,6 @@ export function ReceiptReviewLineItemsList({
   buildEditItemHref = (itemId) =>
     `/(add)/scan-review-item?itemId=${itemId}`,
 }: ReceiptReviewLineItemsListProps) {
-  const canDeleteLine = items.length > 1;
-
   return (
     <>
       <ThemedText className="mt-6 mb-3 text-xs font-medium tracking-wider uppercase text-brand-grey">
@@ -56,30 +49,20 @@ export function ReceiptReviewLineItemsList({
           tagLabels.push(item.categoryLabel.trim());
         }
 
-        const materialIcon =
-          parts.parentName != null
-            ? getCategoryMaterialIconName(
-                parts.categoryName,
-                'child',
-                parts.parentName
-              )
-            : getCategoryMaterialIconName(parts.categoryName, 'child');
+        const trimmedLabel = item.label.trim();
 
         return (
           <View key={item.id} style={styles.card}>
             <View style={styles.topBlock}>
               <View style={styles.topRow}>
-                <View style={styles.iconTile}>
-                  <CategoryIcon name={materialIcon} size={24} color={Colors.primary} />
-                </View>
                 <View style={styles.mainCol}>
                   <View style={styles.titlePriceRow}>
                     <ThemedText
-                      style={styles.title}
+                      style={trimmedLabel ? styles.title : styles.titleMuted}
                       numberOfLines={2}
                       ellipsizeMode="tail"
                     >
-                      {item.label}
+                      {trimmedLabel ? trimmedLabel : t('history.noLabel')}
                     </ThemedText>
                     <ThemedText
                       lightColor={Colors.primary}
@@ -121,12 +104,8 @@ export function ReceiptReviewLineItemsList({
               </Pressable>
               <Pressable
                 onPress={() => onConfirmDelete(item.id)}
-                disabled={!canDeleteLine}
                 hitSlop={8}
-                style={[
-                  styles.actionHit,
-                  !canDeleteLine && styles.actionDisabled,
-                ]}
+                style={styles.actionHit}
               >
                 <IconSymbol name="trash" size={18} color={Colors.grey} />
                 <ThemedText style={styles.actionLabel}>
@@ -165,11 +144,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: 12,
   },
-  iconTile: {
-    padding: 8,
-    borderRadius: 12,
-    backgroundColor: CATEGORY_ICON_TILE_BG,
-  },
   mainCol: {
     flex: 1,
     minWidth: 0,
@@ -187,6 +161,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.black,
     lineHeight: 22,
+  },
+  titleMuted: {
+    flex: 1,
+    minWidth: 0,
+    fontSize: 13,
+    fontWeight: '500',
+    color: Colors.grey,
+    lineHeight: 20,
   },
   price: {
     fontSize: 16,
@@ -230,9 +212,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-  },
-  actionDisabled: {
-    opacity: 0.4,
   },
   actionLabel: {
     fontSize: 12,

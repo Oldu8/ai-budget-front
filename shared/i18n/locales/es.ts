@@ -104,6 +104,9 @@ export const es = {
         deleteConfirmTitle: '¿Quitar línea?',
         deleteConfirmMessage:
           'Esta línea se quitará del recibo antes de confirmar.',
+        deleteLastLineTitle: '¿Eliminar el recibo entero?',
+        deleteLastLineMessage:
+          'Es la última línea; al quitarla se eliminará este recibo.',
         confirmAll: 'Confirmar todo',
         cancelReview: 'Cancelar',
         cancelDirtyTitle: '¿Descartar cambios?',
@@ -205,6 +208,11 @@ export const es = {
     price: 'Precio',
     saveChanges: 'Guardar cambios',
     cancelEdit: 'Cancelar',
+    noLabel: 'Sin descripción',
+    deleteExpenseSuccess: 'Gasto eliminado.',
+    deleteLastLineTitle: '¿Eliminar este gasto?',
+    deleteLastLineMessage:
+      'Al quitar la última línea se elimina el gasto por completo.',
   },
   buttons: {
     save: 'Guardar',

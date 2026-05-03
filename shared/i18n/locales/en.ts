@@ -196,6 +196,9 @@ export const en = {
         deleteConfirmTitle: "Remove line?",
         deleteConfirmMessage:
           "This line will be removed from the receipt before you confirm.",
+        deleteLastLineTitle: "Remove entire receipt?",
+        deleteLastLineMessage:
+          "This is the last line. Removing it deletes the receipt.",
         confirmAll: "Confirm all items",
         cancelReview: "Cancel",
         cancelDirtyTitle: "Discard changes?",
@@ -299,6 +302,11 @@ export const en = {
     price: "Price",
     saveChanges: "Save changes",
     cancelEdit: "Cancel",
+    noLabel: "No label",
+    deleteExpenseSuccess: "Expense deleted.",
+    deleteLastLineTitle: "Delete this expense?",
+    deleteLastLineMessage:
+      "Removing the last line deletes the whole expense.",
   },
   buttons: {
     save: "Save",
