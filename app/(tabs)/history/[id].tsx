@@ -72,12 +72,12 @@ export default function HistoryTransactionDetailScreen() {
   useEffect(() => {
     if (!data) return;
     initFromDraft(mapTransactionDetailToScannedDraft(data));
-    return () => {
-      clearReview();
-    };
+    // Do not clearReview on unmount: pushing `history/line-item` can detach this screen
+    // and would wipe the shared store while the line editor still needs `items`.
+    // Store is replaced on the next `initFromDraft` (other id) or cleared on save/cancel/delete.
     // Intentionally only when transaction id changes — avoid resetting the store on refetch.
     // eslint-disable-next-line react-hooks/exhaustive-deps -- data is read when id changes
-  }, [data?.id, initFromDraft, clearReview]);
+  }, [data?.id, initFromDraft]);
 
   const watchedDate = useWatch({ control: dateForm.control, name: 'date' });
 

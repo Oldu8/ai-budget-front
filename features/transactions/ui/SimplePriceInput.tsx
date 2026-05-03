@@ -6,7 +6,15 @@ import {
   FieldValues,
 } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, TextInput, View } from 'react-native';
+import {
+  InputAccessoryView,
+  Keyboard,
+  Platform,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { Colors } from '@/shared/constants/theme';
@@ -78,6 +86,10 @@ function SimplePriceInputInner({
   error?: string;
 }) {
   const { t } = useTranslation();
+  /** iOS `decimal-pad` has no Done key — toolbar above the keyboard. */
+  const inputAccessoryNativeId = useRef(
+    `simplePriceInputAccessory-${Math.random().toString(36).slice(2, 11)}`
+  ).current;
   const [focused, setFocused] = useState(false);
   const [text, setText] = useState(() => formatUsTwoDecimals(value));
   const prevValueRef = useRef(value);
@@ -118,6 +130,17 @@ function SimplePriceInputInner({
 
   return (
     <View style={styles.wrap}>
+      {Platform.OS === 'ios' ? (
+        <InputAccessoryView nativeID={inputAccessoryNativeId}>
+          <View style={styles.accessoryBar}>
+            <Pressable onPress={Keyboard.dismiss} hitSlop={12}>
+              <ThemedText style={styles.accessoryDone}>
+                {t('buttons.done')}
+              </ThemedText>
+            </Pressable>
+          </View>
+        </InputAccessoryView>
+      ) : null}
       <ThemedText lightColor={Colors.grey} style={styles.label}>
         {t('history.price')}
       </ThemedText>
@@ -131,6 +154,9 @@ function SimplePriceInputInner({
           editable={!disabled}
           keyboardType="decimal-pad"
           inputMode="decimal"
+          inputAccessoryViewID={
+            Platform.OS === 'ios' ? inputAccessoryNativeId : undefined
+          }
           placeholder="0.00"
           placeholderTextColor={Colors.grey}
           style={styles.input}
@@ -152,6 +178,21 @@ function SimplePriceInputInner({
 }
 
 const styles = StyleSheet.create({
+  accessoryBar: {
+    height: 44,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    backgroundColor: '#F8F8F8',
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 16,
+  },
+  accessoryDone: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
   wrap: {
     alignSelf: 'stretch',
     marginTop: 16,

@@ -49,12 +49,14 @@ export default function ScanReviewItemScreen() {
     if (!item) {
       return { label: '', amount: 0, subcategoryId: null };
     }
+    const trimmed = (item.label ?? '').trim();
+    /** Empty server labels left `canSave` false (label trim length 0); zod also needs ≥1 letter. */
     return {
-      label: item.label,
+      label: trimmed.length > 0 ? trimmed : t('history.noLabel'),
       amount: item.amount / 100,
       subcategoryId: item.categoryId ?? null,
     };
-  }, [item]);
+  }, [item, t]);
 
   const form = useForm<ReceiptItemEditFormData>({
     resolver: zodResolver(itemEditSchema),
