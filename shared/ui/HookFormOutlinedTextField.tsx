@@ -6,6 +6,7 @@ import {
   type FieldValues,
 } from 'react-hook-form';
 import {
+  Keyboard,
   StyleSheet,
   TextInput,
   type TextInputProps,
@@ -31,6 +32,13 @@ export interface HookFormOutlinedTextFieldProps<T extends FieldValues> {
   maxLength?: number;
   autoCapitalize?: TextInputProps['autoCapitalize'];
   autoCorrect?: boolean;
+  /** iOS/Android keyboard action key label; `'done'` shows Done instead of Return. */
+  returnKeyType?: TextInputProps['returnKeyType'];
+  /**
+   * When true, tapping Done / Enter clears focus and dismisses the keyboard.
+   * Use `false` for multiline or custom submit flows.
+   */
+  dismissKeyboardOnSubmit?: boolean;
 }
 
 /** Single-line text field wired to react-hook-form (`Controller` + outlined pill style). */
@@ -44,6 +52,8 @@ export function HookFormOutlinedTextField<T extends FieldValues>({
   maxLength,
   autoCapitalize,
   autoCorrect,
+  returnKeyType = 'done',
+  dismissKeyboardOnSubmit = true,
 }: HookFormOutlinedTextFieldProps<T>) {
   return (
     <View style={styles.wrap}>
@@ -90,6 +100,15 @@ export function HookFormOutlinedTextField<T extends FieldValues>({
                 maxLength={maxLength}
                 autoCapitalize={autoCapitalize}
                 autoCorrect={autoCorrect}
+                returnKeyType={returnKeyType}
+                submitBehavior={
+                  dismissKeyboardOnSubmit ? 'blurAndSubmit' : 'submit'
+                }
+                onSubmitEditing={() => {
+                  if (dismissKeyboardOnSubmit) {
+                    Keyboard.dismiss();
+                  }
+                }}
               />
               {fieldState.error?.message ? (
                 <ThemedText

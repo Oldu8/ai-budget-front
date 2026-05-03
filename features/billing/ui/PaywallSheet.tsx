@@ -1,4 +1,6 @@
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
   Modal,
@@ -7,7 +9,6 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 import { PlanType } from '@/entities/user';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
@@ -59,6 +60,15 @@ export function PaywallSheet() {
     <Modal visible transparent animationType="slide" onRequestClose={close}>
       <Pressable style={styles.backdrop} onPress={close} />
       <View style={styles.sheet}>
+        <Pressable
+          onPress={close}
+          hitSlop={12}
+          style={styles.closeButton}
+          accessibilityRole="button"
+          accessibilityLabel={t('buttons.close')}
+        >
+          <MaterialIcons name="close" size={26} color={Colors.grey} />
+        </Pressable>
         <View style={styles.header}>
           <ThemedText type="title" style={styles.title}>
             {headerTitle}
@@ -126,9 +136,17 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
+  closeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    zIndex: 1,
+    padding: 4,
+  },
   header: {
     gap: 6,
     marginBottom: 12,
+    paddingRight: 36,
   },
   title: {
     fontSize: 22,
