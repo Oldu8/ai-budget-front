@@ -4,7 +4,8 @@ import { PlanType } from '@/entities/user';
 export type PaidFeature =
   | 'csvExport'
   | 'pastMonthNavigation'
-  | 'recurringExpenses';
+  | 'recurringExpenses'
+  | 'analyticsDashboard';
 
 function normalizePlanType(plan: PlanType | string | undefined | null): PlanType {
   const raw = String(plan ?? PlanType.Free).toLowerCase();
@@ -26,6 +27,8 @@ export function planIncludesPaidFeature(
     case 'pastMonthNavigation':
       return p !== PlanType.Free;
     case 'recurringExpenses':
+      return p === PlanType.Plus || p === PlanType.Premium;
+    case 'analyticsDashboard':
       return p === PlanType.Plus || p === PlanType.Premium;
     default:
       return false;
