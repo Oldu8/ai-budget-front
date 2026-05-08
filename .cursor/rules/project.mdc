@@ -18,9 +18,9 @@ description: Project conventions for ai-budget-front
 
 ### 3. General
 
-- Always refer to frontend-backend-spec.md for the database schema, table naming conventions, and business logic before generating any backend code.
-- When implementing new features or significant changes, update the documentation (e.g. front-spec.md) so it stays accurate and up to date.
-- For better understanding already existed routes, params for them use api-routes.json
+- Always refer to `.cursor/frontend-backend-spec.en.md` and `.cursor/backend-spec.md` for schema, naming, and business logic before generating backend-facing code.
+- When implementing new features or significant changes, update `.cursor/frontend-spec.en.md` so it stays accurate.
+- For existing HTTP routes and params, use `docs/api-routes.json` (keep English descriptions; align with `.cursor/backend-spec.md` when in doubt).
 
 ### 4. COMMENTS FOR COMPLEX LOGIC
 
