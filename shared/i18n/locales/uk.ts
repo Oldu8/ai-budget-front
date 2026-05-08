@@ -19,6 +19,10 @@ export const uk = {
     emptyDescription: "Ваші витрати зʼявляться тут після додавання транзакцій.",
     errorTitle: "Щось пішло не так",
     errorRetry: "Спробувати знову",
+    view: {
+      table: "Таблиця",
+      analytics: "Аналітика",
+    },
   },
   add: {
     title: "Додати витрату",
@@ -404,6 +408,9 @@ export const uk = {
     pastMonthUpgradeTitle: "Оновіть план для перегляду минулих місяців",
     pastMonthUpgradeSubtitle:
       "Перехід до попередніх місяців доступний у планах Basic, Plus та Premium.",
+    analyticsUpgradeTitle: "Оновіть для аналітичної панелі",
+    analyticsUpgradeSubtitle:
+      "Аналітична панель доступна в планах Plus і Premium.",
     perMonth: "на місяць",
     freeLabel: "Безкоштовно",
     currentPlan: "Поточний план",
@@ -425,6 +432,25 @@ export const uk = {
     portalErrorTitle: "Не вдалося відкрити портал",
     portalErrorMessage: "Спробуйте ще раз.",
     planFeaturesTitle: "Що входить у {{planName}}",
+  },
+  analytics: {
+    title: "Аналітика",
+    totalSpent: "Усього витрачено",
+    comparedToPreviousMonth: "Порівняно з попереднім місяцем",
+    biggestCategory: "Найбільша категорія",
+    averagePerDay: "У середньому на день",
+    spendingByCategory: "Витрати за категоріями",
+    trends: "Тренди",
+    new: "Нове",
+    noChange: "Без змін",
+    noExpenses: "Ще немає витрат за цей місяць.",
+    cards: {
+      totalSpent: "УСЬОГО ВИТРАТ",
+      vsLastMonth: "ДО ПОПЕРЕДН. МІСЯЦЯ",
+      topCategory: "ТОП КАТЕГОРІЯ",
+      dailyAverage: "СЕР. ЗА ДЕНЬ",
+    },
+    percentOfTotal: "{{percent}}% від загального",
   },
   recurring: {
     entryTitle: "Регулярні витрати",
