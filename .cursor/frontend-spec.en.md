@@ -16,7 +16,7 @@ Personal budget app (iOS, Android, Web): email/password auth, onboarding funnel,
 | Onboarding | Funnel: settings → visibility questions → tabs | — |
 | Profile | Header, edit name; currency / language / timezone; subscription block with **`scan_usage`** (`SubscriptionProfileBlock`) | — |
 | Profile stack | `edit-profile`, `visibility-preferences`, **`payment-plan`** (plans, Checkout, Portal), **`export-data`** (paid gate; copy says export is coming soon), `notifications` | CSV file download/share (`GET /api/transactions/export`), real notification prefs |
-| Home | Month switcher, daily expense grid, expand → subcategories, loading/empty/error | Optional: charts, non-month ranges, standalone analytics screen |
+| Home | Month switcher, **Table \| Analytics** toggle (analytics: Plus/Premium, `GET /api/analytics/dashboard`), daily expense grid, expand → subcategories, loading/empty/error | Optional: charts, non-month ranges |
 | History tab | Stack: list → transaction detail; **`GET /api/transactions`**, **`GET /api/transactions/{id}`**, **`DELETE`**; multi-line / AI edits via **`PUT /api/transactions/{id}/update`** | Income on manual create; **`PUT /api/transactions/{id}`** for simple one-line manual edits (backend exists; not wired as a separate client path) |
 | Add tab | **Receipt scan**: image → **`POST /api/transactions/scan`** → `scan` → **`scan-review`** (lines, date, confirm via **`PUT .../update`**), `scan-review-item`, `scan-success` | Reliable receipt image preview on review (`ReceiptPreviewImage` / `GET .../image` exist but review screen notes preview not fully wired) |
 | Add tab | Manual expense `/(add)/manual` | — |
@@ -106,4 +106,4 @@ Root: `app/_layout.tsx` — QueryClient, ThemeProvider, AuthProvider, ToastProvi
 
 ## 8. Quick file map
 
-`app/_layout.tsx` · `app/(tabs)/*` · `app/(auth)/*` · `app/(funnel)/*` · `app/(profile)/*` · `app/(add)/*` · `app/(recurring)/*` · `features/{auth,billing,subscription,funnel,settings,home,transactions,receipt-scan,recurring-expenses}/` · `shared/{api,ui,i18n,constants,storage,lib}/` · `entities/` · `docs/api-routes.json`.
+`app/_layout.tsx` · `app/(tabs)/*` · `app/(auth)/*` · `app/(funnel)/*` · `app/(profile)/*` · `app/(add)/*` · `app/(recurring)/*` · `features/{auth,billing,subscription,funnel,settings,home,analytics,transactions,receipt-scan,recurring-expenses}/` · `shared/{api,ui,i18n,constants,storage,lib}/` · `entities/` · `docs/api-routes.json`.

@@ -39,3 +39,50 @@ description: Project conventions for ai-budget-front
 ### 6. ONLY absolute pathers for imports
 
 - Use only absolute path, not relative.
+
+### 7. Naming
+
+- Do not use unclear abbreviations in variables, functions, components, or file names.
+- Avoid names like `cfg`, `res`, `req`, `tmp`, `val`, `sub`, `cat`, `tx`.
+- Prefer explicit names: `config`, `response`, `request`, `temporaryValue`, `subcategory`, `category`, `transaction`.
+
+### 8. React Native UI
+
+- Keep screens thin. Screens in `app/` should compose feature components, not contain complex UI/business logic.
+- Reuse existing shared UI components, theme constants, spacing, and typography before creating new styles.
+- Do not add heavy UI/chart libraries unless clearly required. Prefer simple React Native primitives.
+
+### 9. Server State
+
+- Use TanStack Query for backend data.
+- Query keys must be stable and descriptive, for example `['analytics', 'dashboard', month]`.
+- Do not duplicate server data in Zustand unless it is needed for local UI state.
+
+### 10. Money and Dates
+
+- Money from the backend is always in minor units. Never display raw amounts without formatting.
+- Use existing money/date formatting helpers before creating new ones.
+- Keep backend date formats unchanged: `YYYY-MM`, `YYYY-MM-DD`, ISO strings where already used.
+
+### 11. Feature Gating
+
+- Reuse existing plan/paywall helpers for paid features.
+- Do not duplicate plan logic inside components if a shared entitlement helper exists.
+- Backend 403 for paid features should show the same paywall UI as client-side gating.
+
+### 12. API Contracts
+
+- Do not invent response wrappers. If backend returns top-level JSON, consume top-level JSON.
+- Keep API field names in snake_case when they come from the backend.
+- Convert data only at UI boundaries when needed.
+
+### 13. i18n
+
+- All visible user-facing text must use i18n keys.
+- English is the source language.
+- When adding a key to `en`, mirror it in `es` and `uk`.
+
+### 14. Error and Empty States
+
+- Every backend-driven screen must handle loading, empty, 403/paywall, and generic error states.
+- Use existing toast/error/empty-state patterns where available.
