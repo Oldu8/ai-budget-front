@@ -23,15 +23,6 @@ export async function buildVoiceAudioFormData(
     // hardcoded mobile preset ('audio/mp4').  Sending the wrong Content-Type
     // causes the backend to immediately reject the file with 503.
     const actualMimeType = blob.type || audio.mimeType;
-    if (__DEV__) {
-      console.warn('[voice-upload] buildFormData:web-blob', {
-        blobSizeBytes: blob.size,
-        blobTypeRaw: blob.type || '(empty string)',
-        fileNameUsed: audio.fileName,
-        mimePassedToFile: actualMimeType,
-        declaredPresetMime: audio.mimeType,
-      });
-    }
     const file = new File([blob], audio.fileName, { type: actualMimeType });
     formData.append('audio', file);
     return formData;
@@ -42,15 +33,6 @@ export async function buildVoiceAudioFormData(
     name: audio.fileName,
     type: audio.mimeType,
   } as unknown as Blob);
-
-  if (__DEV__) {
-    console.warn('[voice-upload] buildFormData:native-append', {
-      fileNameUsed: audio.fileName,
-      typeField: audio.mimeType,
-      uriScheme: audio.uri.split(':')[0],
-      uriLength: audio.uri.length,
-    });
-  }
 
   return formData;
 }
