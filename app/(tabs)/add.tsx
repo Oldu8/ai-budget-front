@@ -10,6 +10,7 @@ import { useReceiptScanPendingImageStore } from '@/features/receipt-scan/model/u
 import { ReceiptSourceSheet } from '@/features/receipt-scan/ui/ReceiptSourceSheet';
 import { ScanUsageCapsule } from '@/features/receipt-scan/ui/ScanUsageCapsule';
 import { RecurringEntryButton } from '@/features/recurring-expenses';
+import { VoiceExpenseEntryButton } from '@/features/voice-expense';
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { ThemedView } from '@/shared/ui/ThemedView';
@@ -81,9 +82,17 @@ export default function AddScreen() {
           </View>
         </View>
 
-        <View className="mt-10">
+        <View className="mt-4">
           <RecurringEntryButton
             onGrantedNavigate={() => router.push('/(recurring)' as never)}
+          />
+        </View>
+
+        <View className="mt-4">
+          <VoiceExpenseEntryButton
+            onGrantedNavigate={() =>
+              router.push('/(add)/voice' as never)
+            }
           />
         </View>
       </View>
@@ -94,7 +103,7 @@ export default function AddScreen() {
 const styles = StyleSheet.create({
   /** Только StyleSheet — без className на этой ноде: на нативе смесь className+style даёт «пустую» карточку. */
   manualCard: {
-    marginTop: 40,
+    marginTop: 20,
     width: '100%',
     alignSelf: 'stretch',
     padding: 16,

@@ -5,7 +5,8 @@ export type PaidFeature =
   | 'csvExport'
   | 'pastMonthNavigation'
   | 'recurringExpenses'
-  | 'analyticsDashboard';
+  | 'analyticsDashboard'
+  | 'voiceExpense';
 
 function normalizePlanType(plan: PlanType | string | undefined | null): PlanType {
   const raw = String(plan ?? PlanType.Free).toLowerCase();
@@ -30,6 +31,8 @@ export function planIncludesPaidFeature(
       return p === PlanType.Plus || p === PlanType.Premium;
     case 'analyticsDashboard':
       return p === PlanType.Plus || p === PlanType.Premium;
+    case 'voiceExpense':
+      return p === PlanType.Premium;
     default:
       return false;
   }
