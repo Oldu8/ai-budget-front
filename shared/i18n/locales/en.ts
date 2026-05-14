@@ -267,6 +267,8 @@ export const en = {
       instruction2: "Say the amount of the product or service.",
       instruction3:
         "Say category or subcategory if you know it, or briefly describe the expense.",
+      instruction4:
+        "Treat everything in one recording as a single receipt: you can list several line items, but use one date and one currency — don’t mix different dates or currencies; start another recording if they differ.",
       examplesTitle: "Examples",
       example1: "Today I spent 24 euros on groceries.",
       example2: "Yesterday I paid 12.50 for parking.",

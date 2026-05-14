@@ -384,6 +384,7 @@ export function VoiceRecorder() {
     t('add.voiceExpense.instruction1'),
     t('add.voiceExpense.instruction2'),
     t('add.voiceExpense.instruction3'),
+    t('add.voiceExpense.instruction4'),
   ];
 
   const EXAMPLES = [

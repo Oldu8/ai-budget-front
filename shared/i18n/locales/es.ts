@@ -150,6 +150,8 @@ export const es = {
       instruction2: "Di el importe del producto o servicio.",
       instruction3:
         "Di categoría o subcategoría si la sabes, o describe brevemente el gasto.",
+      instruction4:
+        "Trata cada grabación como un solo recibo: puedes decir varias líneas, pero en la misma grabación usa una sola fecha y una sola moneda; no mezcles fechas o monedas distintas — para eso haz otra grabación.",
       examplesTitle: "Ejemplos",
       example1: "Hoy gasté 24 euros en el súper.",
       example2: "Ayer pagué 12,50 por aparcamiento.",
