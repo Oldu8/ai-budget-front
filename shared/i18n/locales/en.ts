@@ -28,6 +28,12 @@ export const en = {
     scanLimitReached: "Scan limit reached",
     scanLimitReachedMessage:
       "Upgrade your plan to unlock more AI scans this month.",
+    voiceUpgradeTitle: "Upgrade to Premium for voice expense",
+    voiceUpgradeSubtitle:
+      "Record a quick voice memo and AI will propose a draft transaction for you to review.",
+    voiceQuotaTitle: "No AI scans left this period",
+    voiceQuotaSubtitle:
+      "Upgrade your plan or wait until your scan allowance resets to use voice entry.",
     addPromoTitle: "Upgrade for unlimited tools",
     addPromoSubtitle:
       "Unlock recurring expenses, CSV export, and higher scan limits.",
@@ -49,6 +55,7 @@ export const en = {
     currentPlan: "Current plan",
     included: "Included",
     choosePlan: "Choose plan",
+    changePlan: "Change plan",
     plansTitle: "Plans",
     loadPlansError: "Could not load plans",
     retry: "Retry",
@@ -247,6 +254,54 @@ export const en = {
       errors: {
         invalidReceipt: "This photo could not be processed as a receipt.",
         aiFailed: "AI processing failed. Please try again.",
+        generic: "Something went wrong. Please try again.",
+      },
+    },
+    voiceExpense: {
+      screenTitle: "Voice expense",
+      entryButtonLabel: "Voice expense",
+      entryButtonSubtitle: "Speak your purchase — AI drafts it like a receipt.",
+      instructionsTitle: "Before you record",
+      instruction1:
+        'Say the date — for example: "today", "yesterday", or a specific day.',
+      instruction2: "Say the amount of the product or service.",
+      instruction3:
+        "Say category or subcategory if you know it, or briefly describe the expense.",
+      examplesTitle: "Examples",
+      example1: "Today I spent 24 euros on groceries.",
+      example2: "Yesterday I paid 12.50 for parking.",
+      example3: "45 euros for fuel.",
+      startRecording: "Start recording",
+      send: "Send",
+      cancel: "Cancel",
+      maxDurationHint:
+        "Recommended: up to {{seconds}} seconds (auto‑stops there).",
+      processing: {
+        title: "Processing your voice expense...",
+        subtitle: "Hang tight — this usually takes a few seconds.",
+      },
+      unsupported:
+        "Voice recording is not supported in this browser. Use the Expo app on a phone.",
+      permissionDenied:
+        "Microphone access is required to record a voice expense.",
+      openSettings: "Open settings",
+      upgradeCta: "Upgrade",
+      tryAgain: "Dismiss",
+      errorBannerTitle: "Error",
+      error: {
+        quota:
+          "You have no AI scans left this month. Upgrade to get more scans.",
+        planRequired:
+          "Your plan doesn’t include voice expense entry yet. Upgrade to Premium.",
+        unreadable:
+          "Could not detect a valid expense. Try again and include amount, date, and category.",
+        serverError: "Voice processing failed. Please try again.",
+        permissionDenied:
+          "Microphone access is required to record a voice expense.",
+        noAudio: "Recording was not created. Please try again.",
+        tooShort:
+          "Recording is too short. Speak for at least 2 seconds, then send.",
+        permissionRetry: "Try again",
         generic: "Something went wrong. Please try again.",
       },
     },

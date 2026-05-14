@@ -58,6 +58,7 @@ const MAPPING = {
   'list.bullet': 'format-list-bulleted',
   pencil: 'edit',
   trash: 'delete-outline',
+  'mic.fill': 'mic',
 } as IconMapping;
 
 /**

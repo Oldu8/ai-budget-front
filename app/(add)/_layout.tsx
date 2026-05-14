@@ -68,6 +68,12 @@ export default function AddLayout() {
           gestureEnabled: false,
         }}
       />
+      <Stack.Screen
+        name="voice"
+        options={{
+          title: t('add.voiceExpense.screenTitle'),
+        }}
+      />
     </Stack>
   );
 }

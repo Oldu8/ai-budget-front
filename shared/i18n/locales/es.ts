@@ -140,6 +140,54 @@ export const es = {
         generic: "Algo salió mal. Inténtalo de nuevo.",
       },
     },
+    voiceExpense: {
+      screenTitle: "Gasto por voz",
+      entryButtonLabel: "Gasto por voz",
+      entryButtonSubtitle: "Describe la compra por voz: la IA lo prepara igual que un recibo.",
+      instructionsTitle: "Antes de grabar",
+      instruction1:
+        'Di la fecha — por ejemplo: «hoy», «ayer» o un día concreto.',
+      instruction2: "Di el importe del producto o servicio.",
+      instruction3:
+        "Di categoría o subcategoría si la sabes, o describe brevemente el gasto.",
+      examplesTitle: "Ejemplos",
+      example1: "Hoy gasté 24 euros en el súper.",
+      example2: "Ayer pagué 12,50 por aparcamiento.",
+      example3: "45 euros de gasolina.",
+      startRecording: "Empezar a grabar",
+      send: "Enviar",
+      cancel: "Cancelar",
+      maxDurationHint: "Recomendado: hasta {{seconds}} s (se detiene solo ahí).",
+      processing: {
+        title: "Procesando tu gasto por voz…",
+        subtitle: "Suele tardar solo unos segundos.",
+      },
+      unsupported:
+        "Este navegador no permite grabación de voz. Usa la app Expo en el móvil.",
+      permissionDenied:
+        "Se necesita acceso al micrófono para grabar un gasto por voz.",
+      openSettings: "Abrir ajustes",
+      upgradeCta: "Mejorar plan",
+      tryAgain: "Cerrar",
+      errorBannerTitle: "Error",
+      error: {
+        quota:
+          "No tienes escaneos de IA este mes. Mejora el plan para seguir.",
+        planRequired:
+          "Tu plan aún no incluye gastos por voz. Mejora a Premium.",
+        unreadable:
+          "No pudimos detectar un gasto válido. Intenta incluir importe, fecha y categoría.",
+        serverError:
+          "Falló el procesamiento de voz. Inténtalo de nuevo.",
+        permissionDenied:
+          "Se necesita acceso al micrófono para grabar un gasto por voz.",
+        noAudio: "No se creó la grabación. Inténtalo de nuevo.",
+        tooShort:
+          "La grabación es demasiado corta. Habla al menos 2 segundos y envía.",
+        permissionRetry: "Intentar de nuevo",
+        generic: "Algo salió mal. Inténtalo de nuevo.",
+      },
+    },
   },
   profile: {
     userFallback: "Usuario",
@@ -398,6 +446,12 @@ export const es = {
     scanLimitReached: "Límite de escaneos alcanzado",
     scanLimitReachedMessage:
       "Mejora tu plan para desbloquear más escaneos de IA este mes.",
+    voiceUpgradeTitle: "Mejora a Premium para gastos por voz",
+    voiceUpgradeSubtitle:
+      "Graba una nota de voz y la IA propondrá un borrador para que lo revises.",
+    voiceQuotaTitle: "No te quedan escaneos de IA este periodo",
+    voiceQuotaSubtitle:
+      "Mejora tu plan o espera a que se renueve tu cupo para usar la voz.",
     addPromoTitle: "Mejora para más herramientas",
     addPromoSubtitle:
       "Desbloquea gastos recurrentes, exportación CSV y más escaneos.",
@@ -418,6 +472,7 @@ export const es = {
     currentPlan: "Plan actual",
     included: "Incluido",
     choosePlan: "Elegir plan",
+    changePlan: "Cambiar plan",
     plansTitle: "Planes",
     loadPlansError: "No se pudieron cargar los planes",
     retry: "Reintentar",

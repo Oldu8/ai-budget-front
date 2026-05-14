@@ -207,6 +207,19 @@
       }
     },
     {
+      "name": "transactions.voice",
+      "method": "POST",
+      "path": "/api/transactions/voice",
+      "auth": "supabase",
+      "description": "Premium voice expense: multipart audio upload; returns AI draft transaction (same shape as receipt scan). Consumes scan quota.",
+      "headers": {
+        "Authorization": "Bearer <access_token>"
+      },
+      "body": {
+        "audio": "file (mp3, mpeg, mp4 container, m4a, wav, webm, ogg; max 5 MB)"
+      }
+    },
+    {
       "name": "transactions.confirm",
       "method": "POST",
       "path": "/api/transactions/{transaction}/confirm",

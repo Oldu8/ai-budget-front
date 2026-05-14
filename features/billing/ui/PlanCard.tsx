@@ -16,9 +16,10 @@ interface PlanCardProps {
   isCurrent: boolean;
   onSelect: (plan: BillingPlan) => void;
   loading?: boolean;
+  selectLabel?: string;
 }
 
-export function PlanCard({ plan, isCurrent, onSelect, loading }: PlanCardProps) {
+export function PlanCard({ plan, isCurrent, onSelect, loading, selectLabel }: PlanCardProps) {
   const { t } = useTranslation();
   const isFree = plan.type === PlanType.Free;
   const copy: PlanCopy | null = getPlanCopy(plan.type);
@@ -73,7 +74,7 @@ export function PlanCard({ plan, isCurrent, onSelect, loading }: PlanCardProps) 
           ? t('billing.currentPlan', 'Current plan')
           : isFree
             ? t('billing.included', 'Included')
-            : t('billing.choosePlan', 'Choose plan')}
+            : (selectLabel ?? t('billing.choosePlan', 'Choose plan'))}
       </Button>
     </View>
   );

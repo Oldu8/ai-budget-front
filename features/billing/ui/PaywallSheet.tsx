@@ -30,7 +30,10 @@ export function PaywallSheet() {
   const currentPlanType = subscription?.plan?.type ?? PlanType.Free;
 
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
-  const { startCheckout, checkoutStatus } = useBillingActions();
+  const { startCheckout, checkoutStatus, openPortal, portalStatus } = useBillingActions();
+
+  /** User is already a paying customer — plan changes go through the portal, not a new checkout. */
+  const hasActivePaidPlan = currentPlanType !== PlanType.Free;
 
   const headerTitle = useMemo(
     () =>
@@ -102,8 +105,17 @@ export function PaywallSheet() {
                 key={plan.type}
                 plan={plan}
                 isCurrent={plan.type === currentPlanType}
-                onSelect={(p) => void startCheckout(p.type)}
-                loading={checkoutStatus === 'pending'}
+                onSelect={() =>
+                  hasActivePaidPlan
+                    ? void openPortal()
+                    : void startCheckout(plan.type)
+                }
+                loading={checkoutStatus === 'pending' || portalStatus === 'pending'}
+                selectLabel={
+                  hasActivePaidPlan
+                    ? t('billing.changePlan', 'Change plan')
+                    : undefined
+                }
               />
             ))}
           </ScrollView>
