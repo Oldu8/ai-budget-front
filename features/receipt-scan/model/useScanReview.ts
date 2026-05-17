@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 
 import { updateReceiptTransaction } from '@/features/receipt-scan/api/updateReceiptTransaction';
+import { bypassReceiptReviewLeaveGuardOnce } from '@/features/receipt-scan/lib/receiptReviewLeaveGuard';
 import { deleteTransaction } from '@/features/transactions/api/deleteTransaction';
 import {
   isReceiptReviewDirty,
@@ -82,12 +83,14 @@ export function useScanReview() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       clearReview();
       clearDraft();
+      bypassReceiptReviewLeaveGuardOnce();
       router.back();
     },
     onError: (err: unknown) => {
       if (err instanceof ApiError && err.status === 404) {
         clearReview();
         clearDraft();
+        bypassReceiptReviewLeaveGuardOnce();
         router.back();
         return;
       }
@@ -125,6 +128,7 @@ export function useScanReview() {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       clearReview();
       clearDraft();
+      bypassReceiptReviewLeaveGuardOnce();
       router.replace(
         `/(add)/scan-success?totalMinor=${encodeURIComponent(String(total))}&date=${encodeURIComponent(savedDate)}` as never
       );
@@ -133,6 +137,7 @@ export function useScanReview() {
       if (err instanceof ApiError && err.status === 404) {
         clearReview();
         clearDraft();
+        bypassReceiptReviewLeaveGuardOnce();
         replaceToAddTab();
         return;
       }
@@ -143,6 +148,7 @@ export function useScanReview() {
     updateMutation.reset();
     clearReview();
     clearDraft();
+    bypassReceiptReviewLeaveGuardOnce();
     replaceToAddTab();
   };
 
@@ -209,6 +215,9 @@ export function useScanReview() {
     form,
     totalMinor,
     confirmDisabled,
+    /** True while confirming line items / discarding AI draft via API — blocks leaving without dialog. */
+    reviewNavigationBusy:
+      updateMutation.isPending || cancelReviewMutation.isPending,
     updateMutation,
     cancelReviewMutation,
     handleConfirm,

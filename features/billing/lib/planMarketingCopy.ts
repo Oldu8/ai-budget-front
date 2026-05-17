@@ -1,52 +1,33 @@
+import type { TFunction } from "i18next";
+
 import { PlanType } from "@/entities/user";
 import type { BillingPlanType } from "@/features/billing/types";
 
 export interface PlanCopy {
   tagline: string;
+  /** Paid tiers: line like "Everything in Free, plus:" before delta bullets */
+  includesBridge?: string;
   bullets: string[];
 }
 
-// TODO: Move to backend tagline
-const copyByPlan: Record<PlanType, PlanCopy> = {
-  [PlanType.Free]: {
-    tagline: "Start with core scanning",
-    bullets: [
-      "20 scans per month",
-      "Manual expenses unlimited",
-      "History: 1 month",
-      "Basic categories only",
-    ],
-  },
-  [PlanType.Basic]: {
-    tagline: "Essentials for consistent tracking",
-    bullets: [
-      "200 scans per month",
-      "Unlimited history",
-      "Custom categories",
-      "CSV export",
-    ],
-  },
-  [PlanType.Plus]: {
-    tagline: "Automate and analyze",
-    bullets: [
-      "500 scans per month",
-      "Recurring expenses",
-      "Analytics dashboard",
-      "CSV export",
-    ],
-  },
-  [PlanType.Premium]: {
-    tagline: "Advanced insights",
-    bullets: [
-      "2000 scans per month",
-      "Recurring expenses",
-      "Advanced analytics + AI insights",
-      "CSV export",
-    ],
-  },
-};
-
-export function getPlanCopy(type: BillingPlanType): PlanCopy | null {
+/** Resolves plan tagline + feature bullets for the active i18n language. */
+export function getPlanCopy(
+  t: TFunction,
+  type: BillingPlanType,
+): PlanCopy | null {
   if (!Object.values(PlanType).includes(type as PlanType)) return null;
-  return copyByPlan[type as PlanType];
+  const raw = t(`billing.planMarketing.${type}`, { returnObjects: true });
+  if (!raw || typeof raw !== "object" || !("tagline" in raw && "bullets" in raw)) {
+    return null;
+  }
+  const o = raw as Record<string, unknown>;
+  const includesBridge =
+    typeof o.inheritIntroKey === "string"
+      ? t(`billing.planMarketing.${o.inheritIntroKey}`)
+      : undefined;
+  return {
+    tagline: String(o.tagline),
+    includesBridge,
+    bullets: o.bullets as string[],
+  };
 }

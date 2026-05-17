@@ -1,5 +1,5 @@
 import * as WebBrowser from 'expo-web-browser';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { PlanType } from '@/entities/user';
@@ -16,6 +16,11 @@ export function useBillingActions() {
   const { refetchMe } = useAuthContext();
   const checkoutMutation = useCheckoutMutation();
   const portalMutation = usePortalMutation();
+  const [checkoutLoadingPlanType, setCheckoutLoadingPlanType] =
+    useState<BillingPlanType | null>(null);
+  const [portalLoadingPlanType, setPortalLoadingPlanType] = useState<BillingPlanType | null>(
+    null
+  );
   const { showToast, hideToast } = useToast();
   const openPaywall = usePaywallStore((s) => s.open);
   const closePaywall = usePaywallStore((s) => s.close);
@@ -25,6 +30,7 @@ export function useBillingActions() {
       if (planType === PlanType.Free) {
         return;
       }
+      setCheckoutLoadingPlanType(planType);
       showToast({
         title: t('billing.checkoutOpening', 'Opening checkout…'),
         type: 'loading',
@@ -45,12 +51,19 @@ export function useBillingActions() {
           type: 'error',
         });
         throw err;
+      } finally {
+        setCheckoutLoadingPlanType(null);
       }
     },
     [checkoutMutation, hideToast, refetchMe, showToast, t]
   );
 
-  const openPortal = useCallback(async () => {
+  /** Optional `focusedPlan`: when opening portal from PaywallSheet, scopes loading to one plan row. */
+  const openPortal = useCallback(async (focusedPlan?: BillingPlanType) => {
+    const trackRow = focusedPlan !== undefined;
+    if (trackRow) {
+      setPortalLoadingPlanType(focusedPlan);
+    }
     showToast({
       title: t('billing.portalOpening', 'Opening billing portal…'),
       type: 'loading',
@@ -74,6 +87,10 @@ export function useBillingActions() {
         openPaywall();
       }
       throw err;
+    } finally {
+      if (trackRow) {
+        setPortalLoadingPlanType(null);
+      }
     }
   }, [hideToast, openPaywall, portalMutation, refetchMe, showToast, t]);
 
@@ -82,7 +99,7 @@ export function useBillingActions() {
     openPortal,
     openPaywall,
     closePaywall,
-    checkoutStatus: checkoutMutation.status,
-    portalStatus: portalMutation.status,
+    checkoutLoadingPlanType,
+    portalLoadingPlanType,
   };
 }

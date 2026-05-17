@@ -22,7 +22,7 @@ export default function PaymentPlanScreen() {
   const { t } = useTranslation();
   const { subscription, subscriptionStatus, scanUsage } = useAuthContext();
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
-  const { startCheckout, openPortal, openPaywall, checkoutStatus } =
+  const { startCheckout, openPortal, openPaywall, checkoutLoadingPlanType } =
     useBillingActions();
 
   const currentPlan = subscription?.plan?.type ?? PlanType.Free;
@@ -106,7 +106,7 @@ export default function PaymentPlanScreen() {
                   plan={plan}
                   isCurrent={plan.type === currentPlan}
                   onSelect={(p) => void startCheckout(p.type)}
-                  loading={checkoutStatus === 'pending'}
+                  loading={checkoutLoadingPlanType === plan.type}
                 />
               ))
             )}

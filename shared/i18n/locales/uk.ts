@@ -73,8 +73,10 @@ export const uk = {
       },
       reviewPlaceholderTitle: "Перегляд чека",
       reviewTitle: "Перегляд чека",
+      reviewTitleVoice: "Голосовий чек",
       reviewEditItemTitle: "Редагувати рядок",
       receiptScanned: "Чек відскановано",
+      voiceExpenseDraftLead: "Результат голосового запису",
       imageLoading: "Завантаження зображення…",
       imageError: "Попередній перегляд недоступний",
       itemLabel: "Опис",
@@ -116,6 +118,12 @@ export const uk = {
         cancelDirtyTitle: "Скинути зміни?",
         cancelDirtyMessage: "Редагування цього чека буде втрачено.",
         discard: "Скинути",
+        leaveBackScanTitle: "Видалити відсканований чек?",
+        leaveBackScanMessage:
+          "Повернення назад видалить цей відсканований чорновик і нічого не збережеться.",
+        leaveBackVoiceTitle: "Видалити голосовий чорновик?",
+        leaveBackVoiceMessage:
+          "Повернення назад видалить проаналізований із голосу чек, він не збережеться.",
         minOneItemHint:
           "Потрібна хоча б одна позиція з категорією, щоб підтвердити чек.",
         emptyDraftTitle: "Нічого переглядати",
@@ -274,6 +282,7 @@ export const uk = {
     save: "Зберегти",
     update: "Оновити",
     cancel: "Скасувати",
+    goBack: "Назад",
     done: "Готово",
     close: "Закрити",
     addOperation: "Додати операцію",
@@ -488,6 +497,46 @@ export const uk = {
     portalErrorTitle: "Не вдалося відкрити портал",
     portalErrorMessage: "Спробуйте ще раз.",
     planFeaturesTitle: "Що входить у {{planName}}",
+    planMarketing: {
+      includesAfterFree: "Усе з безкоштовного плану, плюс:",
+      includesAfterBasic: "Усе з Basic, плюс:",
+      includesAfterPlus: "Усе з Plus, плюс:",
+      free: {
+        tagline: "Базові можливості для старту",
+        bullets: [
+          "20 AI-сканів на місяць",
+          "Необмежені ручні витрати",
+          "Історія: лише останній місяць",
+          "Показ або приховування груп категорій (Налаштування → Видимість)",
+        ],
+      },
+      basic: {
+        tagline: "Більше сканів, повна історія та експорт",
+        inheritIntroKey: "includesAfterFree",
+        bullets: [
+          "200 AI-сканів на місяць",
+          "Необмежена історія транзакцій",
+          "Експорт CSV",
+        ],
+      },
+      plus: {
+        tagline: "Автоматизація та глибша аналітика",
+        inheritIntroKey: "includesAfterBasic",
+        bullets: [
+          "500 AI-сканів на місяць",
+          "Регулярні витрати",
+          "Аналітична панель",
+        ],
+      },
+      premium: {
+        tagline: "Максимальний ліміт сканів і голосовий ввід витрат",
+        inheritIntroKey: "includesAfterPlus",
+        bullets: [
+          "2000 AI-сканів на місяць",
+          "Голосовий ввід витрат",
+        ],
+      },
+    },
   },
   analytics: {
     title: "Аналітика",
