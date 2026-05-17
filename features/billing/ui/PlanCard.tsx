@@ -22,7 +22,7 @@ interface PlanCardProps {
 export function PlanCard({ plan, isCurrent, onSelect, loading, selectLabel }: PlanCardProps) {
   const { t } = useTranslation();
   const isFree = plan.type === PlanType.Free;
-  const copy: PlanCopy | null = getPlanCopy(plan.type);
+  const copy: PlanCopy | null = getPlanCopy(t, plan.type);
 
   const priceLine = isFree
     ? t('billing.freeLabel', 'Free')
@@ -54,8 +54,11 @@ export function PlanCard({ plan, isCurrent, onSelect, loading, selectLabel }: Pl
 
       {copy ? (
         <View style={styles.features}>
-          {copy.bullets.map((item) => (
-            <View key={item} style={styles.featureRow}>
+          {copy.includesBridge ? (
+            <ThemedText style={styles.includesBridge}>{copy.includesBridge}</ThemedText>
+          ) : null}
+          {copy.bullets.map((item, index) => (
+            <View key={`${plan.type}-${index}`} style={styles.featureRow}>
               <View style={styles.dot} />
               <ThemedText style={styles.featureText}>{item}</ThemedText>
             </View>
@@ -123,6 +126,11 @@ const styles = StyleSheet.create({
   features: {
     gap: 6,
     marginTop: 4,
+  },
+  includesBridge: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.grey,
   },
   featureRow: {
     flexDirection: 'row',

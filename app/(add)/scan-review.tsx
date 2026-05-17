@@ -1,21 +1,30 @@
 import { useHeaderHeight } from '@react-navigation/elements';
-import React from 'react';
+import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useLayoutEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
+import { isVoiceExpenseDraft } from '@/features/receipt-scan/lib/isVoiceExpenseDraft';
+import { consumeReceiptReviewLeaveGuard } from '@/features/receipt-scan/lib/receiptReviewLeaveGuard';
 import { useScanReview } from '@/features/receipt-scan/model/useScanReview';
+import { useReceiptScanDraftStore } from '@/features/receipt-scan/model/useReceiptScanDraftStore';
+import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptReviewStore';
 import { ReceiptReviewLineItemsList } from '@/features/receipt-scan/ui/ReceiptReviewLineItemsList';
 import { ReceiptScanErrorScreen } from '@/features/receipt-scan/ui/ReceiptScanErrorScreen';
 import { ScanReviewEmptyState } from '@/features/receipt-scan/ui/ScanReviewEmptyState';
 import { ScanReviewSummaryCard } from '@/features/receipt-scan/ui/ScanReviewSummaryCard';
 import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
+import { Colors } from '@/shared/constants/theme';
+import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
@@ -26,15 +35,18 @@ import { ThemedText } from '@/shared/ui/ThemedText';
  */
 export default function ScanReviewScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const headerHeight = useHeaderHeight();
   const currency = useUserStore((s) => s.settings?.currency ?? 'USD');
 
   const {
+    draft,
     items,
     categories,
     form,
     totalMinor,
     confirmDisabled,
+    reviewNavigationBusy,
     updateMutation,
     cancelReviewMutation,
     handleConfirm,
@@ -46,7 +58,68 @@ export default function ScanReviewScreen() {
     showUpdateError,
   } = useScanReview();
 
-  const busy = updateMutation.isPending || cancelReviewMutation.isPending;
+  const busy = reviewNavigationBusy;
+
+  const fromVoiceDraft = useMemo(
+    () => (draft ? isVoiceExpenseDraft(draft.rawAiData) : false),
+    [draft]
+  );
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: fromVoiceDraft
+        ? t('add.receiptScan.reviewTitleVoice')
+        : t('add.receiptScan.reviewTitle'),
+      headerLeft: () => (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('buttons.goBack')}
+          hitSlop={12}
+          onPress={() => navigation.goBack()}
+          style={styles.headerBack}
+        >
+          <IconSymbol name="chevron.left" size={22} color={Colors.black} />
+        </Pressable>
+      ),
+    });
+  }, [navigation, fromVoiceDraft, t]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
+      if (consumeReceiptReviewLeaveGuard()) return;
+
+      const tid = useReceiptReviewStore.getState().transactionId;
+      if (tid == null) return;
+
+      if (busy) {
+        e.preventDefault();
+        return;
+      }
+
+      const rawAiData = useReceiptScanDraftStore.getState().draft?.rawAiData;
+      const voice = isVoiceExpenseDraft(rawAiData);
+
+      e.preventDefault();
+      Alert.alert(
+        voice
+          ? t('add.receiptScan.review.leaveBackVoiceTitle')
+          : t('add.receiptScan.review.leaveBackScanTitle'),
+        voice
+          ? t('add.receiptScan.review.leaveBackVoiceMessage')
+          : t('add.receiptScan.review.leaveBackScanMessage'),
+        [
+          { text: t('buttons.cancel'), style: 'cancel' },
+          {
+            text: t('add.receiptScan.review.discard'),
+            style: 'destructive',
+            onPress: () => cancelReviewMutation.mutate(),
+          },
+        ]
+      );
+    });
+
+    return unsubscribe;
+  }, [navigation, busy, t, cancelReviewMutation]);
 
   if (showEmptyState) {
     return <ScanReviewEmptyState />;
@@ -85,7 +158,9 @@ export default function ScanReviewScreen() {
             showsVerticalScrollIndicator={false}
           >
             <ThemedText type="subtitle" className="pt-2 mb-3 text-brand-primary">
-              {t('add.receiptScan.receiptScanned')}
+              {fromVoiceDraft
+                ? t('add.receiptScan.voiceExpenseDraftLead')
+                : t('add.receiptScan.receiptScanned')}
             </ThemedText>
 
             <TransactionDateField
@@ -154,5 +229,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingTop: 24,
     paddingBottom: 32,
+  },
+  headerBack: {
+    marginLeft: Platform.OS === 'ios' ? 8 : 4,
+    paddingRight: 8,
+    justifyContent: 'center',
   },
 });

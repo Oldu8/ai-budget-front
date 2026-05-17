@@ -30,7 +30,12 @@ export function PaywallSheet() {
   const currentPlanType = subscription?.plan?.type ?? PlanType.Free;
 
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
-  const { startCheckout, checkoutStatus, openPortal, portalStatus } = useBillingActions();
+  const {
+    startCheckout,
+    checkoutLoadingPlanType,
+    openPortal,
+    portalLoadingPlanType,
+  } = useBillingActions();
 
   /** User is already a paying customer — plan changes go through the portal, not a new checkout. */
   const hasActivePaidPlan = currentPlanType !== PlanType.Free;
@@ -107,10 +112,13 @@ export function PaywallSheet() {
                 isCurrent={plan.type === currentPlanType}
                 onSelect={() =>
                   hasActivePaidPlan
-                    ? void openPortal()
+                    ? void openPortal(plan.type)
                     : void startCheckout(plan.type)
                 }
-                loading={checkoutStatus === 'pending' || portalStatus === 'pending'}
+                loading={
+                  checkoutLoadingPlanType === plan.type ||
+                  portalLoadingPlanType === plan.type
+                }
                 selectLabel={
                   hasActivePaidPlan
                     ? t('billing.changePlan', 'Change plan')

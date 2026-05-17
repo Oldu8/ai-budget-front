@@ -73,8 +73,10 @@ export const es = {
       },
       reviewPlaceholderTitle: "Revisar recibo",
       reviewTitle: "Revisar recibo",
+      reviewTitleVoice: "Recibo por voz",
       reviewEditItemTitle: "Editar línea",
       receiptScanned: "Recibo escaneado",
+      voiceExpenseDraftLead: "Analizado a partir del audio",
       imageLoading: "Cargando vista previa…",
       imageError: "Vista previa no disponible",
       itemLabel: "Descripción",
@@ -118,6 +120,12 @@ export const es = {
         cancelDirtyTitle: "¿Descartar cambios?",
         cancelDirtyMessage: "Se perderán las ediciones de este recibo.",
         discard: "Descartar",
+        leaveBackScanTitle: "¿Descartar el recibo escaneado?",
+        leaveBackScanMessage:
+          "Si vuelves atrás se borrará este borrador escaneado: no quedará guardado.",
+        leaveBackVoiceTitle: "¿Descartar el recibo de la voz?",
+        leaveBackVoiceMessage:
+          "Si vuelves atrás se borrará este recibo analizado a partir del audio; no quedará guardado.",
         minOneItemHint:
           "Añade al menos una línea con categoría para confirmar el recibo.",
         emptyDraftTitle: "Nada que revisar",
@@ -277,6 +285,7 @@ export const es = {
     save: "Guardar",
     update: "Actualizar",
     cancel: "Cancelar",
+    goBack: "Ir atrás",
     done: "Listo",
     close: "Cerrar",
     addOperation: "Agregar operación",
@@ -491,6 +500,46 @@ export const es = {
     portalErrorTitle: "No se pudo abrir el portal",
     portalErrorMessage: "Por favor inténtalo de nuevo.",
     planFeaturesTitle: "Qué incluye {{planName}}",
+    planMarketing: {
+      includesAfterFree: "Incluye todo el plan Free, y además:",
+      includesAfterBasic: "Incluye todo el plan Basic, y además:",
+      includesAfterPlus: "Incluye todo el plan Plus, y además:",
+      free: {
+        tagline: "Lo esencial para empezar",
+        bullets: [
+          "20 escaneos IA al mes",
+          "Gastos manuales ilimitados",
+          "Historial: solo el último mes",
+          "Mostrar u ocultar grupos de categorías (Ajustes → Visibilidad)",
+        ],
+      },
+      basic: {
+        tagline: "Más escaneos, historial completo y exportación",
+        inheritIntroKey: "includesAfterFree",
+        bullets: [
+          "200 escaneos IA al mes",
+          "Historial ilimitado",
+          "Exportar CSV",
+        ],
+      },
+      plus: {
+        tagline: "Automatización y analítica más profunda",
+        inheritIntroKey: "includesAfterBasic",
+        bullets: [
+          "500 escaneos IA al mes",
+          "Gastos recurrentes",
+          "Panel de analíticas",
+        ],
+      },
+      premium: {
+        tagline: "Máximo cupo de escaneos y entrada de gastos por voz",
+        inheritIntroKey: "includesAfterPlus",
+        bullets: [
+          "2000 escaneos IA al mes",
+          "Entrada de gastos por voz",
+        ],
+      },
+    },
   },
   analytics: {
     title: "Analíticas",

@@ -72,6 +72,46 @@ export const en = {
     portalErrorTitle: "Unable to open portal",
     portalErrorMessage: "Please try again.",
     planFeaturesTitle: "{{planName}} includes",
+    planMarketing: {
+      includesAfterFree: "Everything in Free, plus:",
+      includesAfterBasic: "Everything in Basic, plus:",
+      includesAfterPlus: "Everything in Plus, plus:",
+      free: {
+        tagline: "Core tools to get started",
+        bullets: [
+          "20 AI scans per month",
+          "Unlimited manual expenses",
+          "Transaction history: last month only",
+          "Show or hide category groups (Settings → Visibility)",
+        ],
+      },
+      basic: {
+        tagline: "More scans, full history, and export",
+        inheritIntroKey: "includesAfterFree",
+        bullets: [
+          "200 AI scans per month",
+          "Unlimited transaction history",
+          "CSV export",
+        ],
+      },
+      plus: {
+        tagline: "Automation and deeper analytics",
+        inheritIntroKey: "includesAfterBasic",
+        bullets: [
+          "500 AI scans per month",
+          "Recurring expenses",
+          "Analytics dashboard",
+        ],
+      },
+      premium: {
+        tagline: "Maximum scan allowance and voice expense entry",
+        inheritIntroKey: "includesAfterPlus",
+        bullets: [
+          "2000 AI scans per month",
+          "Voice expense entry",
+        ],
+      },
+    },
   },
   analytics: {
     title: "Analytics",
@@ -191,8 +231,10 @@ export const en = {
       },
       reviewPlaceholderTitle: "Review receipt",
       reviewTitle: "Review receipt",
+      reviewTitleVoice: "Voice receipt",
       reviewEditItemTitle: "Edit line",
       receiptScanned: "Receipt scanned",
+      voiceExpenseDraftLead: "Analyzed from your voice",
       imageLoading: "Loading preview…",
       imageError: "Preview unavailable",
       itemLabel: "Description",
@@ -235,6 +277,12 @@ export const en = {
         cancelDirtyTitle: "Discard changes?",
         cancelDirtyMessage: "Your edits to this receipt will be lost.",
         discard: "Discard",
+        leaveBackScanTitle: "Discard scanned receipt?",
+        leaveBackScanMessage:
+          "Leaving now deletes this scanned receipt draft — it won't be saved.",
+        leaveBackVoiceTitle: "Discard voice receipt?",
+        leaveBackVoiceMessage:
+          "Leaving now deletes this receipt created from your voice — it won't be saved.",
         minOneItemHint:
           "Add at least one line with a category to confirm this receipt.",
         emptyDraftTitle: "Nothing to review",
@@ -392,6 +440,7 @@ export const en = {
     save: "Save",
     update: "Update",
     cancel: "Cancel",
+    goBack: "Go back",
     done: "Done",
     close: "Close",
     addOperation: "Add operation",
