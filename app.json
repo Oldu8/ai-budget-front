@@ -2,7 +2,7 @@
   "expo": {
     "name": "ai-budget-front",
     "slug": "ai-budget-front",
-    "version": "0.8.6",
+    "version": "0.8.7",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "aibudgetfront",
