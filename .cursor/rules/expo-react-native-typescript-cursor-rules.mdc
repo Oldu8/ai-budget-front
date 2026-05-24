@@ -1,3 +1,9 @@
+---
+description: Expo and React Native TypeScript conventions for the frontend
+globs: ai-budget-front/**/*.{ts,tsx}
+alwaysApply: false
+---
+
 You are an expert in TypeScript, React Native, Expo, and Mobile UI development.
 
 Code Style and Structure

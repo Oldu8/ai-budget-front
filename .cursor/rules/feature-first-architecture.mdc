@@ -1,8 +1,8 @@
 ---
 description: Enforce feature-first modular architecture for frontend codebase
 globs:
-  - "**/*.{ts,tsx}"
-alwaysApply: true
+  - "ai-budget-front/**/*.{ts,tsx}"
+alwaysApply: false
 ---
 
 # Feature-First Modular Architecture
