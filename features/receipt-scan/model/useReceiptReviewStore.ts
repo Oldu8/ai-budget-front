@@ -4,6 +4,7 @@ import type {
   ScannedDraft,
   ScannedDraftItem,
 } from "@/features/receipt-scan/model/types";
+import { toDateKey } from "@/shared/lib/parseIsoDate";
 
 type ReceiptReviewState = {
   transactionId: number | null;
@@ -42,7 +43,7 @@ export const useReceiptReviewStore = create<ReceiptReviewState>((set) => ({
 
   initFromDraft: (draft) => {
     const items = cloneItems(draft.items);
-    const date = draft.date;
+    const date = toDateKey(draft.date);
     set({
       transactionId: draft.id,
       date,

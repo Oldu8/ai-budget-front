@@ -2,6 +2,7 @@ import type {
   ScannedDraft,
   ScannedDraftItem,
 } from "@/features/receipt-scan/model/types";
+import { toDateKey } from "@/shared/lib/parseIsoDate";
 
 type RawItem = {
   id?: unknown;
@@ -84,7 +85,7 @@ export function mapScannedDraft(payload: unknown): ScannedDraft {
 
   return {
     id,
-    date: str(t.date),
+    date: toDateKey(str(t.date)),
     totalAmount: num(t.total_amount) ?? 0,
     createdBy: str(t.created_by),
     confirmedAt:

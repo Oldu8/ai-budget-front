@@ -1,8 +1,8 @@
 import { useHeaderHeight } from '@react-navigation/elements';
-import { format, startOfDay } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -28,7 +28,7 @@ import { useTransactionQuery } from '@/features/transactions/model/useTransactio
 import { useUpdateReceiptTransactionMutation } from '@/features/transactions/model/useUpdateReceiptTransactionMutation';
 import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
 import { ApiError } from '@/shared/api/client';
-import { safeParseIsoDateToStartOfDay } from '@/shared/lib/parseIsoDate';
+import { formatDateKey, safeParseIsoDateToStartOfDay, toDateKey } from '@/shared/lib/parseIsoDate';
 import { Button } from '@/shared/ui/Button';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { ThemedText } from '@/shared/ui/ThemedText';
@@ -54,38 +54,23 @@ export default function HistoryTransactionDetailScreen() {
   const initFromDraft = useReceiptReviewStore((s) => s.initFromDraft);
   const clearReview = useReceiptReviewStore((s) => s.clear);
   const items = useReceiptReviewStore((s) => s.items);
-  const storeDate = useReceiptReviewStore((s) => s.date);
-  const setDate = useReceiptReviewStore((s) => s.setDate);
   const removeItem = useReceiptReviewStore((s) => s.removeItem);
-  const transactionIdStore = useReceiptReviewStore((s) => s.transactionId);
 
   const dateForm = useForm<DateForm>({
-    values: {
-      date: safeParseIsoDateToStartOfDay(
-        storeDate ||
-        data?.date ||
-        format(startOfDay(new Date()), 'yyyy-MM-dd')
-      ),
-    },
+    defaultValues: { date: startOfDay(new Date()) },
   });
 
   useEffect(() => {
     if (!data) return;
     initFromDraft(mapTransactionDetailToScannedDraft(data));
+    dateForm.reset({
+      date: safeParseIsoDateToStartOfDay(toDateKey(data.date)),
+    });
     // Do not clearReview on unmount: pushing `history/line-item` can detach this screen
     // and would wipe the shared store while the line editor still needs `items`.
     // Store is replaced on the next `initFromDraft` (other id) or cleared on save/cancel/delete.
-    // Intentionally only when transaction id changes — avoid resetting the store on refetch.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- data is read when id changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset form only when transaction id changes
   }, [data?.id, initFromDraft]);
-
-  const watchedDate = useWatch({ control: dateForm.control, name: 'date' });
-
-  useEffect(() => {
-    if (!watchedDate || !transactionIdStore) return;
-    const next = format(startOfDay(watchedDate), 'yyyy-MM-dd');
-    if (next !== storeDate) setDate(next);
-  }, [watchedDate, transactionIdStore, storeDate, setDate]);
 
   const receiptUpdateMutation = useUpdateReceiptTransactionMutation(
     Number.isFinite(transactionId) ? transactionId : 0
@@ -101,7 +86,7 @@ export default function HistoryTransactionDetailScreen() {
     if (!Number.isFinite(transactionId) || confirmDisabled) return;
     receiptUpdateMutation.mutate(
       {
-        date: storeDate,
+        date: formatDateKey(dateForm.getValues('date')),
         items: items.map((i) => ({
           id: i.id,
           label: i.label.trim(),

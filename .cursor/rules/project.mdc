@@ -1,5 +1,7 @@
 ---
 description: Project conventions for ai-budget-front
+globs: ai-budget-front/**
+alwaysApply: false
 ---
 
 # ai-budget-front
@@ -18,9 +20,9 @@ description: Project conventions for ai-budget-front
 
 ### 3. General
 
-- Always refer to `.cursor/frontend-backend-spec.en.md` and `.cursor/backend-spec.md` for schema, naming, and business logic before generating backend-facing code.
-- When implementing new features or significant changes, update `.cursor/frontend-spec.en.md` so it stays accurate.
-- For existing HTTP routes and params, use `docs/api-routes.json` (keep English descriptions; align with `.cursor/backend-spec.md` when in doubt).
+- Always refer to `.cursor/frontend-backend-spec.en.md` (repo root) and `ai-budget-back/.cursor/backend-spec.md` for schema, naming, and business logic before generating backend-facing code.
+- When implementing new features or significant changes, update `ai-budget-front/.cursor/frontend-spec.en.md` so it stays accurate.
+- For existing HTTP routes and params, use `ai-budget-front/docs/api-routes.json` (keep English descriptions; align with `ai-budget-back/.cursor/backend-spec.md` when in doubt).
 
 ### 4. COMMENTS FOR COMPLEX LOGIC
 

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { format, startOfDay } from 'date-fns';
+import { startOfDay } from 'date-fns';
 import { router } from 'expo-router';
 import { useEffect, useMemo } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Alert } from 'react-native';
 
@@ -17,7 +17,11 @@ import {
 import { useReceiptScanDraftStore } from '@/features/receipt-scan/model/useReceiptScanDraftStore';
 import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
 import { ApiError } from '@/shared/api/client';
-import { safeParseIsoDateToStartOfDay } from '@/shared/lib/parseIsoDate';
+import {
+  formatDateKey,
+  safeParseIsoDateToStartOfDay,
+  toDateKey,
+} from '@/shared/lib/parseIsoDate';
 import { useToast } from '@/shared/ui/Toast';
 
 type ReviewDateForm = { date: Date };
@@ -37,7 +41,6 @@ export function useScanReview() {
   const transactionId = useReceiptReviewStore((s) => s.transactionId);
   const dateStr = useReceiptReviewStore((s) => s.date);
   const items = useReceiptReviewStore((s) => s.items);
-  const setDate = useReceiptReviewStore((s) => s.setDate);
   const removeItem = useReceiptReviewStore((s) => s.removeItem);
   const initFromDraft = useReceiptReviewStore((s) => s.initFromDraft);
   const clearReview = useReceiptReviewStore((s) => s.clear);
@@ -45,27 +48,18 @@ export function useScanReview() {
   const categoriesQuery = useCategoriesQuery();
   const categories = categoriesQuery.data ?? [];
 
-  useEffect(() => {
-    if (draft && (transactionId == null || transactionId !== draft.id)) {
-      initFromDraft(draft);
-    }
-  }, [draft, transactionId, initFromDraft]);
-
   const form = useForm<ReviewDateForm>({
-    values: {
-      date: safeParseIsoDateToStartOfDay(dateStr),
-    },
+    defaultValues: { date: startOfDay(new Date()) },
   });
 
-  const watchedDate = useWatch({ control: form.control, name: 'date' });
-
   useEffect(() => {
-    if (!transactionId || !watchedDate) return;
-    const next = format(startOfDay(watchedDate), 'yyyy-MM-dd');
-    if (next !== dateStr) {
-      setDate(next);
-    }
-  }, [watchedDate, transactionId, dateStr, setDate]);
+    if (!draft || (transactionId != null && transactionId === draft.id)) return;
+    initFromDraft(draft);
+    form.reset({
+      date: safeParseIsoDateToStartOfDay(toDateKey(draft.date)),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- init when draft id changes
+  }, [draft?.id, transactionId, initFromDraft]);
 
   const totalMinor = useMemo(() => sumReviewItemsMinor(items), [items]);
 
@@ -110,7 +104,7 @@ export function useScanReview() {
     mutationFn: async () => {
       if (transactionId == null) throw new Error('Missing transaction');
       const body = {
-        date: dateStr,
+        date: formatDateKey(form.getValues('date')),
         items: items.map((i) => ({
           id: i.id,
           label: i.label.trim(),
@@ -123,7 +117,7 @@ export function useScanReview() {
     onSuccess: () => {
       const state = useReceiptReviewStore.getState();
       const total = sumReviewItemsMinor(state.items);
-      const savedDate = state.date;
+      const savedDate = formatDateKey(form.getValues('date'));
       queryClient.invalidateQueries({ queryKey: ['home'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       clearReview();
