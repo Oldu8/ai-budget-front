@@ -1,12 +1,7 @@
 import { protectedPost } from '@/shared/api/protectedClient';
+import type { AppUserSettings } from '@/entities/user';
 
 export interface CreateSettingsBody {
-  currency: string;
-  language: string;
-  timezone: string;
-}
-
-export interface AppUserSettings {
   currency: string;
   language: string;
   timezone: string;

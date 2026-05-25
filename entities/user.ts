@@ -4,7 +4,6 @@
 
 export interface AppUser {
   id: number;
-  supabase_user_id: string;
   email: string;
   first_name: string | null;
   last_name: string | null;
