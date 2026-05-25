@@ -5,12 +5,11 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-/** Raw user from register/login — backend may omit supabase_user_id, first_name, last_name. */
+/** Raw user from register/login — backend may omit first_name, last_name. */
 export interface AuthResponseUser {
   id: number;
   email: string;
   email_verified_at?: string | null;
-  supabase_user_id?: string;
   first_name?: string | null;
   last_name?: string | null;
   created_at?: string;
@@ -22,7 +21,6 @@ export function mapAuthUserToAppUser(u: AuthResponseUser): AppUser {
   return {
     id: u.id,
     email: u.email,
-    supabase_user_id: u.supabase_user_id ?? '',
     first_name: u.first_name ?? null,
     last_name: u.last_name ?? null,
     email_verified_at: u.email_verified_at ?? null,
