@@ -31,6 +31,7 @@ export const es = {
     subtitle: "Escanea un recibo con IA o agrega manualmente",
     scanReceipt: "Escanear recibo",
     addManually: "Agregar manualmente",
+    addManuallySubtitle: "Introduce importe, categoría y fecha tú mismo",
     or: "o",
     scanUsageLabelScan: "ESCANEO",
     scanUsageLabelScans: "ESCANEOS",
@@ -52,6 +53,10 @@ export const es = {
     scan: {
       title: "Escanear recibo",
       hint: "Elige cómo añadir la imagen del recibo.",
+      tipsTitle: "Consejos para un mejor escaneo",
+      tip1: "Buena iluminación — sin sombras ni reflejos en el recibo.",
+      tip2: "Encuadra el recibo completo, incluido el total.",
+      tip3: "No cubras los nombres, precios ni el total.",
       takePhoto: "Hacer foto",
       chooseFromGallery: "Elegir de la galería",
       cancel: "Cancelar",
