@@ -189,6 +189,7 @@ export const en = {
     subtitle: "Scan a receipt with AI or add manually",
     scanReceipt: "Scan Receipt",
     addManually: "Add Manually",
+    addManuallySubtitle: "Enter amount, category, and date yourself",
     or: "or",
     scanUsageLabelScan: "SCAN",
     scanUsageLabelScans: "SCANS",
@@ -210,6 +211,10 @@ export const en = {
     scan: {
       title: "Scan Receipt",
       hint: "Choose a source to capture your receipt image.",
+      tipsTitle: "Tips for better scan",
+      tip1: "Good lighting — no shadows or glare on the receipt.",
+      tip2: "Fit the entire receipt in frame, including the total.",
+      tip3: "Don't cover item names, prices, or the total.",
       takePhoto: "Take photo",
       chooseFromGallery: "Choose from gallery",
       cancel: "Cancel",

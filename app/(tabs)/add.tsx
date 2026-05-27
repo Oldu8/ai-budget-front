@@ -1,17 +1,18 @@
 import { router } from 'expo-router';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { useBillingActions } from '@/features/billing';
 import type { NormalizedReceiptImage } from '@/features/receipt-scan/lib/normalizeReceiptAsset';
 import { useReceiptScanPendingImageStore } from '@/features/receipt-scan/model/useReceiptScanPendingImageStore';
 import { ReceiptSourceSheet } from '@/features/receipt-scan/ui/ReceiptSourceSheet';
+import { ScanReceiptTips } from '@/features/receipt-scan/ui/ScanReceiptTips';
 import { ScanUsageCapsule } from '@/features/receipt-scan/ui/ScanUsageCapsule';
 import { RecurringEntryButton } from '@/features/recurring-expenses';
 import { VoiceExpenseEntryButton } from '@/features/voice-expense';
-import { Colors } from '@/shared/constants/theme';
+import { AddEntryOptionCard } from '@/shared/ui/AddEntryOptionCard';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { ThemedView } from '@/shared/ui/ThemedView';
 
@@ -48,37 +49,35 @@ export default function AddScreen() {
       <View className="items-end px-4 pt-1">
         <ScanUsageCapsule scansRemaining={scansRemaining} scansLimit={scansLimit} />
       </View>
-      <View className="flex-1 justify-center px-6">
-        <View className="items-center mt-10">
-          <View className="relative w-full max-w-xs">
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="items-center">
+          <View className="relative w-full">
             <ReceiptSourceSheet
               variant="primaryCard"
               isLocked={scansRemaining <= 0}
               onLockedPress={handleLockedPress}
               onImageSelected={onImageSelected}
             />
+            <ScanReceiptTips />
           </View>
 
-          <View className="flex-row gap-3 items-center mt-10">
+          <View className="flex-row gap-3 items-center mt-4">
             <View className="flex-1 h-px bg-brand-grey" />
             <ThemedText className="text-sm text-brand-grey">{t('add.or')}</ThemedText>
             <View className="flex-1 h-px bg-brand-grey" />
           </View>
 
-          <View style={styles.manualCard}>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={t('add.addManually')}
+          <View className="mt-4 w-full">
+            <AddEntryOptionCard
+              title={t('add.addManually')}
+              subtitle={t('add.addManuallySubtitle')}
               onPress={() => router.push('/(add)/manual' as never)}
-              style={({ pressed }) => [
-                styles.manualPressable,
-                pressed && styles.manualPressed,
-              ]}
-            >
-              <ThemedText type="defaultSemiBold" style={styles.manualLabel}>
-                {t('add.addManually')}
-              </ThemedText>
-            </Pressable>
+            />
           </View>
         </View>
 
@@ -95,50 +94,19 @@ export default function AddScreen() {
             }
           />
         </View>
-      </View>
+      </ScrollView>
     </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  /** Только StyleSheet — без className на этой ноде: на нативе смесь className+style даёт «пустую» карточку. */
-  manualCard: {
-    marginTop: 20,
-    width: '100%',
-    alignSelf: 'stretch',
-    padding: 16,
-    backgroundColor: Colors.white,
-    borderColor: Colors.grey,
-    borderWidth: 1,
-    borderRadius: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.14,
-        shadowRadius: 8,
-      },
-      android: {
-        elevation: 4,
-      },
-      default: {
-        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-      },
-    }),
+  scroll: {
+    flex: 1,
   },
-  manualPressable: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 16,
-    borderRadius: 16,
-  },
-  manualPressed: {
-    opacity: 0.92,
-  },
-  /** ThemedText не прокидывает tailwind className так же, как веб — цвет и вес явно. */
-  manualLabel: {
-    color: Colors.primary,
-    textAlign: 'center',
+    paddingTop: 16,
+    paddingBottom: 32,
   },
 });
