@@ -11,6 +11,7 @@ import {
 import { PlanType } from '@/entities/user';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { useBillingActions, usePlansQuery } from '@/features/billing';
+import { getPlanFeatureLines } from '@/features/billing/lib/planMarketingCopy';
 import { PlanCard } from '@/features/billing/ui/PlanCard';
 import { UpgradePromoCard } from '@/features/billing/ui/UpgradePromoCard';
 import { SubscriptionProfileBlock } from '@/features/subscription';
@@ -35,21 +36,10 @@ export default function PaymentPlanScreen() {
     [isPaid, openPaywall, openPortal]
   );
 
-  /** Catalog row for the user’s active plan — drives feature bullets (not always Free). */
-  const currentCatalogPlan = useMemo(
-    () =>
-      plans?.find(
-        (p) => String(p.type).toLowerCase() === String(currentPlan).toLowerCase()
-      ),
-    [plans, currentPlan]
+  const currentPlanFeatureLines = useMemo(
+    () => getPlanFeatureLines(t, currentPlan),
+    [t, currentPlan]
   );
-  const currentPlanFeatureLines = useMemo(() => {
-    if (!currentCatalogPlan?.description?.trim()) return null;
-    return currentCatalogPlan.description
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
-  }, [currentCatalogPlan]);
 
   /** Paid-only upgrades: exclude Free and the plan already shown at the top. */
   const upgradePlans = useMemo(
@@ -79,7 +69,11 @@ export default function PaymentPlanScreen() {
             subscriptionStatus={subscriptionStatus}
             scanUsage={scanUsage}
             onManageBilling={manageHandler}
-            planFeatureLines={currentPlanFeatureLines ?? undefined}
+            planFeatureLines={
+              currentPlanFeatureLines.length > 0
+                ? currentPlanFeatureLines
+                : undefined
+            }
           />
 
           <Section title={t('billing.plansTitle', 'Plans')}>
