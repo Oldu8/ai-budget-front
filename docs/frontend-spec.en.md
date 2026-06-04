@@ -6,13 +6,13 @@ Concise overview of the Expo / React Native client. For HTTP contracts and paylo
 
 ## 1. Product
 
-Personal budget app (iOS, Android, Web): email/password auth, onboarding funnel, Home expense summaries, History, manual expenses, AI receipt scan with review, **Premium voice expense entry** (`expo-audio` recording → `POST /api/transactions/voice` → same review/confirm flow as scan), recurring expense rules (paid plans), category visibility, billing via Stripe (plans, Checkout, Customer Portal). CSV export is gated in the UI but the download flow is not finished yet.
+Personal budget app (iOS, Android, Web): email/password + Google/Apple auth, change password, onboarding funnel, Home expense summaries, History, manual expenses, AI receipt scan with review, **Premium voice expense entry** (`expo-audio` recording → `POST /api/transactions/voice` → same review/confirm flow as scan), recurring expense rules (paid plans), category visibility, billing via Stripe (plans, Checkout, Customer Portal). CSV export is gated in the UI but the download flow is not finished yet.
 
 **Implemented vs not done** (tracks the `ai-budget-front` repo):
 
 | Area | Done | Not done |
 | --- | --- | --- |
-| Auth | Login, signup, token refresh, protected API client, logout | — |
+| Auth | Login, signup, Google/Apple sign-in, change password, token refresh, protected API client, logout | Wire native Google/Apple SDKs + credentials in `socialAuth.ts` |
 | Onboarding | Funnel: settings → visibility questions → tabs | — |
 | Profile | Header, edit name; currency / language / timezone; subscription block with **`scan_usage`** (`SubscriptionProfileBlock`) | — |
 | Profile stack | `edit-profile`, `visibility-preferences`, **`payment-plan`** (plans, Checkout, Portal), **`export-data`** (paid gate; copy says export is coming soon), `notifications` | CSV file download/share (`GET /api/transactions/export`), real notification prefs |
@@ -65,7 +65,9 @@ There is no separate `screens/` folder; routes live under `app/`.
 ## 4. Auth
 
 - **`AuthProvider`** (`features/auth/providers/AuthProvider.tsx`): `bootstrapAuth` on mount; unauthenticated → `/(auth)/login`; authenticated in auth group → `/(tabs)` or `/(funnel)/settings` if no settings; authenticated on tabs without settings → `/(funnel)/settings`. Visibility step is reached via funnel navigation after settings, not as an extra redirect rule in `AuthProvider`.
-- **`useAuthContext()`** (from `useAuth`): `signIn`, `signUp`, `signOut`, `bootstrapAuth`, `refetchMe`, `user`, `settings`, `subscription`, `subscriptionStatus`, `scanUsage`, `status`, `error`, `setError`.
+- **`useAuthContext()`** (from `useAuth`): `signIn`, `signUp`, `signInWithProvider`, `changePassword`, `signOut`, `bootstrapAuth`, `refetchMe`, `user`, `settings`, `subscription`, `subscriptionStatus`, `scanUsage`, `status`, `error`, `setError`.
+- **Social sign-in:** `SocialAuthButtons` on login/signup → `signInWithProvider('google'|'apple')` → native SDK `id_token` → `POST /api/auth/social`. Apple is iOS-only. Native token retrieval lives in `features/auth/lib/socialAuth.ts` (throws `SocialAuthNotConfiguredError` until provider SDKs + credentials are wired).
+- **Change password:** `app/(profile)/change-password.tsx` → `changePassword(current, new)` → `PUT /api/me/password`. The Profile entry is shown only when `user.has_password` (hidden for social-only accounts).
 
 ---
 
@@ -76,7 +78,7 @@ There is no separate `screens/` folder; routes live under `app/`.
 | `app/(tabs)/` | Home, Add (scan + manual), **History** (nested stack), Profile |
 | `app/(auth)/` | login, signup |
 | `app/(funnel)/` | settings, visibility-questions |
-| `app/(profile)/` | Stack: edit-profile, visibility-preferences, export-data, payment-plan, notifications |
+| `app/(profile)/` | Stack: edit-profile, change-password, visibility-preferences, export-data, payment-plan, notifications |
 | `app/(add)/` | Stack: manual, scan (fullscreen), scan-review, scan-review-item, scan-success, **voice** (Premium + scan quota) |
 | `app/(recurring)/` | Recurring expense list / detail / create (**paid feature gate** on backend) |
 
