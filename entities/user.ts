@@ -8,6 +8,8 @@ export interface AppUser {
   first_name: string | null;
   last_name: string | null;
   email_verified_at: string | null;
+  /** True when the account has a password (false for social-only accounts). From GET /api/me. */
+  has_password?: boolean;
 }
 
 export interface AppUserSettings {

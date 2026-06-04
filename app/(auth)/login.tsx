@@ -17,6 +17,7 @@ import { ThemedText } from '@/shared/ui/ThemedText';
 import { ThemedView } from '@/shared/ui/ThemedView';
 import { EmailInput } from '@/features/auth/ui/EmailInput';
 import { PasswordInput } from '@/features/auth/ui/PasswordInput';
+import { SocialAuthButtons } from '@/features/auth/ui/SocialAuthButtons';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { Colors } from '@/shared/constants/theme';
@@ -117,6 +118,8 @@ export default function LoginScreen() {
               <ThemedText style={styles.buttonText}>{t('auth.loginButton')}</ThemedText>
             )}
           </Pressable>
+
+          <SocialAuthButtons disabled={loading} />
 
           <Pressable
             style={styles.link}

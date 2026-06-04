@@ -183,6 +183,13 @@ export default function ProfileScreen() {
             subtitle={t('profile.editProfileSubtitle')}
             onPress={() => router.push('/(profile)/edit-profile')}
           />
+          {user?.has_password ? (
+            <SettingsRow
+              icon="lock"
+              title={t('auth.changePassword.title')}
+              onPress={() => router.push('/(profile)/change-password')}
+            />
+          ) : null}
         </SettingsSection>
 
         <SettingsSection title={t('profile.sectionPreferences')}>

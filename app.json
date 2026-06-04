@@ -2,16 +2,18 @@
   "expo": {
     "name": "ai-budget-front",
     "slug": "ai-budget-front",
-    "version": "0.8.9",
+    "version": "0.8.10",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "aibudgetfront",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "aibudget.oldu"
     },
     "android": {
+      "package": "aibudget.oldu",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -49,6 +51,12 @@
         "expo-audio",
         {
           "microphonePermission": "Allow AI Budget to access your microphone for voice expense entry."
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.359845148933-7kn28qr3aomca22766fe6amalnlcrt2d"
         }
       ]
     ],

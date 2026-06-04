@@ -12,4 +12,7 @@ export const env = {
   apiUrl: rawApiUrl.replace(/\/+$/, ''),
   /** When set, sent as X-API-Key header. Required if backend has API_SECRET. */
   apiSecret: process.env.EXPO_PUBLIC_API_SECRET ?? '',
+  /** Google OAuth client ids (public). Used to obtain an id_token for /api/auth/social. */
+  googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
+  googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
 } as const;

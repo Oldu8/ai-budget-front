@@ -48,6 +48,24 @@ export interface RefreshResponse {
   refresh_token: string;
 }
 
+/** Supported social sign-in providers. */
+export type SocialProvider = 'google' | 'apple';
+
+/** POST /api/auth/social response (200) — same shape as login. */
+export interface SocialResponse {
+  access_token: string;
+  refresh_token: string;
+  user: AuthResponseUser;
+  settings?: AppUserSettings;
+}
+
+/** PUT /api/me/password body. refresh_token (this device) is kept while other sessions are revoked. */
+export interface ChangePasswordBody {
+  current_password: string;
+  new_password: string;
+  refresh_token?: string;
+}
+
 /** GET /api/me response (200) */
 export interface MeResponse {
   user: AppUser;

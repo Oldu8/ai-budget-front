@@ -41,6 +41,10 @@ export default function ProfileLayout() {
         options={{ title: t('profile.editProfile') }}
       />
       <Stack.Screen
+        name="change-password"
+        options={{ title: t('auth.changePassword.title') }}
+      />
+      <Stack.Screen
         name="payment-plan"
         options={{ title: t('profile.paymentAndPlan') }}
       />

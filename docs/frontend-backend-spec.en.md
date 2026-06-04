@@ -1,8 +1,10 @@
-> Canonical copy: `.cursor/frontend-backend-spec.en.md` at the repo root. Update that file when API/domain docs change.
+## AI Budget — Backend overview for frontend
 
 This document is a concise but complete description of the AI Budget backend, focused on what matters for the mobile frontend.
 
-The stack: Laravel 12, PostgreSQL (Supabase), Supabase Auth, Stripe, OpenAI. The full low-level spec lives in `.cursor/backend-spec.md`.
+The stack: Laravel 12, PostgreSQL (Supabase, DB only), Laravel-issued JWT auth (email/password + Google/Apple), Stripe, OpenAI. The full low-level spec lives in `ai-budget-back/.cursor/backend-spec.md`.
+
+> Canonical copy for the monorepo. Keep in sync when editing API/domain docs.
 
 ---
 
@@ -10,11 +12,11 @@ The stack: Laravel 12, PostgreSQL (Supabase), Supabase Auth, Stripe, OpenAI. The
 
 AI Budget is a personal budget tracker:
 
-- Users register / log in with email + password (Supabase Auth behind an API proxy).
+- Users register / log in with email + password, or via Google / Apple — all handled by the backend, which issues its own JWT.
 - Users can:
   - create **manual transactions** (incomes / expenses),
-  - scan receipts with **AI scan** (photos → categorized items; Free/Basic: one image per scan; Plus/Premium: multiple — see [`docs/plans.md`](../docs/plans.md)),
-  - on **Premium**, add expenses via **voice messages** (product feature; see [`docs/plans.md`](../docs/plans.md)),
+  - scan receipts with **AI scan** (photos → categorized items; Free/Basic: one image per scan; Plus/Premium: multiple — see [`ai-budget-back/docs/plans.md`](../ai-budget-back/docs/plans.md)),
+  - on **Premium**, add expenses via **voice messages** (product feature; see [`ai-budget-back/docs/plans.md`](../ai-budget-back/docs/plans.md)),
   - enable / disable expense categories (via visibility tags; **all plans**, including Free),
   - see expense summaries by category / subcategory for a period,
   - export expenses to **CSV** (paid plans only).
@@ -28,8 +30,8 @@ AI Budget is a personal budget tracker:
 
 - Table `app_users`:
   - `id` — internal user id.
-  - `supabase_user_id` — id in Supabase Auth (**DB only; not exposed in JSON API responses**).
   - `email`, `first_name`, `last_name`.
+  - `has_password` (in `/api/me`) — `false` for social-only accounts; use it to hide "change password".
   - `email_verified_at` — whether email is verified.
 - Table `app_user_settings` (1:1 with `app_users`):
   - `currency` — currency code (e.g. `USD`, `EUR`, `RUB`).
@@ -39,7 +41,7 @@ AI Budget is a personal budget tracker:
 Frontend:
 
 - After register / login the client should create or update settings via `/api/me/settings`.
-- **`GET /api/me`** returns user fields at the top level plus `settings`, `subscription`, `subscription_status`, `scan_usage` (exact shapes in [`backend-spec.md`](../../ai-budget-back/.cursor/backend-spec.md) §5.7). Client consumes the payload directly without defensive parsing.
+- **`GET /api/me`** returns user fields at the top level plus `settings`, `subscription`, `subscription_status`, `scan_usage` (exact shapes in [`ai-budget-back/.cursor/backend-spec.md`](../ai-budget-back/.cursor/backend-spec.md) §5.7). Client consumes the payload directly without defensive parsing.
 - **`GET|POST|PUT /api/me/settings`** return `{ currency, language, timezone }` only.
 - Currency from settings is used in the UI and in CSV export.
 
@@ -150,31 +152,27 @@ Frontend:
   - handle 403 errors:
     - `Subscription required to scan.`
     - `Scan limit reached for this billing period.`
-- Paywall / plan copy (multi-photo receipt scan, voice entry on Premium, advanced analytics without «AI insights») should match `GET /api/plans` → `description` and the matrix in [`docs/plans.md`](../docs/plans.md).
+- Paywall / plan copy (multi-photo receipt scan, voice entry on Premium, advanced analytics without «AI insights») should match `GET /api/plans` → `description` and the matrix in [`ai-budget-back/docs/plans.md`](../ai-budget-back/docs/plans.md).
 
 ### 2.6. Stripe: Checkout, Portal, Plans
 
 **Plans list** (`GET /api/plans`):
-
 - Returns all plans with currency-aware pricing: `type`, `label`, `price` (cents), `currency`, `price_id` (Stripe, null for free), `check_limit`, `description`.
 - Use for the paywall / subscription selection UI.
 
 **Checkout** (`POST /api/stripe/checkout`):
-
 - Body: `{ "plan_type": "basic"|"plus"|"premium" }`.
 - Response: `{ "checkout_url": "https://checkout.stripe.com/..." }`.
 - Frontend opens this URL in a browser (not WebView). After completion Stripe redirects to the configured deep link.
 - **Important:** The redirect to `success_url` is **not** confirmation of subscription activation. After returning from Checkout, the app **must** refetch `GET /api/me` to read the actual subscription state (updated by backend webhooks).
 
 **Customer Portal** (`POST /api/stripe/portal`):
-
 - Response: `{ "portal_url": "https://billing.stripe.com/..." }`.
 - Opens a Stripe-hosted page where the user can manage payment methods, cancel, or change subscription.
 - Requires that the user has gone through Checkout at least once (has a Stripe Customer). Returns 400 if not: `{ "message": "No billing account found. Please subscribe to a plan first." }`.
 - After returning from Portal, refetch `GET /api/me`.
 
 **Webhook** (`POST /api/stripe/webhook`):
-
 - Not called by the frontend. Stripe sends events here to keep subscription state in sync.
 - The backend DB (and thus `/api/me`) is the frontend's source of truth, not the Checkout/Portal redirect.
 
@@ -197,14 +195,16 @@ If `API_SECRET` is not set, the header is not required.
 
 ### 3.2. Auth flows
 
-Auth is proxied through the backend. The client **never** calls Supabase Auth directly:
+Authentication is fully handled by the backend, which issues **its own** tokens (no Supabase Auth). All auth responses return `{ access_token, refresh_token, expires_in, user }` (login/social also include `settings`). The `access_token` is a short-lived JWT (~15 min); `refresh_token` is opaque and rotates on use.
 
-- Register: `POST /api/auth/register` → 201 `{ access_token, refresh_token, user }`.
-- Login: `POST /api/auth/login` → 200 `{ access_token, refresh_token, user + settings }` when a local `AppUser` already exists (normally after register). **401** with `message` if Supabase password is wrong **or** if the Supabase user has never been registered through this API (no `app_users` row) — client must register first; login **does not** create `app_users`.
-- Refresh: `POST /api/auth/refresh` → new tokens.
-- Logout: `POST /api/auth/logout` with `Authorization: Bearer <token>`.
+- Register: `POST /api/auth/register` `{ email, password }` → 201. **422** if the email is already registered.
+- Login: `POST /api/auth/login` `{ email, password }` → 200. **401** for unknown email, wrong password, or a social-only account (no password set).
+- Social: `POST /api/auth/social` `{ provider: "google"|"apple", id_token, name? }` → 200. The client gets `id_token` from the native Google/Apple SDK; the backend verifies it (JWKS) and finds/creates the user. **401** if verification fails.
+- Refresh: `POST /api/auth/refresh` `{ refresh_token }` → new tokens (the old refresh token is revoked). **401** if invalid/expired/used.
+- Logout: `POST /api/auth/logout` `{ refresh_token }` → revokes that refresh token.
+- Change password: `PUT /api/me/password` `{ current_password, new_password, refresh_token? }` (protected) → 200. **422** on wrong/invalid password, **409** for social-only accounts. Pass the current `refresh_token` to stay signed in on this device while other sessions are revoked.
 
-All protected endpoints require:
+All `/api/auth/*` routes are throttled (5/min). Protected endpoints require:
 
 ```http
 Authorization: Bearer <access_token>
@@ -274,7 +274,7 @@ Frontend:
 ### 4.4. AI scan (receipt recognition)
 
 - `POST /api/transactions/scan`:
-  - multipart with `image` (jpeg/png) in the current API; product target is **multiple** images per scan on Plus/Premium (see [`docs/plans.md`](../docs/plans.md), `.cursor/receipt-scan-backend.en.md`).
+  - multipart with `image` (jpeg/png) in the current API; product target is **multiple** images per scan on Plus/Premium (see [`ai-budget-back/docs/plans.md`](../ai-budget-back/docs/plans.md), `ai-budget-back/.cursor/receipt-scan-backend.en.md`).
   - requires active subscription and free scan quota.
   - returns a draft transaction with categorized items.
 - `PUT /api/transactions/{transaction}/update`:
@@ -316,7 +316,7 @@ Frontend:
 - **403** on disallowed plans: `Analytics dashboard is not available on your plan.`
 - **Response:** top-level JSON (no `data` envelope): `month`, `currency`, `period` (`from`, `to`, `previous_from`, `previous_to`), `overview`, `categories`, `trends`. Amounts in **cents**. Only **confirmed** expenses; respects disabled categories.
 
-Product copy in [`docs/plans.md`](../docs/plans.md) calls Plus «dashboard» and Premium «advanced analytics»; **the backend currently implements one shared payload** for both plan types.
+Product copy in [`ai-budget-back/docs/plans.md`](../ai-budget-back/docs/plans.md) calls Plus «dashboard» and Premium «advanced analytics»; **the backend currently implements one shared payload** for both plan types.
 
 Frontend:
 
@@ -355,21 +355,37 @@ Frontend:
 - Build `from` / `to` from selected months (e.g. 2026-01-01…2026-02-29).
 - Perform a `GET` with `Accept: text/csv` and use platform tools to download / share / open the file.
 
+### 4.8. Voice expense entry (Premium)
+
+- `POST /api/transactions/voice`:
+  - multipart field `audio` (common mobile formats; max 5 MB).
+  - **Premium only** (`feature.access:voice_expense`). On other plans → **403** with `Voice expense entry is only available on Premium.`
+  - **Uses the same AI scan quota** as receipt scan (`plan.check_limit` / `used_checks_count`; `scan_usage` on `/api/me` applies). When the period limit is exhausted → **403** with `Scan limit reached for this billing period.`
+  - On **successful** draft creation, `used_checks_count` is incremented once (same counter as `POST /api/transactions/scan`).
+  - Transcribes audio with OpenAI, parses text into categorized line items, returns the same **`TransactionResource`** shape as receipt scan (`type: expense`, `created_by: ai`, `confirmed_at: null` until saved via `PUT /api/transactions/{transaction}/update`).
+  - `raw_ai_data` includes a `source` marker (`voice_expense`), `transcript`, and parsed JSON.
+  - Audio is **not** stored server-side (temporary upload only).
+
+Frontend:
+
+- Same post-processing as §4.4: show draft lines, let the user edit, then `PUT .../update` to confirm.
+
 ---
 
 ## 5. File map — where to look in the backend
 
 If you need more detail:
 
-- Full specification and business rules — `.cursor/backend-spec.md`.
-- Machine-readable API route list — `api-routes.json` (importable on the frontend as a reference).
+- Full specification and business rules — `ai-budget-back/.cursor/backend-spec.md`.
+- Machine-readable API route list — `ai-budget-front/docs/api-routes.json`.
 - Key controllers:
-  - `App/Http/Controllers/AuthController.php` — register / login / refresh / logout.
-  - `App/Http/Controllers/AppUserController.php` — `/me`, `/me/settings`, subscription, `subscription_status`, `scan_usage`.
+  - `App/Http/Controllers/AuthController.php` — register / login / social / refresh / logout.
+  - `App/Http/Controllers/AppUserController.php` — `/me`, `/me/password`, `/me/settings`, subscription, `subscription_status`, `scan_usage`.
   - `App/Http/Controllers/CategoryController.php` — `/categories`.
   - `App/Http/Controllers/CategoryVisibilityController.php` — visibility tags and onboarding.
   - `App/Http/Controllers/ManualTransactionController.php` — transaction CRUD.
   - `App/Http/Controllers/ScanController.php` — AI scan and receipt update.
+  - `App/Http/Controllers/VoiceTransactionController.php` — Premium voice expense draft (`POST /api/transactions/voice`).
   - `App/Http/Controllers/TransactionSummaryController.php` — expense summaries (date range).
   - `App/Http/Controllers/AnalyticsDashboardController.php` — analytics dashboard (month, Plus/Premium).
   - `App/Http/Controllers/ExpenseExportController.php` — CSV export.
@@ -379,3 +395,4 @@ If you need more detail:
   - `App/Models/Plan.php`, `App/Models/UserSubscription.php`
 
 `frontend-backend-spec.en.md` together with `api-routes.json` should be enough to understand which features exist, how data is shaped, and which endpoints are available when working on the frontend.
+

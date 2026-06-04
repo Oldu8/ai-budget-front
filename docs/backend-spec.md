@@ -9,9 +9,9 @@ Users can manually log income/expenses, run **AI receipt scan** (single image on
 
 ### Core Responsibilities
 
-- Authenticate mobile app users via Supabase Auth (JWT validation through service role)
+- Authenticate mobile app users with our own Laravel-issued JWT (email/password + Google/Apple)
 - Authenticate admin users via standard Laravel Auth (session-based)
-- Process receipt images using OpenAI GPT-4o-mini (JSON mode)
+- Process receipt images using OpenAI GPT-4o-mini (Structured Outputs)
 - Manage hierarchical expense/income categories
 - Handle subscription billing and AI-scan usage limits via Stripe
 - CRUD for transactions (manual + AI-created)
@@ -24,8 +24,8 @@ Users can manually log income/expenses, run **AI receipt scan** (single image on
 | Database   | PostgreSQL (managed via Supabase)             |
 | ORM        | Eloquent ORM                                  |
 | Migrations | Laravel Migrations (`php artisan migrate`)    |
-| Auth       | Supabase Auth (mobile) + Laravel Auth (admin) |
-| AI         | OpenAI SDK (gpt-4o-mini, JSON mode)           |
+| Auth       | Laravel-issued JWT (mobile) + Laravel Auth (admin) |
+| AI         | OpenAI SDK (gpt-4o-mini, Structured Outputs)  |
 | Payments   | Stripe SDK (Subscriptions & Webhooks)         |
 | Storage    | Supabase Storage (receipt images)             |
 | Host       | Railway.app                                   |
@@ -38,9 +38,9 @@ The system has two separate user entities with different auth mechanisms:
 
 **AppUser (`app_users`)** — Mobile application users.
 
-- Authenticated via Supabase Auth (JWT tokens)
-- Custom middleware `supabase.auth` validates token against Supabase `/auth/v1/user`
-- **Normal lifecycle:** row is created in `POST /api/auth/register` after Supabase signup. **`POST /api/auth/login` does not create** a missing row — if Supabase accepts the password but no `AppUser` exists yet, the API returns **401** (user must register via the backend first). The `supabase.auth` middleware still **syncs** `AppUser` with `firstOrCreate` when a valid JWT hits a protected route (edge cases, e.g. tokens issued outside this API).
+- Authenticated via our **own Laravel-issued JWT** (no Supabase Auth). The `auth.app` middleware verifies the JWT locally (signature + exp) and loads the `AppUser` by `sub`.
+- **Lifecycle:** the row is created on `POST /api/auth/register` (email + password hashed in `app_users`) or on first social sign-in (`POST /api/auth/social`). There is no Supabase round-trip and no `firstOrCreate` in the middleware.
+- Credentials live in `app_users.password` (bcrypt). Social-only accounts have `password = null`.
 - Used for: transactions, subscriptions, payments, AI features
 - Model: `App\Models\AppUser` (extends Authenticatable)
 
@@ -58,151 +58,120 @@ The system has two separate user entities with different auth mechanisms:
 | `web` | session | `users`     | Admin panel     |
 | `app` | session | `app_users` | Mobile (backup) |
 
-Mobile API routes use the `supabase.auth` middleware (not Laravel guards).
+Mobile API routes use the `auth.app` middleware (not Laravel guards).
 
-### 3.3. AppUser Auth Flow (Backend Proxy)
+### 3.3. AppUser Auth Flow (Laravel-issued JWT)
 
-All auth goes through the backend. The client never talks to Supabase directly.
-Backend proxies requests to Supabase Auth API and returns tokens to the client.
+All authentication lives in Laravel. We issue our **own** tokens for every path:
 
-**Registration:**
+- **access_token** — short-lived JWT (HS256, `sub = app_user.id`, default ~15 min). Sent as `Authorization: Bearer <token>` on protected routes; verified locally (no DB/network round-trip).
+- **refresh_token** — opaque random string stored only as a sha256 hash in `app_user_refresh_tokens`. Rotated on every use and revocable (logout, password change).
 
-```
-Mobile App                     Backend API                     Supabase
-    |                              |                               |
-    |-- POST /api/auth/register -->|                               |
-    |   { email, password }        |                               |
-    |                              |-- POST /auth/v1/signup -----> |
-    |                              |   apiKey: SUPABASE_ANON_KEY   |
-    |                              |<-- { user, access_token } --- |
-    |                              |                               |
-    |                              |   Ensures AppUser for supabase_user_id |
-    |                              |   (new row in app_users if needed)    |
-    |                              |                               |
-    |<-- 201 --------------------- |                               |
-    |   { access_token,            |                               |
-    |     refresh_token,           |                               |
-    |     user }                   |                               |
-```
+Supabase is used only as Postgres + Storage; Supabase Auth is not involved.
 
-1. Client sends `POST /api/auth/register` with `{ email, password }`
-2. Backend validates input, sends signup request to Supabase Auth API
-3. Supabase creates the auth user, returns JWT tokens
-4. Backend creates or finds `AppUser` via `firstOrCreate(supabase_user_id)`, runs `EnsureDefaultSubscriptionService`, registration notifications
-5. Backend returns `access_token`, `refresh_token`, and user profile to client
-
-**Login:**
+**Email / password (register, login):**
 
 ```
-Mobile App                     Backend API                     Supabase
-    |                              |                               |
-    |-- POST /api/auth/login ----> |                               |
-    |   { email, password }        |                               |
-    |                              |-- POST /auth/v1/token ------> |
-    |                              |   ?grant_type=password        |
-    |                              |<-- { user, access_token } --- |
-    |                              |                               |
-    |                              |   Load AppUser by supabase_user_id |
-    |                              |   (must exist — no login-time create) |
-    |                              |                               |
-    |<-- 200 --------------------- |                               |
-    |   { access_token,            |                               |
-    |     refresh_token,           |                               |
-    |     user + settings }        |                               |
+Mobile App                          Backend API                         Postgres
+    |                                   |                                   |
+    |-- POST /api/auth/register ------->|                                   |
+    |   { email, password }             |-- create app_users (Hash::make) ->|
+    |                                   |   ensure free subscription        |
+    |<-- 201 { access_token,            |                                   |
+    |          refresh_token,           |                                   |
+    |          expires_in, user } ------|                                   |
+    |                                   |                                   |
+    |-- POST /api/auth/login ---------->|                                   |
+    |   { email, password }             |-- find by email + Hash::check --->|
+    |<-- 200 { access_token, refresh_token, expires_in, user }              |
 ```
 
-1. Client sends `POST /api/auth/login` with `{ email, password }`
-2. Backend sends credentials to Supabase `/auth/v1/token?grant_type=password`
-3. Supabase validates credentials, returns JWT tokens
-4. Backend **requires** an existing `AppUser` with the same `supabase_user_id` (created via `POST /api/auth/register`). If missing → **401** JSON: `This email is not registered. Please sign up before signing in.` (no tokens issued for app provisioning via login alone)
-5. Backend syncs email / `email_verified_at` from Supabase, runs `EnsureDefaultSubscriptionService`, loads settings
-6. Backend returns tokens + user profile to client
+- `register`: validates input, creates the `AppUser` with a hashed password (model cast `password => hashed`), provisions the free plan, sends the registration notification, returns tokens. **422** if the email is already registered.
+- `login`: finds the `AppUser` by email and verifies with `Hash::check`. **401** on bad credentials or for a social-only account (password is `null`).
 
-**Token refresh:**
+**Social (Google / Apple):**
 
 ```
-Mobile App                     Backend API                     Supabase
-    |                              |                               |
-    |-- POST /api/auth/refresh --> |                               |
-    |   { refresh_token }          |-- POST /auth/v1/token ------> |
-    |                              |   ?grant_type=refresh_token   |
-    |                              |<-- { new tokens } ----------- |
-    |<-- { access_token,           |                               |
-    |      refresh_token } ------- |                               |
+Mobile App            Provider SDK          Backend API                 Provider JWKS
+    |  native sign-in -->  |                    |                            |
+    |<-- id_token -------- |                    |                            |
+    |-- POST /api/auth/social { provider, id_token, name? } -->|             |
+    |                                           |-- verify id_token (aud/iss/exp) -->|
+    |                                           |   find/create AppUser, link identity
+    |<-- 200 { access_token, refresh_token, expires_in, user } |            |
 ```
 
-**Logout:**
+- The client obtains an `id_token` from the native Google/Apple SDK and posts it. The backend verifies its signature against the provider's published JWKS and checks `aud` / `iss` / `exp`.
+- User resolution: by linked identity (`app_user_identities`) → by **verified** email → otherwise create. Linking to an existing email account happens **only** when the provider reports the email as verified (prevents account takeover via an unverified email).
 
-```
-Mobile App                     Backend API                     Supabase
-    |                              |                               |
-    |-- POST /api/auth/logout ---> |                               |
-    |   Authorization: Bearer <t>  |-- POST /auth/v1/logout -----> |
-    |<-- { message: "Logged out" } |                               |
-```
+**Token refresh / logout:**
+
+- `POST /api/auth/refresh { refresh_token }` → validates + rotates: the presented token is revoked and a fresh `access_token` + `refresh_token` are returned. **401** if invalid, expired, or already used.
+- `POST /api/auth/logout { refresh_token }` → revokes that refresh token. The access_token remains valid until it expires (stateless).
+
+**Change password:** `PUT /api/me/password` (protected). Verifies `current_password`, sets the new one, and revokes other sessions (the current device's `refresh_token`, if supplied, is kept). **409** for social-only accounts. No email is sent. Password reset by email and "set password" for social users are deferred.
 
 **Key points:**
 
-- Client stores `access_token` and `refresh_token` locally (e.g. SecureStorage)
-- `access_token` is sent as `Authorization: Bearer <token>` on all protected routes
-- When `access_token` expires → client calls `/api/auth/refresh` with `refresh_token`
-- Auth routes (`/api/auth/*`) are public — no middleware required
-- Protected routes (`/api/me/*`) use `supabase.auth` middleware that validates the token
-- `supabase_user_id` is the bridge between Supabase Auth and `app_users` table
-- **Login vs orphans:** Supabase may have an auth user (e.g. old test) without an `app_user` row. `POST /api/auth/login` then returns **401** so the app cannot “bootstrap” an account through login alone. **`supabase.auth` middleware** still uses `firstOrCreate` when a valid JWT reaches a protected route — operators should treat out-of-band Supabase users separately if that must be disabled.
-- Sensitive fields (`supabase_user_id`, `payment_customer_id`) are hidden from JSON responses
+- Client stores `access_token` and `refresh_token` locally (e.g. SecureStorage).
+- When `access_token` expires → client calls `/api/auth/refresh`.
+- Auth routes (`/api/auth/*`) are public and throttled (5/min).
+- Protected routes use the `auth.app` middleware, which verifies our JWT and loads the `AppUser` by `sub`. A token for a missing/soft-deleted user → **401**.
+- Sensitive fields (`password`, `payment_customer_id`) are hidden from JSON responses.
 
 ### 3.4. API Routes
 
 **Public (no auth required):**
 
-| Method | Route                | Action            | Body                     |
-| ------ | -------------------- | ----------------- | ------------------------ |
-| `POST` | `/api/auth/register` | Register new user | `{ email, password }`    |
-| `POST` | `/api/auth/login`    | Login             | `{ email, password }`    |
-| `POST` | `/api/auth/refresh`  | Refresh tokens    | `{ refresh_token }`      |
-| `POST` | `/api/auth/logout`   | Logout            | Header: `Bearer <token>` |
+| Method | Route                | Action            | Body                                  |
+| ------ | -------------------- | ----------------- | ------------------------------------- |
+| `POST` | `/api/auth/register` | Register new user | `{ email, password }`                 |
+| `POST` | `/api/auth/login`    | Login             | `{ email, password }`                 |
+| `POST` | `/api/auth/social`   | Social sign-in    | `{ provider, id_token, name? }`       |
+| `POST` | `/api/auth/refresh`  | Refresh tokens    | `{ refresh_token }`                   |
+| `POST` | `/api/auth/logout`   | Logout            | `{ refresh_token }`                   |
 
-**`POST /api/auth/login` responses:** **200** when Supabase password grant succeeds **and** a local `AppUser` exists for that `supabase_user_id`. **401** for invalid Supabase credentials **or** when the Supabase user exists but **no `AppUser` row** yet — client must call `POST /api/auth/register` first (login no longer creates `app_users`).
+All `/api/auth/*` routes are throttled (5/min) and return `{ access_token, refresh_token, expires_in, user }` (except `logout`). **`POST /api/auth/login`** returns **401** for an unknown email, a wrong password, or a social-only account (no password set).
 
 **Protected (requires `Authorization: Bearer <token>`):**
 
-| Method   | Route              | Action                                                                                                         |
-| -------- | ------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Method   | Route              | Action                       |
+| -------- | ------------------ | ---------------------------- |
 | `GET`    | `/api/me`          | Get profile, settings, subscription, `subscription_status`, and scan_usage (scans remaining/limit, period_end) |
-| `PUT`    | `/api/me`          | Update profile                                                                                                 |
-| `DELETE` | `/api/me`          | Soft-delete account                                                                                            |
-| `GET`    | `/api/me/settings` | Get user settings                                                                                              |
-| `POST`   | `/api/me/settings` | Create settings (onboarding)                                                                                   |
-| `PUT`    | `/api/me/settings` | Update user settings                                                                                           |
+| `PUT`    | `/api/me`          | Update profile               |
+| `PUT`    | `/api/me/password` | Change password (`{ current_password, new_password, refresh_token? }`); 409 for social-only accounts |
+| `DELETE` | `/api/me`          | Soft-delete account          |
+| `GET`    | `/api/me/settings` | Get user settings            |
+| `POST`   | `/api/me/settings` | Create settings (onboarding) |
+| `PUT`    | `/api/me/settings` | Update user settings         |
 
-| `GET` | `/api/categories` | List categories and subcategories (id, slug, label, children); filtered by user's disabled list; optional `?visibility_tag=` for funnel preview |
-| `GET` | `/api/funnel/visibility-questions` | List funnel questions per visibility tag (visibility_tag, question_key, type, order, translation_key). Frontend uses `t(translation_key + '.title')`, `t(translation_key + '.description')` for i18n. |
-| `GET` | `/api/visibility-tags` | List visibility tags with `enabled`, `translation_key` for current user (for settings toggles). Frontend uses `t(translation_key)` for i18n. |
-| `PATCH` | `/api/me/category-visibility` | Set tag enabled/disabled: body `{ "visibility_tag", "enabled" }` — disabled = add all categories with tag to app_user_category_settings; enabled = delete those rows |
-| `GET` | `/api/transactions` | List transactions (paginated, filters: from, to, type) |
-| `GET` | `/api/transactions/summary` | Expense summary by category for date range (query: from, to) |
-| `GET` | `/api/transactions/summary/{category}` | Expense summary by subcategory for one category (query: from, to) |
-| `GET` | `/api/transactions/export` | CSV export of expenses for date range (query: from, to); Basic/Plus/Premium only |
-| `GET` | `/api/analytics/dashboard` | **Plus & Premium** (not Basic): calendar-month analytics (query `month=YYYY-MM`). JSON **without** `data` envelope: `month`, `currency`, `period` (`from`, `to`, `previous_from`, `previous_to`), `overview` (totals, `average_per_day`, `biggest_category`, diff vs previous month), `categories` (Level 1 with nested `subcategories`), `trends.categories` / `trends.subcategories` (mom deltas). Same expense basis as summaries: confirmed only, disabled categories excluded. **403** on Free/Basic. |
-| `POST` | `/api/transactions` | Create transaction (manual, ManualTransactionController) |
-| `GET` | `/api/transactions/{id}` | Get transaction — JSON envelope `{ "data": { ... } }` (same shape as scan / receipt update / show) |
-| `PUT` | `/api/transactions/{id}` | Update transaction |
-| `DELETE` | `/api/transactions/{id}` | Soft-delete transaction |
+| `GET`    | `/api/categories`               | List categories and subcategories (id, slug, label, children); filtered by user's disabled list; optional `?visibility_tag=` for funnel preview     |
+| `GET`    | `/api/funnel/visibility-questions` | List funnel questions per visibility tag (visibility_tag, question_key, type, order, translation_key). Frontend uses `t(translation_key + '.title')`, `t(translation_key + '.description')` for i18n.     |
+| `GET`    | `/api/visibility-tags`         | List visibility tags with `enabled`, `translation_key` for current user (for settings toggles). Frontend uses `t(translation_key)` for i18n.     |
+| `PATCH`  | `/api/me/category-visibility`   | Set tag enabled/disabled: body `{ "visibility_tag", "enabled" }` — disabled = add all categories with tag to app_user_category_settings; enabled = delete those rows     |
+| `GET`    | `/api/transactions`             | List transactions (paginated, filters: from, to, type)            |
+| `GET`    | `/api/transactions/summary`     | Expense summary by category for date range (query: from, to)      |
+| `GET`    | `/api/transactions/summary/{category}` | Expense summary by subcategory for one category (query: from, to) |
+| `GET`    | `/api/transactions/export`     | CSV export of expenses for date range (query: from, to); Basic/Plus/Premium only |
+| `GET`    | `/api/analytics/dashboard`     | **Plus & Premium** (not Basic): calendar-month analytics (query `month=YYYY-MM`). JSON **without** `data` envelope: `month`, `currency`, `period` (`from`, `to`, `previous_from`, `previous_to`), `overview` (totals, `average_per_day`, `biggest_category`, diff vs previous month), `categories` (Level 1 with nested `subcategories`), `trends.categories` / `trends.subcategories` (mom deltas). Same expense basis as summaries: confirmed only, disabled categories excluded. **403** on Free/Basic. |
+| `POST`   | `/api/transactions`             | Create transaction (manual, ManualTransactionController)          |
+| `GET`    | `/api/transactions/{id}`        | Get transaction — JSON envelope `{ "data": { ... } }` (same shape as scan / receipt update / show) |
+| `PUT`    | `/api/transactions/{id}`        | Update transaction                                                  |
+| `DELETE` | `/api/transactions/{id}`        | Soft-delete transaction                                             |
 
-| `POST` | `/api/transactions/scan` | AI scan: upload image; 201 `{ "data": { ... } }` (transaction with `items[].category`) |
-| `POST` | `/api/transactions/voice` | **Premium** — voice expense draft: multipart `audio`; 201 same envelope as scan; `raw_ai_data` includes `source`, `transcript`, `parsed`; increments **`used_checks_count`** like receipt scan when draft is created (same plan `check_limit`); audio not persisted |
-| `PUT` | `/api/transactions/{id}/update` | Save edited AI receipt (`date`, `items[]` …) and **confirm** in one request; server recalculates `total_amount`, sets `confirmed_at` |
-| `GET` | `/api/transactions/{id}/image` | Receipt preview: `{ "url", "expires_in" }` signed URL (owner, requires `img_path`) |
-| `GET` | `/api/plans` | List all plans with currency-aware pricing for frontend paywall |
-| `POST` | `/api/stripe/checkout` | Create Stripe Checkout Session; body `{ plan_type }` → `{ checkout_url }` |
-| `POST` | `/api/stripe/portal` | Create Stripe Customer Portal Session → `{ portal_url }` |
+| `POST`   | `/api/transactions/scan`               | AI scan: upload image; 201 `{ "data": { ... } }` (transaction with `items[].category`) |
+| `POST`   | `/api/transactions/voice`              | **Premium** — voice expense draft: multipart `audio`; 201 same envelope as scan; `raw_ai_data` includes `source`, `transcript`, `parsed`; increments **`used_checks_count`** like receipt scan when draft is created (same plan `check_limit`); audio not persisted |
+| `PUT`    | `/api/transactions/{id}/update`        | Save edited AI receipt (`date`, `items[]` …) and **confirm** in one request; server recalculates `total_amount`, sets `confirmed_at` |
+| `GET`    | `/api/transactions/{id}/image`         | Receipt preview: `{ "url", "expires_in" }` signed URL (owner, requires `img_path`) |
+| `GET`    | `/api/plans`                           | List all plans with currency-aware pricing for frontend paywall |
+| `POST`   | `/api/stripe/checkout`                 | Create Stripe Checkout Session; body `{ plan_type }` → `{ checkout_url }` |
+| `POST`   | `/api/stripe/portal`                   | Create Stripe Customer Portal Session → `{ portal_url }` |
 
 **No auth (Stripe signature only):**
 
-| Method | Route                 | Action                                          |
-| ------ | --------------------- | ----------------------------------------------- |
-| `POST` | `/api/stripe/webhook` | Stripe webhook endpoint (verified by signature) |
+| Method | Route                  | Action                                         |
+| ------ | ---------------------- | ---------------------------------------------- |
+| `POST` | `/api/stripe/webhook`  | Stripe webhook endpoint (verified by signature) |
 
 **Scan / receipt update / show responses** use a stable envelope: `data.id`, `data.type`, `data.created_by`, `data.confirmed_at`, `data.date`, `data.total_amount`, `data.img_path`, `data.raw_ai_data`, `data.items[]` with nested `category` `{ id, slug, label }`.
 
@@ -267,13 +236,17 @@ Email confirmation is handled entirely by Supabase. The backend does not expose 
 
 ### 4.1. Users & Settings
 
-**app_users** — mobile user profile linked to Supabase Auth and Stripe.
+**app_users** — mobile user profile (local auth) and Stripe link.
 
-- `supabase_user_id` (uuid, unique) — link to Supabase Auth
 - `email` (unique)
+- `password` (nullable, bcrypt) — `null` for social-only accounts
 - `first_name`, `last_name` (nullable)
 - `payment_customer_id` (nullable) — Stripe customer ID
 - Soft deletes enabled
+
+**app_user_identities** — linked social logins: `app_user_id`, `provider` (`google`|`apple`), `provider_user_id`, unique(`provider`, `provider_user_id`).
+
+**app_user_refresh_tokens** — opaque refresh tokens: `app_user_id`, `token_hash` (sha256), `expires_at`, `revoked_at`. Rotated on use.
 
 **users** — admin panel users (standard Laravel).
 
@@ -302,7 +275,6 @@ Email confirmation is handled entirely by Supabase. The backend does not expose 
 - `visibility_tag` (nullable) — metadata (e.g. kids, car, pets) for bulk-toggling
 
 **Category hierarchy rules:**
-
 - **Level 1 (parent)** — rollup categories only (e.g. Housing, Food). **Not** user-selectable when creating a transaction. In the UI they show summed amounts for all child subcategories.
 - **Level 2 (child)** — concrete subcategories (e.g. Rent, Groceries). These are what the user picks when creating or editing a transaction.
 - `transaction_items.category_id` always references a Level 2 category. Level 1 must not be used on the client (parents are not shown as selectable options).
@@ -333,13 +305,11 @@ Email confirmation is handled entirely by Supabase. The backend does not expose 
 - Indexes: (transaction_id, category_id), (category_id)
 
 **Shapes:**
-
 - **Manual:** 1 transaction with `total_amount`, 1 transaction_item where `amount` = `total_amount`
 - **AI receipt:** 1 transaction with overall total, N transaction_items across categories
 - **Recurring:** 1 transaction with `total_amount`, 1 transaction_item (`amount` = `total_amount`) for one category; created by the scheduler, always `type = expense`, `created_by = 'recurring'`, `confirmed_at = now()`
 
 **`confirmed_at` — visibility gate:**
-
 - **Manual:** set immediately (`now()`) on create
 - **AI:** `null` on create; set only after the user confirms the scan result
 - **Unconfirmed (`confirmed_at IS NULL`):**
@@ -365,11 +335,11 @@ Plan order is fixed: **Free → Basic → Plus → Premium**. Typical marketing/
 
 **Category visibility** (`PATCH /api/me/category-visibility`, etc.) works on **all** tiers including Free; not repeated in the matrix below.
 
-| Plan    | Price | AI scans | Manual | History   | Categories | Recurring | Analytics                 | CSV | Other                                  |
-| ------- | ----- | -------- | ------ | --------- | ---------- | --------- | ------------------------- | --- | -------------------------------------- |
-| Free    | $0    | 20/mo    | unlim  | 1 month   | basic only | —         | —                         | —   | 1 photo/scan                           |
-| Basic   | $3    | 200/mo   | unlim  | unlimited | custom     | —         | —                         | yes | 1 photo/scan                           |
-| Plus    | $5    | 500/mo   | unlim  | unlimited | custom     | yes       | dashboard                 | yes | Multi-photo scans                      |
+| Plan    | Price | AI scans | Manual | History   | Categories | Recurring | Analytics              | CSV | Other                         |
+| ------- | ----- | -------- | ------ | --------- | ---------- | --------- | ---------------------- | --- | ----------------------------- |
+| Free    | $0    | 20/mo    | unlim  | 1 month   | basic only | —         | —                      | —   | 1 photo/scan                  |
+| Basic   | $3    | 200/mo   | unlim  | unlimited | custom     | —         | —                      | yes | 1 photo/scan                  |
+| Plus    | $5    | 500/mo   | unlim  | unlimited | custom     | yes       | dashboard              | yes | Multi-photo scans             |
 | Premium | $10   | 2000/mo  | unlim  | unlimited | custom     | yes       | advanced (no AI insights) | yes | Multi-photo scans; voice expense entry |
 
 Seeding: `php artisan plans:seed`. Data: `database/data/plans.php`. Uses `updateOrCreate` by `type` — safe to run multiple times.
@@ -379,6 +349,7 @@ Seeding: `php artisan plans:seed`. Data: `database/data/plans.php`. Uses `update
 - `payment_subscription_id` — Stripe Subscription ID
 - `status_id` — FK to statuses
 - `used_checks_count` — incremented after each successful AI scan
+- `scans_reset_at` — next rolling quota reset for free plans (nullable; paid rows set on Stripe checkout/renewal for UI)
 - `current_period_end` — billing cycle end
 - `cancel_at_period_end` — boolean
 - Trial fields: `trial_start`, `trial_end`
@@ -416,7 +387,6 @@ Seeding: `php artisan plans:seed`. Data: `database/data/plans.php`. Uses `update
 - Soft deletes enabled
 
 **Rules:**
-
 - `category_id` must be Level 2 (`categories.category_id IS NOT NULL`).
 - Category must not be disabled for the user in `app_user_category_settings`.
 - When disabled (`is_active = false`), the scheduler skips the rule.
@@ -465,7 +435,7 @@ Endpoints for the category tree and expense aggregates for a range. Only **confi
 }
 ```
 
-- `days` — map _date → { category_id → amount in minor units for that day }_. Every date in the range appears (empty object if no spend). Disabled categories excluded.
+- `days` — map *date → { category_id → amount in minor units for that day }*. Every date in the range appears (empty object if no spend). Disabled categories excluded.
 - `meta.totals_by_category` — per Level‑1 category total for the range; `meta.grand_total` — overall total.
 
 **3. Subcategories under one Level‑1 category**
@@ -489,7 +459,7 @@ Endpoints for the category tree and expense aggregates for a range. Only **confi
 
 **API: recurring rules**
 
-- Endpoints require `supabase.auth` and current `AppUser` context only.
+- Endpoints require `auth.app` and current `AppUser` context only.
 - **Routes:**
   - `GET /api/recurring-expenses` — list rules for the user.
   - `POST /api/recurring-expenses` — create.
@@ -537,14 +507,17 @@ Endpoints for the category tree and expense aggregates for a range. Only **confi
 
 - Artisan `app:run-recurring-expenses` (`RunRecurringExpensesCommand`).
 - Scheduled in `App\Console\Kernel` hourly:
+
   - `$schedule->command('app:run-recurring-expenses')->hourly()->withoutOverlapping()->onOneServer();`
 
 - Candidate rules:
+
   - `is_active = true`
   - `next_run_at <= now() + 14 hours` (pre-filter for UTC+14 edge cases)
   - `deleted_at IS NULL` (SoftDeletes)
 
 - Processing:
+
   - `chunkById(100)`, ordered by `next_run_at`.
   - Per rule:
     - Open DB transaction.
@@ -627,9 +600,9 @@ On the client, map `category_id` → `category_name` (or use `name` as key). Pro
 3. Base64-encode the uploaded file (still in memory)
 4. Upload original to Supabase Storage (private bucket `receipts`, service role key, path: `{userId}/{uuid}.{ext}`)
 5. Fetch all Level 2 categories from DB that are not in the user's `app_user_category_settings` (disabled list); then with('parent').
-6. Build prompt with categories grouped by parent (ScanPromptBuilder), send base64 image to OpenAI GPT-4o-mini (JSON mode)
-7. Validate AI response structure (`is_receipt`, `total_amount`, `date`, `items` must be present)
-8. If `is_receipt = false` → delete image from Storage, return 422
+6. Build prompt with categories grouped by parent (ScanPromptBuilder), send base64 image to OpenAI GPT-4o-mini (**Structured Outputs** via `ScanResponseSchemaBuilder`)
+7. Parse AI response: if `is_receipt = false` → only `{ is_receipt, message }` (no receipt fields); if `is_receipt = true` → full receipt shape enforced by JSON Schema
+8. If `is_receipt = false` → delete image from Storage, return 422 with AI `message`
 9. If AI call fails → keep image in Storage (ops); return 503 **without** `img_path` (no retry endpoint; client uploads again).
 10. If valid → in one DB transaction: create Transaction (`created_by = 'ai'`, `confirmed_at = null`, `type = expense`) + N TransactionItems, then increment `user_subscriptions.used_checks_count` for the active subscription.
 11. Return 201 with unconfirmed transaction (invisible in lists/aggregations until saved via receipt update)
@@ -639,12 +612,23 @@ On the client, map `category_id` → `category_name` (or use `name` as key). Pro
 **Key implementation details:**
 
 - **Category fallback:** if AI returns an invalid `category_id`, the item falls back to `finance_other_misc`. The prompt also instructs AI to use `*_other` subcategories when no specific match fits.
-- **Prompt (ScanPromptBuilder):** categories are passed grouped by parent label. AI must return strict JSON with amounts in smallest currency unit (cents/kopecks).
+- **Prompt (ScanPromptBuilder):** categories are passed grouped by parent label. Accepts receipt-like images (paper receipt, app/email screenshot, invoice, etc.) with line items and a total. Business rules (amounts in minor units, document total as ground truth, item sum check) stay in the prompt; response shape is enforced by OpenAI Structured Outputs (`ScanResponseSchemaBuilder`).
 - **Type is always `expense`** — hardcoded in controller, not requested from AI.
 - **Private bucket** — Supabase Storage bucket `receipts` is private. All access (upload, download, delete) uses the service role key. No public URLs, no RLS policies needed. OpenAI receives image as base64, not URL.
 - **`raw_ai_data`** stores the full OpenAI response JSON for debugging.
 
-**AI response schema (from OpenAI):**
+**AI response schema (OpenAI Structured Outputs — `oneOf`):**
+
+Not a financial document:
+
+```json
+{
+  "is_receipt": false,
+  "message": "This looks like a photo, not a receipt."
+}
+```
+
+Valid receipt:
 
 ```json
 {
@@ -667,6 +651,7 @@ On the client, map `category_id` → `category_name` (or use `name` as key). Pro
 - `app/Http/Controllers/ScanController.php` — scan(), updateReceipt(), image()
 - `app/Services/ScanService.php` — OpenAI API call orchestration
 - `app/Services/Scan/ScanPromptBuilder.php` — prompt construction and category grouping
+- `app/Services/Scan/ScanResponseSchemaBuilder.php` — OpenAI Structured Outputs JSON Schema (`oneOf`: not-receipt vs receipt)
 - `app/Services/SupabaseStorageService.php` — Supabase Storage REST API (upload, delete, signed URLs)
 - `app/Http/Requests/ScanRequest.php` — image validation
 
@@ -687,7 +672,6 @@ On the client, map `category_id` → `category_name` (or use `name` as key). Pro
 **Data:** Table `visibility_questions` — list of visibility questions (visibility_tag, question_key, type, order, translation_key, is_active). Seeded by `php artisan visibility-questions:seed`. Backend provides structure only; frontend handles translation via i18n. Used by `GET /api/funnel/visibility-questions` and `GET /api/visibility-tags`.
 
 **Rules:**
-
 - Categories (and subcategories) whose id is in `app_user_category_settings` for the user are **hidden**: excluded from `GET /api/categories`, from AI scan category list, and from transaction summary aggregation.
 - **Disable by tag** (e.g. front sends `kids` = false): insert into `app_user_category_settings` one row per category that has `visibility_tag = 'kids'` (with `visibility_tag` stored in the row). **Enable by tag:** delete all rows for that user where `visibility_tag = 'kids'`.
 - **GET /api/visibility-tags** returns each tag with `enabled: true` if the user has no rows with that tag in `app_user_category_settings`; otherwise `enabled: false`.
@@ -696,7 +680,12 @@ On the client, map `category_id` → `category_name` (or use `name` as key). Pro
 
 ### 5.7. Scan quota (plan-based limit)
 
-Each plan defines `check_limit` (max AI scans per billing period). The count is stored in `user_subscriptions.used_checks_count` and is incremented after each successful scan (when a transaction is created); it is reset to 0 by the Stripe `invoice.paid` webhook at the start of a new billing cycle.
+Each plan defines `check_limit` (max AI scans per billing period). The count is stored in `user_subscriptions.used_checks_count` and is incremented after each successful scan (when a transaction is created).
+
+**Reset rules:**
+
+- **Free plan:** rolling 30-day reset via `ScanQuotaResetService::ensureReset()` — called lazily before quota checks (`FeatureAccessService`) and in `GET /api/me`. When `scans_reset_at` is in the past, `used_checks_count` is set to 0 and `scans_reset_at` is advanced by 30 days. New free subscriptions get `scans_reset_at = now() + 30 days` from `EnsureDefaultSubscriptionService`.
+- **Paid plans:** reset only on Stripe `invoice.paid` with `billing_reason = subscription_cycle` (and on initial paid subscription creation). `scans_reset_at` is updated alongside the counter for display in `scan_usage`.
 
 **Before calling OpenAI (in `ScanController::scan()`):**
 
@@ -706,13 +695,13 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 
 **GET /api/me response** — flat JSON (no `data` envelope). Explicit API payload only (not raw Eloquent):
 
-- **User fields** (top-level): `id`, `email`, `first_name`, `last_name`, `email_verified_at` (ISO 8601 or `null`). Omits `created_at`, `updated_at`, `supabase_user_id`, `payment_customer_id`.
+- **User fields** (top-level): `id`, `email`, `first_name`, `last_name`, `email_verified_at` (ISO 8601 or `null`), `has_password` (bool — `false` for social-only accounts; lets the client hide "change password"). Omits `created_at`, `updated_at`, `password`, `payment_customer_id`.
 - **`settings`**: `{ currency, language, timezone }` or `null` if not configured. Omits `id`, `app_user_id`.
 - **`subscription`**: Active subscription per `AppUser::activeSubscription()` (status `active`, `trialing`, or `canceled` within period), or `null`. Shape:
   - `id`, `status` (string — same value as `subscription_status`), `used_checks_count`, `current_period_end` (ISO 8601 or `null`)
   - `plan`: `{ type, price, check_limit, label, description }` — omits internal ids and Stripe fields
 - **`subscription_status`**: String — `statuses.name` for the subscription above; `null` if no active row.
-- **`scan_usage`**: `{ scans_remaining, scans_limit, period_end }`. If no subscription: zeros and `period_end: null`. Otherwise: `scans_remaining = max(0, plan.check_limit - used_checks_count)`, `scans_limit = plan.check_limit`, `period_end` = billing period end (ISO 8601).
+- **`scan_usage`**: `{ scans_remaining, scans_limit, period_end, scans_reset_at }`. If no subscription: zeros and `period_end` / `scans_reset_at`: null. Otherwise: `scans_remaining = max(0, plan.check_limit - used_checks_count)`, `scans_limit = plan.check_limit`, `period_end` = billing period end (ISO 8601), `scans_reset_at` = next quota reset (ISO 8601 or `null`).
 
 **PUT /api/me response** — user fields only (same five fields as GET, no settings/subscription/scan_usage).
 
@@ -721,7 +710,6 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 ### 5.8. Stripe Integration (StripeController)
 
 **Checkout** (`POST /api/stripe/checkout`):
-
 - Accepts `{ plan_type: "basic"|"plus"|"premium" }`. Rejects `free`.
 - Gets or creates Stripe Customer (saves `payment_customer_id` on `app_users`).
 - Resolves `price_id` from user's currency (`app_user_settings.currency`, default `usd`) via `config('services.stripe.prices')`, fallback to USD.
@@ -729,12 +717,10 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 - Returns `{ checkout_url }`.
 
 **Customer Portal** (`POST /api/stripe/portal`):
-
 - Requires existing `payment_customer_id`; returns 400 if missing.
 - Creates `Stripe\BillingPortal\Session` and returns `{ portal_url }`.
 
 **Webhook** (`POST /api/stripe/webhook`):
-
 - Outside auth middleware; verified solely by Stripe signature (`STRIPE_WEBHOOK_SECRET`).
 - All handlers are **idempotent** (upsert by `payment_subscription_id` / `payment_invoice_id`).
 - Webhooks are the **single source of truth** for subscription state.
@@ -743,18 +729,16 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
   - `customer.subscription.created` — upserts `user_subscriptions` (plan, status, period end, usage = 0). Cancels local free subscription. With Stripe **flexible billing**, root `current_period_end` may be absent; period is read from `items.data[0].current_period_end` (and API retrieve as fallback).
   - `customer.subscription.updated` — updates status, period end, cancel_at_period_end, plan if price changed.
   - `customer.subscription.deleted` — sets status to `canceled`, creates fallback free subscription via `EnsureDefaultSubscriptionService`.
-  - `invoice.paid` — creates/updates `payments` record. Subscription id is taken from `subscription`, or `parent.subscription_details.subscription`, or line `parent.subscription_item_details.subscription` when the top-level `subscription` field is missing. Recovers subscription from `past_due`/`pending` to `active`. Resets `used_checks_count` only on renewal (`billing_reason = subscription_cycle`).
+  - `invoice.paid` — creates/updates `payments` record. Subscription id is taken from `subscription`, or `parent.subscription_details.subscription`, or line `parent.subscription_item_details.subscription` when the top-level `subscription` field is missing. Recovers subscription from `past_due`/`pending` to `active`. Resets `used_checks_count` and updates `scans_reset_at` only on renewal (`billing_reason = subscription_cycle`).
   - `invoice.payment_failed` — sets subscription status to `past_due`.
 - Missing AppUser for a customer ID is logged and reported via `ErrorNotifier`, webhook returns 200 without throwing.
 
 **Free Plan Auto-Creation** (`EnsureDefaultSubscriptionService`):
-
 - Called in `AuthController::register()` and **after successful** `login()` (when `AppUser` already exists).
-- Ensures every user has an active subscription. If no active subscription exists, creates a local-only free subscription (`payment_subscription_id = null`, `current_period_end = null`, `used_checks_count = 0`).
+- Ensures every user has an active subscription. If no active subscription exists, creates a local-only free subscription (`payment_subscription_id = null`, `current_period_end = null`, `used_checks_count = 0`, `scans_reset_at = now() + 30 days`).
 - Free plan is local-only — no Stripe Product/Price. When paid subscription activates, free is canceled. When paid is deleted, free is re-created with fresh usage.
 
 **Plans** (`GET /api/plans`):
-
 - Returns all plans ordered Free → Basic → Plus → Premium with currency-aware `price_id` from config.
 
 ### 5.9. CSV export of expenses
@@ -768,47 +752,48 @@ Each plan defines `check_limit` (max AI scans per billing period). The count is 
 ### 5.10. Analytics dashboard (Plus and Premium)
 
 - **Route:** `GET /api/analytics/dashboard?month=YYYY-MM`
-- **Access:** `feature.access:analytics_dashboard` via `FeatureAccessService`. **Allowed plans: Plus and Premium** (Basic and Free → **403** with `Analytics dashboard is not available on your plan.`). _Product copy_ in `docs/plans.md` distinguishes «dashboard» (Plus) vs «advanced analytics» (Premium); **the current backend exposes one implementation** for both plan types — same payload and rules.
+- **Access:** `feature.access:analytics_dashboard` via `FeatureAccessService`. **Allowed plans: Plus and Premium** (Basic and Free → **403** with `Analytics dashboard is not available on your plan.`). *Product copy* in `docs/plans.md` distinguishes «dashboard» (Plus) vs «advanced analytics» (Premium); **the current backend exposes one implementation** for both plan types — same payload and rules.
 - **Validation:** `month` required; `date_format:Y-m` (invalid month → **422**).
 - **Data:** Same basis as transaction summaries: confirmed expenses only, not soft-deleted, Level 2 items rolled up to parents; categories in `app_user_category_settings` excluded. Amounts in **minor units** (integers). `currency` from `app_user_settings` (uppercased). `overview.average_per_day` = `total_spent / days_in_month` (integer division).
 - **Response:** Top-level JSON (no `data` wrapper): `month`, `currency`, `period`, `overview`, `categories`, `trends`. Month-over-month comparison uses the **previous calendar month**. Percents in diff metadata rounded to 2 decimals; `difference_percent` may be null when previous total is zero and current is positive.
 
 ## 6. Environment Variables
 
-| Variable                                                | Purpose                                                                                                          |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `DB_CONNECTION`                                         | Set to `pgsql` for PostgreSQL                                                                                    |
-| `DB_URL`                                                | Supabase Postgres connection URI (Dashboard → Database)                                                          |
-| `SUPABASE_URL`                                          | Project URL (Settings → API → Project URL)                                                                       |
-| `SUPABASE_ANON_KEY`                                     | Used by AuthController for register/login/refresh (Supabase anon public key)                                     |
-| `SUPABASE_SERVICE_ROLE`                                 | Middleware + logout: JWT validation (Supabase **service_role** — never expose)                                   |
-| `OPENAI_API_KEY`                                        | OpenAI key for receipt scan                                                                                      |
-| `SUPABASE_STORAGE_BUCKET`                               | Supabase Storage bucket name (default: `receipts`)                                                               |
-| `OPENAI_REQUEST_TIMEOUT`                                | OpenAI request timeout in seconds (default: 60)                                                                  |
-| `STRIPE_SECRET_KEY`                                     | Stripe secret key                                                                                                |
-| `STRIPE_PUBLIC_KEY`                                     | Stripe publishable key (for frontend if needed)                                                                  |
-| `STRIPE_WEBHOOK_SECRET`                                 | Stripe webhook signing secret                                                                                    |
-| `STRIPE_SUCCESS_URL`                                    | Redirect after successful checkout; if unset, defaults to `{APP_URL}/stripe/checkout/success` (public test page) |
-| `STRIPE_CANCEL_URL`                                     | Redirect after canceled checkout; if unset, defaults to `{APP_URL}/stripe/checkout/cancel` (public test page)    |
-| `STRIPE_BASIC_PRICE_EUR` / `STRIPE_BASIC_PRICE_USD`     | Stripe Price IDs for **Basic** (EUR / USD)                                                                       |
-| `STRIPE_PLUS_PRICE_EUR` / `STRIPE_PLUS_PRICE_USD`       | Stripe Price IDs for **Plus** (EUR / USD)                                                                        |
-| `STRIPE_PREMIUM_PRICE_EUR` / `STRIPE_PREMIUM_PRICE_USD` | Stripe Price IDs for **Premium** (EUR / USD)                                                                     |
-| `DISCORD_ERRORS_WEBHOOK_URL`                            | Errors / Stripe issues → `#error-logs` (fallback: `DISCORD_WEBHOOK_URL`)                                         |
-| `DISCORD_REGISTRATIONS_WEBHOOK_URL`                     | Successful sign-ups → `#new-users`                                                                               |
-| `DISCORD_PAYMENTS_WEBHOOK_URL`                          | Paid subscription start / cancel → `#payment-info` (not renewals)                                                |
-| `DISCORD_REGISTRATION_INCLUDE_EMAIL`                    | `true` — include full email in registration ping; otherwise `app_user_id` + domain only                          |
+| Variable                | Purpose                                                                               |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| `DB_CONNECTION`         | Set to `pgsql` for PostgreSQL                                                        |
+| `DB_URL`                | Supabase Postgres connection URI (Dashboard → Database)                               |
+| `SUPABASE_URL`          | Project URL — used for Storage only (Settings → API → Project URL)                    |
+| `SUPABASE_SERVICE_ROLE` | Supabase **Storage** access (service_role — never expose). Not used for auth.         |
+| `JWT_SECRET`            | Secret for signing our access JWT (required). Generate a long random string.          |
+| `JWT_TTL` / `JWT_REFRESH_TTL` | Access / refresh token lifetimes in seconds (defaults 900 / 2592000)            |
+| `GOOGLE_CLIENT_IDS` / `APPLE_CLIENT_IDS` | Comma-separated allowed OAuth client ids (the `aud` of the id_token) for social sign-in |
+| `OPENAI_API_KEY`        | OpenAI key for receipt scan                                                           |
+| `SUPABASE_STORAGE_BUCKET` | Supabase Storage bucket name (default: `receipts`)                                  |
+| `OPENAI_REQUEST_TIMEOUT`| OpenAI request timeout in seconds (default: 60)                                       |
+| `STRIPE_SECRET_KEY`     | Stripe secret key                                                                   |
+| `STRIPE_PUBLIC_KEY`     | Stripe publishable key (for frontend if needed)                                     |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret                                                       |
+| `STRIPE_SUCCESS_URL`    | Redirect after successful checkout; if unset, defaults to `{APP_URL}/stripe/checkout/success` (public test page) |
+| `STRIPE_CANCEL_URL`     | Redirect after canceled checkout; if unset, defaults to `{APP_URL}/stripe/checkout/cancel` (public test page)   |
+| `STRIPE_BASIC_PRICE_EUR` / `STRIPE_BASIC_PRICE_USD` | Stripe Price IDs for **Basic** (EUR / USD)                          |
+| `STRIPE_PLUS_PRICE_EUR` / `STRIPE_PLUS_PRICE_USD`   | Stripe Price IDs for **Plus** (EUR / USD)                           |
+| `STRIPE_PREMIUM_PRICE_EUR` / `STRIPE_PREMIUM_PRICE_USD` | Stripe Price IDs for **Premium** (EUR / USD)                    |
+| `DISCORD_ERRORS_WEBHOOK_URL` | Errors / Stripe issues → `#error-logs` (fallback: `DISCORD_WEBHOOK_URL`)          |
+| `DISCORD_REGISTRATIONS_WEBHOOK_URL` | Successful sign-ups → `#new-users`                                              |
+| `DISCORD_PAYMENTS_WEBHOOK_URL` | Paid subscription start / cancel → `#payment-info` (not renewals)              |
+| `DISCORD_REGISTRATION_INCLUDE_EMAIL` | `true` — include full email in registration ping; otherwise `app_user_id` + domain only |
 
 **Supabase keys:**
 
-- `SUPABASE_ANON_KEY` — proxied signup/token calls to Supabase
-- `SUPABASE_SERVICE_ROLE` — JWT validation + logout (**never ship to clients**)
+- `SUPABASE_SERVICE_ROLE` — Supabase Storage access only (**never ship to clients**). Supabase Auth is no longer used.
 
 ## 7. MVP Scope
 
 Included:
 
-- Auth proxy: register, login, refresh, logout (AuthController)
-- Supabase Auth middleware (mobile users)
+- Local auth: register, login, social (Google/Apple), refresh, logout, change password (AuthController + AppUserController)
+- `auth.app` JWT middleware (mobile users)
 - Laravel Auth (admin users)
 - Manual transaction CRUD
 - AI receipt scanning (single photo → transaction suggestion → `PUT .../update` to save + confirm)
