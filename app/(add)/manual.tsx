@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import { getDefaultExpenseFormValues } from '@/features/transactions/lib/createExpenseSchema';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { useCreateTransaction } from '@/features/transactions/model/useCreateTransaction';
 import { AmountInput } from '@/features/transactions/ui/AmountInput';
 import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';

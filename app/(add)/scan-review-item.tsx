@@ -18,7 +18,7 @@ import {
   type ReceiptItemEditFormData,
 } from '@/features/receipt-scan/model/createReceiptItemEditSchema';
 import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptReviewStore';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
 import { SimplePriceInput } from '@/features/transactions/ui/SimplePriceInput';
 import { BackButton } from '@/shared/ui/BackButton';

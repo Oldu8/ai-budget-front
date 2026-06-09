@@ -13,7 +13,7 @@ import { useCreateRecurringExpenseMutation } from '@/features/recurring-expenses
 import { toCreateRecurringExpensePayload } from '@/features/recurring-expenses/lib/toRecurringExpenseApiPayload';
 import type { RecurringExpenseFormData } from '@/features/recurring-expenses/lib/recurringExpenseSchema';
 import { RecurringExpenseForm } from '@/features/recurring-expenses/ui/RecurringExpenseForm';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { useToast } from '@/shared/ui/Toast';
 

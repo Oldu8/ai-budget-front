@@ -31,11 +31,9 @@ export function buildExpenseTable(
   );
   const totalsByDay = { ...daysObj };
 
-  const parentCategories = categories.filter((c) => c.category_id == null);
-
+  // API root contains only Level-1 parents, so iterate it directly.
   const rows: TableRow[] = [];
-  // TODO: do we cash this ?
-  for (const parent of parentCategories) {
+  for (const parent of categories) {
     const parentData = monthlySummary?.days ?? {};
     const parentAmountsByDay: Record<number, number> = {};
     for (const day of days) {
