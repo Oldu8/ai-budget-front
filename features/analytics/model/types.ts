@@ -60,6 +60,12 @@ export type AnalyticsDashboardResponse = {
     difference_percent: number | null;
     direction: AnalyticsDirection;
     average_per_day: number;
+    average_per_day_diff: {
+      previous_amount: number;
+      difference_amount: number;
+      difference_percent: number | null;
+      direction: AnalyticsDirection;
+    };
     biggest_category: null | {
       id: number;
       slug: string;
