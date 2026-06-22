@@ -1,4 +1,3 @@
-import { getAveragePerDayMonthOverMonth } from '@/features/analytics/lib/averagePerDayMonthOverMonth';
 import {
   formatDiffPercent,
   formatSignedMinorCurrency,
@@ -81,13 +80,10 @@ export function AnalyticsOverviewCards({ data }: AnalyticsOverviewCardsProps) {
 
   const biggest = data.overview.biggest_category;
 
-  const averagePerDayMom = useMemo(
-    () => getAveragePerDayMonthOverMonth(data),
-    [data]
-  );
+  const averagePerDayDiff = data.overview.average_per_day_diff;
   const averagePerDayPercentFormatted = formatDiffPercent(
-    averagePerDayMom.differencePercent,
-    averagePerDayMom.direction,
+    averagePerDayDiff.difference_percent,
+    averagePerDayDiff.direction,
     labels
   );
 
@@ -166,7 +162,7 @@ export function AnalyticsOverviewCards({ data }: AnalyticsOverviewCardsProps) {
             <Text
               style={[
                 styles.comparedPercent,
-                { color: trendDeltaColor(averagePerDayMom.direction) },
+                { color: trendDeltaColor(averagePerDayDiff.direction) },
               ]}
             >
               {averagePerDayPercentFormatted}

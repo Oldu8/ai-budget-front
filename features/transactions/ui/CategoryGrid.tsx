@@ -5,7 +5,10 @@ import { Pressable, View } from 'react-native';
 import type { Category } from '@/entities/category';
 import { Colors } from '@/shared/constants/theme';
 import { getCategoryMaterialIconName } from '@/shared/lib/categoryIcons';
-import { findParentOfSubcategory } from '@/shared/lib/categoryTree';
+import {
+  findParentOfSubcategory,
+  parentCategoriesWithChildren,
+} from '@/shared/lib/categoryTree';
 import { CategoryIcon } from '@/shared/ui/CategoryIcon';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -33,9 +36,7 @@ export function CategoryGrid({
     }
   }, [selectedSubcategoryId, categories, expandedId]);
 
-  const parentCategories = categories.filter(
-    (c) => c.category_id == null && (c.children?.length ?? 0) > 0
-  );
+  const parentCategories = parentCategoriesWithChildren(categories);
 
   const handleParentPress = (cat: Category) => {
     if (disabled) return;

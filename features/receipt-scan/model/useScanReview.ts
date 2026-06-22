@@ -15,7 +15,7 @@ import {
   useReceiptReviewStore,
 } from '@/features/receipt-scan/model/useReceiptReviewStore';
 import { useReceiptScanDraftStore } from '@/features/receipt-scan/model/useReceiptScanDraftStore';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { ApiError } from '@/shared/api/client';
 import {
   formatDateKey,

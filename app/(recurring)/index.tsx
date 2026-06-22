@@ -3,7 +3,7 @@ import React from 'react';
 
 import { useRecurringExpensesQuery } from '@/features/recurring-expenses/model/useRecurringExpensesQuery';
 import { RecurringExpenseList } from '@/features/recurring-expenses/ui/RecurringExpenseList';
-import { useCategoriesQuery } from '@/features/transactions/model/useCategoriesQuery';
+import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 
 export default function RecurringExpensesListScreen() {

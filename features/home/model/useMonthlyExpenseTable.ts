@@ -9,6 +9,7 @@ import { useHomeStore } from '@/features/home/model/homeStore';
 import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
 import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
 import { useMonthlySummaryQuery } from '@/features/home/model/useMonthlySummaryQuery';
+import { parentCategoriesWithChildren } from '@/shared/lib/categoryTree';
 
 export function useMonthlyExpenseTable() {
   const { status } = useAuthContext();
@@ -25,9 +26,9 @@ export function useMonthlyExpenseTable() {
 
   const parentIds = useMemo(
     () =>
-      categoriesQuery.data?.filter(
-        (c) => c.category_id == null && (c.children?.length ?? 0) > 0
-      ).map((c) => c.id) ?? [],
+      categoriesQuery.data
+        ? parentCategoriesWithChildren(categoriesQuery.data).map((c) => c.id)
+        : [],
     [categoriesQuery.data]
   );
 
