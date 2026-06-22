@@ -1,6 +1,6 @@
 export const en = {
   home: {
-    title: "AI Budget",
+    title: "SnapSpend",
     description:
       "This is the home screen. Here you can see your budget and your operations.",
     monthFormat: "MMMM yyyy",

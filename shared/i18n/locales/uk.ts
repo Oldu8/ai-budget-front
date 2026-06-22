@@ -1,7 +1,7 @@
 // Ukrainian translations.
 export const uk = {
   home: {
-    title: "AI Budget",
+    title: "SnapSpend",
     description:
       "Це головний екран. Тут ви можете побачити свій бюджет та свої операції.",
     monthFormat: "MMMM yyyy",

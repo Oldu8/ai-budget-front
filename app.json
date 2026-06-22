@@ -1,19 +1,21 @@
 {
   "expo": {
-    "name": "ai-budget-front",
-    "slug": "ai-budget-front",
+    "name": "SnapSpend",
+    "description": "AI-powered budgeting app for personal finance management.",
+    "slug": "snapspend.com",
+    "owner": "oldu",
     "version": "0.8.10",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "aibudgetfront",
+    "scheme": "snapspend",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "aibudget.oldu"
+      "bundleIdentifier": "snapspend.oldu"
     },
     "android": {
-      "package": "aibudget.oldu",
+      "package": "snapspend.oldu",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -50,7 +52,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow AI Budget to access your microphone for voice expense entry."
+          "microphonePermission": "Allow SnapSpend to access your microphone for voice expense entry."
         }
       ],
       [
