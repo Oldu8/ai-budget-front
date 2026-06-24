@@ -175,6 +175,23 @@ export default function ScanReviewScreen() {
               currency={currency}
             />
 
+            {draft?.rateIsApproximate ? (
+              <View style={styles.approxNote}>
+                <ThemedText style={styles.approxNoteText}>
+                  {draft.originalCurrency
+                    ? t(
+                        'add.receiptScan.review.approxRateHintWithCurrency',
+                        `${draft.originalCurrency} isn't tracked, so today's exchange rate was used — the converted amount is approximate.`,
+                        { currency: draft.originalCurrency }
+                      )
+                    : t(
+                        'add.receiptScan.review.approxRateHint',
+                        "This currency isn't tracked, so today's exchange rate was used — the converted amount is approximate."
+                      )}
+                </ThemedText>
+              </View>
+            ) : null}
+
             <ReceiptReviewLineItemsList
               items={items}
               categories={categories}
@@ -234,5 +251,18 @@ const styles = StyleSheet.create({
     marginLeft: Platform.OS === 'ios' ? 8 : 4,
     paddingRight: 8,
     justifyContent: 'center',
+  },
+  approxNote: {
+    marginTop: 12,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: Colors.greyLow,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.greyHover,
+  },
+  approxNoteText: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: Colors.grey,
   },
 });

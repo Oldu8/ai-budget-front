@@ -203,6 +203,7 @@ export default function ProfileScreen() {
             getDisplayValue={getCurrencyDisplayValue}
             placeholder={t('profile.selectCurrency', 'Select currency')}
             error={currencyError}
+            locked={!!settings?.currency}
           />
           <SettingsPickerRow
             icon="language"

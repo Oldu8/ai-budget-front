@@ -19,6 +19,8 @@ export interface SettingsPickerRowProps {
   getDisplayValue: (value: string | null) => string | undefined;
   placeholder: string;
   error?: string | null;
+  /** When true the value is fixed: the row shows a lock and cannot be opened. */
+  locked?: boolean;
 }
 
 export function SettingsPickerRow({
@@ -31,6 +33,7 @@ export function SettingsPickerRow({
   getDisplayValue,
   placeholder,
   error,
+  locked = false,
 }: SettingsPickerRowProps) {
   const [isSaving, setIsSaving] = useState(false);
 
@@ -58,11 +61,15 @@ export function SettingsPickerRow({
         autoFocusSearch={false}
         renderTrigger={({ onPress }) => (
           <Pressable
-            style={({ pressed }) => [styles.pressable, pressed && styles.rowPressed]}
-            onPress={onPress}
-            disabled={isSaving}
+            style={({ pressed }) => [
+              styles.pressable,
+              pressed && !locked && styles.rowPressed,
+            ]}
+            onPress={locked ? undefined : onPress}
+            disabled={isSaving || locked}
             accessibilityRole="button"
             accessibilityLabel={title}
+            accessibilityState={{ disabled: locked }}
           >
             <View style={styles.row}>
               <View style={styles.iconContainer}>
@@ -89,8 +96,8 @@ export function SettingsPickerRow({
                       </ThemedText>
                     ) : null}
                     <MaterialIcons
-                      name="keyboard-arrow-down"
-                      size={22}
+                      name={locked ? 'lock-outline' : 'keyboard-arrow-down'}
+                      size={locked ? 18 : 22}
                       color={Colors.grey}
                       style={styles.chevron}
                     />

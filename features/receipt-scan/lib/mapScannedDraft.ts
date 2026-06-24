@@ -22,6 +22,8 @@ type RawTransaction = {
   confirmed_at?: unknown;
   img_path?: unknown;
   raw_ai_data?: unknown;
+  original_currency?: unknown;
+  rate_is_approximate?: unknown;
   items?: unknown;
 };
 
@@ -95,6 +97,9 @@ export function mapScannedDraft(payload: unknown): ScannedDraft {
     imgPath:
       t.img_path === null || t.img_path === undefined ? null : str(t.img_path),
     rawAiData: t.raw_ai_data,
+    originalCurrency:
+      typeof t.original_currency === "string" ? t.original_currency : null,
+    rateIsApproximate: t.rate_is_approximate === true,
     items,
   };
 }

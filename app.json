@@ -4,7 +4,7 @@
     "description": "AI-powered budgeting app for personal finance management.",
     "slug": "snapspend.com",
     "owner": "oldu",
-    "version": "0.8.10",
+    "version": "0.8.11",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "snapspend",
