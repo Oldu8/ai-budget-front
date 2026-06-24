@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { EARLIEST_TRANSACTION_DATE } from '@/shared/constants/dates';
 import { Colors } from '@/shared/constants/theme';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
@@ -152,6 +153,7 @@ export function TransactionDateField<T extends FieldValues>({
                 {...(resolvedMaximumDate != null
                   ? { maximumDate: resolvedMaximumDate }
                   : {})}
+                minimumDate={EARLIEST_TRANSACTION_DATE}
                 onChange={onPickerChange}
               />
             ) : null}
@@ -183,6 +185,7 @@ export function TransactionDateField<T extends FieldValues>({
                         {...(resolvedMaximumDate != null
                           ? { maximumDate: resolvedMaximumDate }
                           : {})}
+                        minimumDate={EARLIEST_TRANSACTION_DATE}
                         onChange={onPickerChange}
                         style={styles.iosPicker}
                       />

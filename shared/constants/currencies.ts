@@ -1,8 +1,11 @@
 import type { SelectItem } from '@/shared/ui/SearchableSelect';
 
+// Keep in sync with the backend supported set (config/rates.php → rates.supported).
+// `value`/`badge` is the ISO 4217 code; `leftIcon` is the display symbol.
 export const CURRENCY_ITEMS: SelectItem[] = [
   { label: 'US Dollar', value: 'USD', badge: 'USD', leftIcon: '$', keywords: ['dollar', 'usd'] },
   { label: 'Euro', value: 'EUR', badge: 'EUR', leftIcon: '€', keywords: ['euro', 'eur'] },
+  { label: 'British Pound', value: 'GBP', badge: 'GBP', leftIcon: '£', keywords: ['pound', 'sterling', 'gbp'] },
   {
     label: 'Ukrainian Hryvnia',
     value: 'UAH',
@@ -11,4 +14,58 @@ export const CURRENCY_ITEMS: SelectItem[] = [
     keywords: ['hryvnia', 'uah'],
   },
   { label: 'Polish Złoty', value: 'PLN', badge: 'PLN', leftIcon: 'zł', keywords: ['zloty', 'pln'] },
+  {
+    label: 'Canadian Dollar',
+    value: 'CAD',
+    badge: 'CAD',
+    leftIcon: 'C$',
+    keywords: ['canadian', 'dollar', 'cad'],
+  },
+  { label: 'Swiss Franc', value: 'CHF', badge: 'CHF', leftIcon: 'Fr', keywords: ['swiss', 'franc', 'chf'] },
+  { label: 'Turkish Lira', value: 'TRY', badge: 'TRY', leftIcon: '₺', keywords: ['turkish', 'lira', 'try'] },
+  { label: 'Czech Koruna', value: 'CZK', badge: 'CZK', leftIcon: 'Kč', keywords: ['czech', 'koruna', 'czk'] },
+  {
+    label: 'Hungarian Forint',
+    value: 'HUF',
+    badge: 'HUF',
+    leftIcon: 'Ft',
+    keywords: ['hungarian', 'forint', 'huf'],
+  },
+  { label: 'Romanian Leu', value: 'RON', badge: 'RON', leftIcon: 'lei', keywords: ['romanian', 'leu', 'ron'] },
+  { label: 'Bulgarian Lev', value: 'BGN', badge: 'BGN', leftIcon: 'лв', keywords: ['bulgarian', 'lev', 'bgn'] },
+  { label: 'Swedish Krona', value: 'SEK', badge: 'SEK', leftIcon: 'kr', keywords: ['swedish', 'krona', 'sek'] },
+  {
+    label: 'Norwegian Krone',
+    value: 'NOK',
+    badge: 'NOK',
+    leftIcon: 'kr',
+    keywords: ['norwegian', 'krone', 'nok'],
+  },
+  { label: 'Danish Krone', value: 'DKK', badge: 'DKK', leftIcon: 'kr', keywords: ['danish', 'krone', 'dkk'] },
+  { label: 'Japanese Yen', value: 'JPY', badge: 'JPY', leftIcon: '¥', keywords: ['japanese', 'yen', 'jpy'] },
+  { label: 'Chinese Yuan', value: 'CNY', badge: 'CNY', leftIcon: '¥', keywords: ['chinese', 'yuan', 'renminbi', 'cny'] },
+  {
+    label: 'Australian Dollar',
+    value: 'AUD',
+    badge: 'AUD',
+    leftIcon: 'A$',
+    keywords: ['australian', 'dollar', 'aud'],
+  },
+  { label: 'Brazilian Real', value: 'BRL', badge: 'BRL', leftIcon: 'R$', keywords: ['brazilian', 'real', 'brl'] },
+  {
+    label: 'Israeli Shekel',
+    value: 'ILS',
+    badge: 'ILS',
+    leftIcon: '₪',
+    keywords: ['israeli', 'shekel', 'ils'],
+  },
+  { label: 'Mexican Peso', value: 'MXN', badge: 'MXN', leftIcon: '$', keywords: ['mexican', 'peso', 'mxn'] },
+  {
+    label: 'Indonesian Rupiah',
+    value: 'IDR',
+    badge: 'IDR',
+    leftIcon: 'Rp',
+    keywords: ['indonesian', 'rupiah', 'idr'],
+  },
+  { label: 'Moldovan Leu', value: 'MDL', badge: 'MDL', leftIcon: 'L', keywords: ['moldovan', 'leu', 'mdl'] },
 ];
