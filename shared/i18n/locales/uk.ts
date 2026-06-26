@@ -1,7 +1,7 @@
 // Ukrainian translations.
 export const uk = {
   home: {
-    title: "SnapSpend",
+    title: "Vtrata",
     description:
       "Це головний екран. Тут ви можете побачити свій бюджет та свої операції.",
     monthFormat: "MMMM yyyy",

@@ -1,7 +1,7 @@
 // Spanish translations.
 export const es = {
   home: {
-    title: "SnapSpend",
+    title: "Vtrata",
     description:
       "Esta es la pantalla de inicio. Aquí puedes ver tu presupuesto y tus operaciones.",
     monthFormat: "MMMM yyyy",

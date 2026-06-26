@@ -1,21 +1,21 @@
 {
   "expo": {
-    "name": "SnapSpend",
+    "name": "Vtrata",
     "description": "AI-powered budgeting app for personal finance management.",
-    "slug": "snapspend.com",
+    "slug": "Vtrata.com",
     "owner": "oldu",
     "version": "0.8.11",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "snapspend",
+    "scheme": "vtrata",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "snapspend.oldu"
+      "bundleIdentifier": "vtrata.oldu"
     },
     "android": {
-      "package": "snapspend.oldu",
+      "package": "vtrata.oldu",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -52,7 +52,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow SnapSpend to access your microphone for voice expense entry."
+          "microphonePermission": "Allow Vtrata to access your microphone for voice expense entry."
         }
       ],
       [
