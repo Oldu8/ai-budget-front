@@ -2,8 +2,8 @@
   "expo": {
     "name": "Vtrata",
     "description": "AI-powered budgeting app for personal finance management.",
-    "slug": "Vtrata.com",
-    "owner": "oldu",
+    "slug": "vtrata",
+    "owner": "oldu8",
     "version": "0.8.11",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -12,7 +12,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "vtrata.oldu"
+      "bundleIdentifier": "vtrata.oldu",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "package": "vtrata.oldu",
@@ -23,7 +24,13 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "output": "static",
@@ -60,11 +67,27 @@
         {
           "iosUrlScheme": "com.googleusercontent.apps.359845148933-7kn28qr3aomca22766fe6amalnlcrt2d"
         }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/analytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f7e095a0-1da0-4cc1-ab4f-8cf380c0eb63"
+      }
     }
   }
 }
