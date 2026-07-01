@@ -338,6 +338,22 @@ export const es = {
         title: "Hipoteca",
         description: "Pagos de hipoteca",
       },
+      has_pets: {
+        title: "Mascotas",
+        description: "Comida, veterinario y accesorios",
+      },
+      does_fitness: {
+        title: "Fitness y deporte",
+        description: "Gimnasio, entrenador, deporte y equipo",
+      },
+      smokes: {
+        title: "Tabaco",
+        description: "Cigarrillos, vapeo y afines",
+      },
+      uses_beauty: {
+        title: "Belleza y cuidado",
+        description: "Cosméticos, peluquería y cuidado de la piel",
+      },
     },
   },
   categories: {

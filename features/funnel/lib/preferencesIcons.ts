@@ -10,6 +10,10 @@ export const PREFERENCES_ICONS: Record<string, PreferenceIconName> = {
   insurance: 'shield',
   loan: 'account-balance-wallet',
   mortgage: 'domain',
+  pets: 'pets',
+  fitness: 'fitness-center',
+  smoking: 'smoking-rooms',
+  beauty: 'spa',
 };
 
 export const DEFAULT_ICON: PreferenceIconName = 'category';

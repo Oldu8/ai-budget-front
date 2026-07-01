@@ -493,6 +493,22 @@ export const en = {
         title: "Mortgage",
         description: "Mortgage payments",
       },
+      has_pets: {
+        title: "Pets",
+        description: "Food, vet visits and supplies",
+      },
+      does_fitness: {
+        title: "Fitness & Sports",
+        description: "Gym, trainer, sports and equipment",
+      },
+      smokes: {
+        title: "Smoking",
+        description: "Cigarettes, vape and related",
+      },
+      uses_beauty: {
+        title: "Beauty & Care",
+        description: "Cosmetics, salon and skincare",
+      },
     },
   },
   categories: {

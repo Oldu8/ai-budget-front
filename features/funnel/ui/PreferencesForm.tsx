@@ -92,14 +92,21 @@ export function PreferencesForm({
     setSubmitError(null);
     setIsSubmitting(true);
     try {
-      await Promise.all(
-        questions.map((q) =>
-          protectedPatch('/api/me/category-visibility', {
-            visibility_tag: q.visibility_tag,
-            enabled: mergedAnswers[q.question_key] ?? false,
-          })
-        )
+      // De-duplicate by visibility_tag (last one wins) and send the full
+      // current state in a single request instead of one request per question.
+      const preferences = Array.from(
+        questions
+          .reduce((acc, q) => {
+            acc.set(q.visibility_tag, {
+              visibility_tag: q.visibility_tag,
+              enabled: mergedAnswers[q.question_key] ?? false,
+            });
+            return acc;
+          }, new Map<string, { visibility_tag: string; enabled: boolean }>())
+          .values()
       );
+
+      await protectedPatch('/api/me/category-visibility', { preferences });
       onSuccess?.();
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Something went wrong');
