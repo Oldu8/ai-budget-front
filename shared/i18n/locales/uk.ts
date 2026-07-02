@@ -335,6 +335,22 @@ export const uk = {
         title: "Іпотека",
         description: "Платежі за іпотекою",
       },
+      has_pets: {
+        title: "Домашні улюбленці",
+        description: "Корм, ветеринар та товари для тварин",
+      },
+      does_fitness: {
+        title: "Спорт і фітнес",
+        description: "Зал, тренер, спорт та інвентар",
+      },
+      smokes: {
+        title: "Куріння",
+        description: "Сигарети, вейп та супутнє",
+      },
+      uses_beauty: {
+        title: "Краса та догляд",
+        description: "Косметика, салон та догляд за шкірою",
+      },
     },
   },
   categories: {
