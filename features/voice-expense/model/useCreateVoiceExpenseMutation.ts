@@ -7,6 +7,7 @@ import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptR
 import { createVoiceExpense } from '@/features/voice-expense/api/createVoiceExpense';
 import type { VoiceAudioUploadPart } from '@/features/voice-expense/lib/createAudioFormData';
 import { mapVoiceDraftTransaction } from '@/features/voice-expense/lib/mapVoiceDraftTransaction';
+import { Analytics } from '@/shared/analytics';
 
 export function useCreateVoiceExpenseMutation() {
   const { replace } = useRouter();
@@ -20,12 +21,16 @@ export function useCreateVoiceExpenseMutation() {
       return mapVoiceDraftTransaction(raw);
     },
     onSuccess: (draft) => {
+      Analytics.logVoiceEntry(true);
       setDraft(draft);
       initReview(draft);
       void refetchMe().catch(() => {
         /* keep stale scan_usage rather than blocking */
       });
       replace('/(add)/scan-review' as never);
+    },
+    onError: () => {
+      Analytics.logVoiceEntry(false);
     },
   });
 }

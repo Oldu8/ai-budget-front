@@ -1,5 +1,5 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -16,6 +16,7 @@ import { useBillingActions } from '@/features/billing/model/useBillingActions';
 import { usePaywallStore } from '@/features/billing/model/usePaywallStore';
 import { usePlansQuery } from '@/features/billing/model/usePlansQuery';
 import { PlanCard } from '@/features/billing/ui/PlanCard';
+import { Analytics } from '@/shared/analytics';
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -61,6 +62,13 @@ export function PaywallSheet() {
     () => plans?.filter((p) => p.type !== PlanType.Free) ?? [],
     [plans]
   );
+
+  /** Fire view_paywall once each time the sheet opens; source = what gated it. */
+  useEffect(() => {
+    if (isOpen) {
+      Analytics.logViewPaywall(contextTitle ?? undefined);
+    }
+  }, [isOpen, contextTitle]);
 
   if (!isOpen) return null;
 
