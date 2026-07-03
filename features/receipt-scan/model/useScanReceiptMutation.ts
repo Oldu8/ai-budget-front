@@ -6,6 +6,7 @@ import { mapScannedDraft } from '@/features/receipt-scan/lib/mapScannedDraft';
 import type { NormalizedReceiptImage } from '@/features/receipt-scan/lib/normalizeReceiptAsset';
 import { useReceiptScanDraftStore } from '@/features/receipt-scan/model/useReceiptScanDraftStore';
 import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptReviewStore';
+import { Analytics } from '@/shared/analytics';
 
 export function useScanReceiptMutation() {
   const { replace } = useRouter();
@@ -18,9 +19,13 @@ export function useScanReceiptMutation() {
       return mapScannedDraft(raw);
     },
     onSuccess: (draft) => {
+      Analytics.logReceiptScan(true);
       setDraft(draft);
       initReview(draft);
       replace('/(add)/scan-review' as never);
+    },
+    onError: () => {
+      Analytics.logReceiptScan(false);
     },
   });
 }

@@ -11,6 +11,8 @@ import {
 } from "@/features/auth/lib/socialAuth";
 import { useCallback } from "react";
 
+import { Analytics } from "@/shared/analytics";
+
 /** Translation key for the last auth error (e.g. auth.error.invalidCredentials). */
 const AUTH_ERROR_KEYS = {
   invalidCredentials: "auth.error.invalidCredentials",
@@ -69,7 +71,10 @@ export function useAuth() {
         };
         setTokens(tokens);
         await saveTokens(tokens);
-        setUserData({ user: mapAuthUserToAppUser(data.user) });
+        const appUser = mapAuthUserToAppUser(data.user);
+        setUserData({ user: appUser });
+        Analytics.setUser(String(appUser.id));
+        Analytics.logSignUp("email");
         try {
           const me = await meApi.getMe();
           setUserData({
@@ -104,10 +109,13 @@ export function useAuth() {
         };
         setTokens(tokens);
         await saveTokens(tokens);
+        const appUser = mapAuthUserToAppUser(data.user);
         setUserData({
-          user: mapAuthUserToAppUser(data.user),
+          user: appUser,
           settings: data.settings ?? undefined,
         });
+        Analytics.setUser(String(appUser.id));
+        Analytics.logLogin("email");
         try {
           const me = await meApi.getMe();
           setUserData({
@@ -143,10 +151,15 @@ export function useAuth() {
         };
         setTokens(tokens);
         await saveTokens(tokens);
+        const appUser = mapAuthUserToAppUser(data.user);
         setUserData({
-          user: mapAuthUserToAppUser(data.user),
+          user: appUser,
           settings: data.settings ?? undefined,
         });
+        Analytics.setUser(String(appUser.id));
+        // Social sign-in can be a first-time sign-up or a return login; the
+        // backend does not distinguish them here, so we log it as a login.
+        Analytics.logLogin(provider === "apple" ? "apple" : "google");
         try {
           const me = await meApi.getMe();
           setUserData({
@@ -189,6 +202,7 @@ export function useAuth() {
     }
     await clearTokens();
     resetAuth();
+    Analytics.setUser(null);
   }, [resetAuth]);
 
   /** Change password for a user who already has one. Returns true on success. */

@@ -9,6 +9,7 @@ import { useCheckoutMutation } from '@/features/billing/model/useCheckoutMutatio
 import { usePaywallStore } from '@/features/billing/model/usePaywallStore';
 import { usePortalMutation } from '@/features/billing/model/usePortalMutation';
 import type { BillingPlanType } from '@/features/billing/types';
+import { Analytics } from '@/shared/analytics';
 import { useToast } from '@/shared/ui/Toast/ToastContext';
 
 export function useBillingActions() {
@@ -31,6 +32,7 @@ export function useBillingActions() {
         return;
       }
       setCheckoutLoadingPlanType(planType);
+      Analytics.logBeginCheckout(planType);
       showToast({
         title: t('billing.checkoutOpening', 'Opening checkout…'),
         type: 'loading',

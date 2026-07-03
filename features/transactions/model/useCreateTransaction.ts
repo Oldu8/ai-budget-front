@@ -9,6 +9,7 @@ import {
   getDefaultExpenseFormValues,
   type CreateExpenseFormData,
 } from "@/features/transactions/lib/createExpenseSchema";
+import { Analytics } from "@/shared/analytics";
 
 export function useCreateTransaction() {
   const queryClient = useQueryClient();
@@ -22,6 +23,7 @@ export function useCreateTransaction() {
   const mutation = useMutation({
     mutationFn: createTransaction,
     onSuccess: () => {
+      Analytics.logExpenseAdded("manual");
       queryClient.invalidateQueries({ queryKey: ["home"] });
       queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
