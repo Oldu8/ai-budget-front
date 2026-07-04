@@ -1,5 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  Dimensions,
   FlatList,
   Modal,
   Platform,
@@ -10,6 +11,13 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 import { Colors } from '@/shared/constants/theme';
@@ -17,6 +25,7 @@ import { SearchableSelectItem } from './SearchableSelectItem';
 import type { SearchableSelectProps, SelectItem } from './SearchableSelect.types';
 
 const ITEM_HEIGHT = 56;
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 function matchesSearch(item: SelectItem, query: string): boolean {
   const q = query.trim().toLowerCase();
@@ -36,8 +45,45 @@ export function SearchableSelect({
   renderTrigger,
 }: SearchableSelectProps) {
   const [modalVisible, setModalVisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const insets = useSafeAreaInsets();
+
+  const backdropOpacity = useSharedValue(0);
+  const sheetTranslateY = useSharedValue(SCREEN_HEIGHT);
+
+  const handleFullyClosed = useCallback(() => {
+    setIsMounted(false);
+    setSearchQuery('');
+  }, []);
+
+  useEffect(() => {
+    if (modalVisible) {
+      setIsMounted(true);
+      backdropOpacity.value = withTiming(1, { duration: 220 });
+      sheetTranslateY.value = withTiming(0, {
+        duration: 280,
+        easing: Easing.out(Easing.cubic),
+      });
+    } else if (isMounted) {
+      backdropOpacity.value = withTiming(0, { duration: 200 });
+      sheetTranslateY.value = withTiming(
+        SCREEN_HEIGHT,
+        { duration: 240, easing: Easing.in(Easing.cubic) },
+        (finished) => {
+          if (finished) runOnJS(handleFullyClosed)();
+        }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modalVisible]);
+
+  const backdropAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: sheetTranslateY.value }],
+  }));
 
   const filteredItems = useMemo(
     () => items.filter((item) => matchesSearch(item, searchQuery)),
@@ -48,7 +94,6 @@ export function SearchableSelect({
 
   const closeModal = useCallback(() => {
     setModalVisible(false);
-    setSearchQuery('');
   }, []);
 
   const handleSelect = useCallback(
@@ -132,22 +177,26 @@ export function SearchableSelect({
     <View style={styles.container}>
       {trigger}
 
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={closeModal}
-      >
-        <Pressable style={styles.modalOverlay} onPress={closeModal}>
-          <Pressable
+      {isMounted ? (
+        <Modal
+          visible
+          transparent
+          animationType="none"
+          onRequestClose={closeModal}
+        >
+          <Animated.View style={[styles.modalOverlay, backdropAnimatedStyle]}>
+            <Pressable style={StyleSheet.absoluteFillObject} onPress={closeModal} />
+          </Animated.View>
+
+          <Animated.View
             style={[
               styles.modalContent,
               {
                 paddingTop: insets.top + 16,
                 paddingBottom: insets.bottom + 16,
               },
+              sheetAnimatedStyle,
             ]}
-            onPress={(e) => e.stopPropagation()}
           >
             <TextInput
               style={styles.searchInput}
@@ -181,9 +230,9 @@ export function SearchableSelect({
                 </View>
               }
             />
-          </Pressable>
-        </Pressable>
-      </Modal>
+          </Animated.View>
+        </Modal>
+      ) : null}
     </View>
   );
 }
@@ -247,11 +296,14 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   modalOverlay: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
   },
   modalContent: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: Colors.white,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
