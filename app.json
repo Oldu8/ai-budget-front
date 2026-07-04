@@ -4,7 +4,7 @@
     "description": "AI-powered budgeting app for personal finance management.",
     "slug": "vtrata",
     "owner": "oldu8",
-    "version": "0.8.12",
+    "version": "0.8.13",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "vtrata",
@@ -13,7 +13,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "vtrata.oldu",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "vtrata.oldu",

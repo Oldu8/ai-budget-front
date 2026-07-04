@@ -1,14 +1,22 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Dimensions,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
+import Animated, {
+  Easing,
+  runOnJS,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { PlanType } from '@/entities/user';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
@@ -20,6 +28,8 @@ import { Analytics } from '@/shared/analytics';
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
+const SCREEN_HEIGHT = Dimensions.get('window').height;
+
 export function PaywallSheet() {
   const { t } = useTranslation();
   /** Separate selectors — object selector would return a new ref every time and loop updates. */
@@ -27,6 +37,9 @@ export function PaywallSheet() {
   const contextTitle = usePaywallStore((s) => s.contextTitle);
   const contextMessage = usePaywallStore((s) => s.contextMessage);
   const close = usePaywallStore((s) => s.close);
+  const [isMounted, setIsMounted] = useState(false);
+  const backdropOpacity = useSharedValue(0);
+  const sheetTranslateY = useSharedValue(SCREEN_HEIGHT);
   const { subscription } = useAuthContext();
   const currentPlanType = subscription?.plan?.type ?? PlanType.Free;
 
@@ -70,12 +83,45 @@ export function PaywallSheet() {
     }
   }, [isOpen, contextTitle]);
 
-  if (!isOpen) return null;
+  /** Drive backdrop fade and sheet slide separately — RN's Modal animationType="slide"
+   * transforms the whole native container (backdrop included), which on iOS reads as
+   * the dark overlay rising up from the bottom instead of a clean fade-in. */
+  useEffect(() => {
+    if (isOpen) {
+      setIsMounted(true);
+      backdropOpacity.value = withTiming(1, { duration: 220 });
+      sheetTranslateY.value = withTiming(0, {
+        duration: 280,
+        easing: Easing.out(Easing.cubic),
+      });
+    } else if (isMounted) {
+      backdropOpacity.value = withTiming(0, { duration: 200 });
+      sheetTranslateY.value = withTiming(
+        SCREEN_HEIGHT,
+        { duration: 240, easing: Easing.in(Easing.cubic) },
+        (finished) => {
+          if (finished) runOnJS(setIsMounted)(false);
+        }
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  const backdropAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: backdropOpacity.value,
+  }));
+  const sheetAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: sheetTranslateY.value }],
+  }));
+
+  if (!isMounted) return null;
 
   return (
-    <Modal visible transparent animationType="slide" onRequestClose={close}>
-      <Pressable style={styles.backdrop} onPress={close} />
-      <View style={styles.sheet}>
+    <Modal visible transparent animationType="none" onRequestClose={close}>
+      <Animated.View style={[styles.backdrop, backdropAnimatedStyle]}>
+        <Pressable style={StyleSheet.absoluteFillObject} onPress={close} />
+      </Animated.View>
+      <Animated.View style={[styles.sheet, sheetAnimatedStyle]}>
         <Pressable
           onPress={close}
           hitSlop={12}
@@ -136,7 +182,7 @@ export function PaywallSheet() {
             ))}
           </ScrollView>
         )}
-      </View>
+      </Animated.View>
     </Modal>
   );
 }
