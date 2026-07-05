@@ -408,6 +408,14 @@ export const en = {
     manageBilling: "Manage Billing",
     monthlyScanLimit: "Monthly scan limit",
     renewsOn: "Renews on {{date}}",
+    pastDueTitle: "Payment failed",
+    pastDueBodyToday:
+      "We couldn't charge your payment method. Fix it today to keep your {{planName}} plan.",
+    pastDueBodyOneDay:
+      "We couldn't charge your payment method. Fix it within 1 day to keep your {{planName}} plan.",
+    pastDueBodyDays:
+      "We couldn't charge your payment method. Fix it within {{days}} days to keep your {{planName}} plan.",
+    pastDueCta: "Update payment method",
     status: {
       active: "Active",
       trialing: "Trialing",
