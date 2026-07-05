@@ -23,8 +23,13 @@ export default function PaymentPlanScreen() {
   const { t } = useTranslation();
   const { subscription, subscriptionStatus, scanUsage } = useAuthContext();
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
-  const { startCheckout, openPortal, openPaywall, checkoutLoadingPlanType } =
-    useBillingActions();
+  const {
+    startCheckout,
+    openPortal,
+    openPaywall,
+    checkoutLoadingPlanType,
+    portalLoadingPlanType,
+  } = useBillingActions();
 
   const currentPlan = subscription?.plan?.type ?? PlanType.Free;
   const isPaid =
@@ -99,8 +104,16 @@ export default function PaymentPlanScreen() {
                   key={plan.type}
                   plan={plan}
                   isCurrent={plan.type === currentPlan}
-                  onSelect={(p) => void startCheckout(p.type)}
-                  loading={checkoutLoadingPlanType === plan.type}
+                  onSelect={(p) =>
+                    isPaid ? void openPortal(p.type) : void startCheckout(p.type)
+                  }
+                  loading={
+                    checkoutLoadingPlanType === plan.type ||
+                    portalLoadingPlanType === plan.type
+                  }
+                  selectLabel={
+                    isPaid ? t('billing.changePlan', 'Change plan') : undefined
+                  }
                 />
               ))
             )}

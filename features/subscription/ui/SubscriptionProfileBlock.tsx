@@ -12,6 +12,7 @@ import {
   subscriptionBadgeStyles,
   subscriptionStatusTone,
 } from '../lib/subscriptionStatusBadge';
+import { PastDueBanner } from './PastDueBanner';
 
 export interface SubscriptionProfileBlockProps {
   subscription: UserSubscription | null;
@@ -70,80 +71,92 @@ export function SubscriptionProfileBlock({
     return `${scanUsed.toLocaleString(i18n.language)} / ${scanLimit.toLocaleString(i18n.language)}`;
   }, [scanUsed, scanLimit, i18n.language]);
 
-  return (
-    <View style={styles.card}>
-      <View style={styles.cardHeader}>
-        <View style={styles.cardHeaderText}>
-          <ThemedText type="defaultSemiBold" style={styles.planName}>
-            {planLabel}
-          </ThemedText>
-          {renewalLine ? (
-            <ThemedText style={styles.renewal}>{renewalLine}</ThemedText>
-          ) : null}
-        </View>
-        {badgeLabel && badgeColors ? (
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: badgeColors.backgroundColor },
-            ]}
-          >
-            <ThemedText
-              style={[styles.badgeText, { color: badgeColors.color }]}
-            >
-              {badgeLabel.toUpperCase()}
-            </ThemedText>
-          </View>
-        ) : null}
-      </View>
+  const isPastDue = statusKey === 'past_due';
 
-      {usedDisplay != null && progressPct !== null ? (
-        <View style={styles.usageBlock}>
-          <View style={styles.usageRow}>
-            <ThemedText type="defaultSemiBold" style={styles.usageLabel}>
-              {t('subscription.monthlyScanLimit')}
+  return (
+    <View>
+      {isPastDue ? (
+        <PastDueBanner
+          planLabel={planLabel}
+          periodIso={periodIso}
+          onManageBilling={onManageBilling}
+        />
+      ) : null}
+
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardHeaderText}>
+            <ThemedText type="defaultSemiBold" style={styles.planName}>
+              {planLabel}
             </ThemedText>
-            <ThemedText type="defaultSemiBold" style={styles.usageValues}>
-              {usedDisplay}
-            </ThemedText>
+            {renewalLine ? (
+              <ThemedText style={styles.renewal}>{renewalLine}</ThemedText>
+            ) : null}
           </View>
-          <View style={styles.progressTrack}>
+          {badgeLabel && badgeColors ? (
             <View
               style={[
-                styles.progressFill,
-                { width: `${progressPct}%` as `${number}%` },
+                styles.badge,
+                { backgroundColor: badgeColors.backgroundColor },
               ]}
-            />
-          </View>
-        </View>
-      ) : null}
-
-      {planFeatureLines && planFeatureLines.length > 0 ? (
-        <View style={styles.featuresBlock}>
-          <ThemedText type="defaultSemiBold" style={styles.featuresTitle}>
-            {t('billing.planFeaturesTitle', {
-              planName: planLabel,
-              defaultValue: '{{planName}} includes',
-            })}
-          </ThemedText>
-          {planFeatureLines.map((line, index) => (
-            <View key={`${index}-${line}`} style={styles.featureRow}>
-              <View style={styles.featureDot} />
-              <ThemedText style={styles.featureText}>{line}</ThemedText>
+            >
+              <ThemedText
+                style={[styles.badgeText, { color: badgeColors.color }]}
+              >
+                {badgeLabel.toUpperCase()}
+              </ThemedText>
             </View>
-          ))}
+          ) : null}
         </View>
-      ) : null}
 
-      {showManageBilling && onManageBilling ? (
-        <Button
-          variant="primary"
-          style={styles.cta}
-          onPress={onManageBilling}
-        >
-          {t('subscription.manageBilling')}
-        </Button>
-      ) : null}
+        {usedDisplay != null && progressPct !== null ? (
+          <View style={styles.usageBlock}>
+            <View style={styles.usageRow}>
+              <ThemedText type="defaultSemiBold" style={styles.usageLabel}>
+                {t('subscription.monthlyScanLimit')}
+              </ThemedText>
+              <ThemedText type="defaultSemiBold" style={styles.usageValues}>
+                {usedDisplay}
+              </ThemedText>
+            </View>
+            <View style={styles.progressTrack}>
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${progressPct}%` as `${number}%` },
+                ]}
+              />
+            </View>
+          </View>
+        ) : null}
+
+        {planFeatureLines && planFeatureLines.length > 0 ? (
+          <View style={styles.featuresBlock}>
+            <ThemedText type="defaultSemiBold" style={styles.featuresTitle}>
+              {t('billing.planFeaturesTitle', {
+                planName: planLabel,
+                defaultValue: '{{planName}} includes',
+              })}
+            </ThemedText>
+            {planFeatureLines.map((line, index) => (
+              <View key={`${index}-${line}`} style={styles.featureRow}>
+                <View style={styles.featureDot} />
+                <ThemedText style={styles.featureText}>{line}</ThemedText>
+              </View>
+            ))}
+          </View>
+        ) : null}
+
+        {showManageBilling && onManageBilling && !isPastDue ? (
+          <Button
+            variant="primary"
+            style={styles.cta}
+            onPress={onManageBilling}
+          >
+            {t('subscription.manageBilling')}
+          </Button>
+        ) : null}
+      </View>
     </View>
   );
 }

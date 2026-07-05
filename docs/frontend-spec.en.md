@@ -14,7 +14,7 @@ Personal budget app (iOS, Android, Web): email/password + Google/Apple auth, cha
 | --- | --- | --- |
 | Auth | Login, signup, Google/Apple sign-in, change password, token refresh, protected API client, logout | Wire native Google/Apple SDKs + credentials in `socialAuth.ts` |
 | Onboarding | Funnel: settings → visibility questions → tabs | — |
-| Profile | Header, edit name; currency / language / timezone; subscription block with **`scan_usage`** (`SubscriptionProfileBlock`) | — |
+| Profile | Header, edit name; currency / language / timezone; subscription block with **`scan_usage`** (`SubscriptionProfileBlock`); **past-due banner** (in-card, not a popup) shown when `subscription_status === 'past_due'`, with days-left messaging and a "Update payment method" CTA into the Stripe portal | — |
 | Profile stack | `edit-profile`, `visibility-preferences`, **`payment-plan`** (plans, Checkout, Portal), **`export-data`** (paid gate; copy says export is coming soon), `notifications` | CSV file download/share (`GET /api/transactions/export`), real notification prefs |
 | Home | Month switcher, **Table \| Analytics** toggle (analytics: Plus/Premium, `GET /api/analytics/dashboard`), daily expense grid, expand → subcategories, loading/empty/error | Optional: charts, non-month ranges |
 | History tab | Stack: list → transaction detail; **`GET /api/transactions`**, **`GET /api/transactions/{id}`**, **`DELETE`**; multi-line / AI edits via **`PUT /api/transactions/{id}/update`** | Income on manual create; **`PUT /api/transactions/{id}`** for simple one-line manual edits (backend exists; not wired as a separate client path) |

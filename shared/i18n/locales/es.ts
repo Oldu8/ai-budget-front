@@ -252,6 +252,14 @@ export const es = {
     manageBilling: "Gestionar facturación",
     monthlyScanLimit: "Límite mensual de escaneos",
     renewsOn: "Se renueva el {{date}}",
+    pastDueTitle: "Pago fallido",
+    pastDueBodyToday:
+      "No pudimos cobrar tu método de pago. Corrígelo hoy para conservar tu plan {{planName}}.",
+    pastDueBodyOneDay:
+      "No pudimos cobrar tu método de pago. Tienes 1 día para corregirlo y conservar tu plan {{planName}}.",
+    pastDueBodyDays:
+      "No pudimos cobrar tu método de pago. Tienes {{days}} días para corregirlo y conservar tu plan {{planName}}.",
+    pastDueCta: "Actualizar método de pago",
     status: {
       active: "Activa",
       trialing: "Prueba",
