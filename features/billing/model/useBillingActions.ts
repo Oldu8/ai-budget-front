@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PlanType } from '@/entities/user';
 import { ApiError } from '@/shared/api/client';
+import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { useCheckoutMutation } from '@/features/billing/model/useCheckoutMutation';
 import { usePaywallStore } from '@/features/billing/model/usePaywallStore';
@@ -11,6 +12,14 @@ import { usePortalMutation } from '@/features/billing/model/usePortalMutation';
 import type { BillingPlanType } from '@/features/billing/types';
 import { Analytics } from '@/shared/analytics';
 import { useToast } from '@/shared/ui/Toast/ToastContext';
+
+/** Stripe webhooks land a few seconds after checkout/portal closes — poll /me until the plan flips. */
+const PLAN_POLL_ATTEMPTS = 5;
+const PLAN_POLL_INTERVAL_MS = 2000;
+
+function currentPlanKey(): string {
+  return String(useUserStore.getState().subscription?.plan?.type ?? PlanType.Free);
+}
 
 export function useBillingActions() {
   const { t } = useTranslation();
@@ -26,6 +35,21 @@ export function useBillingActions() {
   const openPaywall = usePaywallStore((s) => s.open);
   const closePaywall = usePaywallStore((s) => s.close);
 
+  /** Resolves true once the subscription plan differs from `prevKey`, false if it never changes. */
+  const waitForPlanChange = useCallback(
+    async (prevKey: string): Promise<boolean> => {
+      for (let attempt = 0; attempt < PLAN_POLL_ATTEMPTS; attempt++) {
+        await refetchMe();
+        if (currentPlanKey() !== prevKey) {
+          return true;
+        }
+        await new Promise((resolve) => setTimeout(resolve, PLAN_POLL_INTERVAL_MS));
+      }
+      return false;
+    },
+    [refetchMe]
+  );
+
   const startCheckout = useCallback(
     async (planType: BillingPlanType) => {
       if (planType === PlanType.Free) {
@@ -38,10 +62,22 @@ export function useBillingActions() {
         type: 'loading',
       });
       try {
+        const prevPlanKey = currentPlanKey();
         const { checkout_url } = await checkoutMutation.mutateAsync(planType);
         hideToast();
         await WebBrowser.openBrowserAsync(checkout_url);
-        await refetchMe();
+        const planChanged = await waitForPlanChange(prevPlanKey);
+        if (planChanged) {
+          closePaywall();
+          showToast({
+            title: t('billing.checkoutSuccessTitle', 'Subscription activated 🎉'),
+            text: t(
+              'billing.checkoutSuccessMessage',
+              'Thanks for your purchase — your new plan is ready.'
+            ),
+            type: 'success',
+          });
+        }
       } catch (err) {
         hideToast();
         showToast({
@@ -57,10 +93,11 @@ export function useBillingActions() {
         setCheckoutLoadingPlanType(null);
       }
     },
-    [checkoutMutation, hideToast, refetchMe, showToast, t]
+    [checkoutMutation, closePaywall, hideToast, showToast, t, waitForPlanChange]
   );
 
-  /** Optional `focusedPlan`: when opening portal from PaywallSheet, scopes loading to one plan row. */
+  /** Optional `focusedPlan`: opens the portal directly on the "confirm plan change" screen
+   * for that plan (and scopes row loading state to it in PaywallSheet). */
   const openPortal = useCallback(async (focusedPlan?: BillingPlanType) => {
     const trackRow = focusedPlan !== undefined;
     if (trackRow) {
@@ -71,10 +108,22 @@ export function useBillingActions() {
       type: 'loading',
     });
     try {
-      const { portal_url } = await portalMutation.mutateAsync();
+      const prevPlanKey = currentPlanKey();
+      const { portal_url } = await portalMutation.mutateAsync(focusedPlan);
       hideToast();
       await WebBrowser.openBrowserAsync(portal_url);
-      await refetchMe();
+      const planChanged = await waitForPlanChange(prevPlanKey);
+      if (planChanged) {
+        closePaywall();
+        showToast({
+          title: t('billing.planUpdatedTitle', 'Plan updated 🎉'),
+          text: t(
+            'billing.planUpdatedMessage',
+            'Your subscription has been changed successfully.'
+          ),
+          type: 'success',
+        });
+      }
     } catch (err) {
       hideToast();
       showToast({
@@ -94,7 +143,7 @@ export function useBillingActions() {
         setPortalLoadingPlanType(null);
       }
     }
-  }, [hideToast, openPaywall, portalMutation, refetchMe, showToast, t]);
+  }, [closePaywall, hideToast, openPaywall, portalMutation, showToast, t, waitForPlanChange]);
 
   return {
     startCheckout,

@@ -36,31 +36,42 @@ export function PlanCard({ plan, isCurrent, onSelect, loading, selectLabel }: Pl
       ]}
     >
       <View style={styles.header}>
-        <ThemedText type="defaultSemiBold" style={styles.title}>
+        <ThemedText
+          type="defaultSemiBold"
+          style={[styles.title, isCurrent && styles.textOnPrimary]}
+        >
           {plan.label}
         </ThemedText>
         <View style={styles.priceRow}>
-          <ThemedText style={styles.price}>{priceLine}</ThemedText>
+          <ThemedText style={[styles.price, isCurrent && styles.textOnPrimary]}>
+            {priceLine}
+          </ThemedText>
           {!isFree ? (
-            <ThemedText style={styles.subline}>
+            <ThemedText style={[styles.subline, isCurrent && styles.mutedOnPrimary]}>
               {t('billing.perMonth', 'per month')}
             </ThemedText>
           ) : null}
         </View>
         {copy ? (
-          <ThemedText style={styles.tagline}>{copy.tagline}</ThemedText>
+          <ThemedText style={[styles.tagline, isCurrent && styles.mutedOnPrimary]}>
+            {copy.tagline}
+          </ThemedText>
         ) : null}
       </View>
 
       {copy ? (
         <View style={styles.features}>
           {copy.includesBridge ? (
-            <ThemedText style={styles.includesBridge}>{copy.includesBridge}</ThemedText>
+            <ThemedText style={[styles.includesBridge, isCurrent && styles.mutedOnPrimary]}>
+              {copy.includesBridge}
+            </ThemedText>
           ) : null}
           {copy.bullets.map((item, index) => (
             <View key={`${plan.type}-${index}`} style={styles.featureRow}>
-              <View style={styles.dot} />
-              <ThemedText style={styles.featureText}>{item}</ThemedText>
+              <View style={[styles.dot, isCurrent && styles.dotOnPrimary]} />
+              <ThemedText style={[styles.featureText, isCurrent && styles.textOnPrimary]}>
+                {item}
+              </ThemedText>
             </View>
           ))}
         </View>
@@ -93,6 +104,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   cardCurrent: {
+    backgroundColor: Colors.primary,
     borderColor: Colors.primary,
   },
   header: {
@@ -143,11 +155,21 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: Colors.primary,
   },
+  dotOnPrimary: {
+    backgroundColor: Colors.white,
+  },
   featureText: {
     fontSize: 13,
     color: Colors.black,
     flex: 1,
     lineHeight: 17,
+  },
+  textOnPrimary: {
+    color: Colors.white,
+  },
+  /** Secondary text on the primary background — white with slight transparency. */
+  mutedOnPrimary: {
+    color: 'rgba(255,255,255,0.75)',
   },
   cta: {
     marginTop: 2,

@@ -9,7 +9,7 @@ import { View } from 'react-native';
 import 'react-native-reanimated';
 
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
-import { PaywallSheet } from '@/features/billing';
+import { BillingReturnListener, PaywallSheet } from '@/features/billing';
 import { ToastOverlay, ToastProvider } from '@/shared/ui/Toast';
 
 export const unstable_settings = {
@@ -36,6 +36,7 @@ export default function RootLayout() {
                 <Stack.Screen name="(recurring)" options={{ headerShown: false }} />
               </Stack>
               <PaywallSheet />
+              <BillingReturnListener />
               <ToastOverlay />
             </View>
             <StatusBar style="dark" />
