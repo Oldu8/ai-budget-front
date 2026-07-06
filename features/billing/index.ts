@@ -9,5 +9,6 @@ export {
 } from '@/features/billing/lib/planEntitlements';
 export type { BillingPlan, BillingPlanType } from '@/features/billing/types';
 export { PaywallSheet } from '@/features/billing/ui/PaywallSheet';
+export { BillingReturnListener } from '@/features/billing/ui/BillingReturnListener';
 export { UpgradePromoCard } from '@/features/billing/ui/UpgradePromoCard';
 export { PlanCard } from '@/features/billing/ui/PlanCard';
