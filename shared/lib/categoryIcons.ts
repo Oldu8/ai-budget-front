@@ -15,141 +15,119 @@ export function normalizeCategorySlug(slug: string): string {
  * Aligns with product icon list (Outlined / 24px optical).
  */
 export const MAIN_CATEGORY_ICONS: Record<string, CategoryMaterialIconName> = {
-  home: "home",
-  kids: "child-care",
+  groceries: "local-grocery-store",
+  housing: "domain",
   transport: "directions-bus",
   car: "directions-car",
-  housing: "domain",
   health: "medical-services",
-  connectivity: "router",
-  subscriptions: "subscriptions",
-  fitness: "fitness-center",
-  smoking: "smoking-rooms",
-  pets: "pets",
-  beauty: "content-cut",
   leisure: "celebration",
   shopping: "shopping-bag",
-  gifts: "redeem",
+  kids: "child-care",
+  pets: "pets",
+  beauty: "content-cut",
+  connectivity: "router",
+  subscriptions: "subscriptions",
   work: "work",
+  gifts: "redeem",
+  smoking: "smoking-rooms",
   finance: "account-balance",
 };
 
 /**
  * Subcategory slugs (Level 2) → Material Icons name.
- * Keys are normalized slugs only (unique per subcategory in the product list).
+ * Keys are the full category `name` values from the API (see database/data/categories.php).
+ * `*_other` subcategories intentionally fall back to `DEFAULT_ICON`.
  */
 export const SUBCATEGORY_ICONS: Record<string, CategoryMaterialIconName> = {
-  // Home
-  groceries: "local-grocery-store",
-  snacks: "cookie",
-  drinks: "local-cafe",
-  household: "cleaning-services",
-  // Kids
-  clothes: "checkroom",
-  toys: "smart-toy",
-  food_formula: "baby-changing-station",
-  food_and_formula: "baby-changing-station",
-  care_hygiene: "soap",
-  care_and_hygiene: "soap",
-  // Transport
-  taxi: "local-taxi",
-  public_transport: "train",
-  flights: "flight",
-  trains: "directions-railway",
-  // Car
-  fuel: "local-gas-station",
-  parking: "local-parking",
-  service: "build",
-  car_wash: "local-car-wash",
+  // Groceries
+  groceries_meat: "kebab-dining",
+  groceries_fish: "set-meal",
+  groceries_vegetables: "eco",
+  groceries_fruits: "emoji-nature",
+  groceries_dairy: "egg",
+  groceries_bakery: "bakery-dining",
+  groceries_pantry: "kitchen",
+  groceries_sweets: "cake",
+  groceries_drinks: "local-drink",
   // Housing
-  rent: "key",
-  utilities: "bolt",
-  furniture: "chair",
-  repairs: "handyman",
+  housing_rent: "key",
+  housing_utilities: "bolt",
+  housing_furniture: "chair",
+  housing_repairs: "handyman",
+  housing_household: "cleaning-services",
+  // Transport
+  transport_taxi: "local-taxi",
+  transport_public: "train",
+  transport_flights: "flight",
+  transport_trains: "directions-railway",
+  // Car
+  car_fuel: "local-gas-station",
+  car_parking: "local-parking",
+  car_service: "build",
+  car_wash: "local-car-wash",
   // Health
-  medicines: "medication",
-  treatment_tests: "biotech",
-  treatment_and_tests: "biotech",
+  health_medicines: "medication",
+  health_treatment_tests: "biotech",
   // dentistry glyph missing in Material Icons set — use healing (medical)
-  dental: "healing",
-  // Connectivity
-  mobile_plan: "smartphone",
-  home_internet: "wifi",
-  top_ups: "currency-exchange",
-  topups: "currency-exchange",
-  // Subscriptions feature
-  streaming: "movie",
-  apps_services: "apps",
-  apps_and_services: "apps",
-  cloud_storage: "cloud",
-  // Fitness — exercise glyph missing — use directions-run
-  gym: "directions-run",
-  trainer: "person",
-  sports: "sports-soccer",
-  equipment: "high-quality",
-  // Smoking
-  cigarettes: "smoke-free",
-  vape: "vape-free",
-  // Pets
-  food: "restaurant",
-  vet: "health-and-safety",
-  supplies: "shopping-bag",
-  // Beauty
-  hygiene: "sanitizer",
-  cosmetics: "brush",
-  salon: "face",
-  skincare: "spa",
+  health_dental: "healing",
   // Leisure
-  cafes_delivery: "delivery-dining",
-  cafes_and_delivery: "delivery-dining",
-  entertainment: "theater-comedy",
-  travel: "travel-explore",
-  hobbies: "palette",
+  leisure_food_delivery: "delivery-dining",
+  leisure_entertainment: "theater-comedy",
+  leisure_travel: "travel-explore",
+  leisure_hobbies: "palette",
+  leisure_fitness: "fitness-center",
   // Shopping
-  shoes: "ice-skating",
-  electronics: "devices",
-  tools: "construction",
-  // Gifts
-  family: "family-restroom",
-  friends: "group",
-  colleagues: "badge",
-  charity: "volunteer-activism",
+  shopping_clothes: "checkroom",
+  shopping_shoes: "ice-skating",
+  shopping_electronics: "devices",
+  shopping_tools: "construction",
+  // Kids
+  kids_clothes: "checkroom",
+  kids_toys: "smart-toy",
+  kids_food: "baby-changing-station",
+  kids_care: "soap",
+  // Pets
+  pets_food: "restaurant",
+  pets_vet: "health-and-safety",
+  pets_supplies: "shopping-bag",
+  // Beauty
+  beauty_cosmetics: "brush",
+  beauty_salon: "face",
+  // Connectivity
+  connectivity_mobile: "smartphone",
+  connectivity_internet: "wifi",
+  // Subscriptions
+  subscriptions_services: "apps",
   // Work
-  courses: "school",
-  expenses: "receipt-long",
-  software: "terminal",
-  // Composite keys when the same sub-label exists under different parents
+  work_education: "school",
   work_equipment: "laptop-mac",
-  fitness_equipment: "high-quality",
+  // Gifts
+  gifts_close: "favorite",
+  gifts_work: "badge",
+  // Smoking
+  smoking_cigarettes: "smoke-free",
+  smoking_vape: "vape-free",
   // Finance
-  taxes: "description",
-  insurance: "assured-workload",
-  loans: "credit-score",
-  mortgage: "home-work",
-  fees: "payments",
-  // Shared
-  other: "more-horiz",
+  finance_taxes: "description",
+  finance_insurance: "assured-workload",
+  finance_loans: "credit-score",
+  finance_mortgage: "home-work",
+  finance_fees: "payments",
+  finance_charity: "volunteer-activism",
 };
 
 const DEFAULT_ICON: CategoryMaterialIconName = "more-horiz";
 
 /**
  * Resolves Material Icons glyph name for a category row.
- * Parent rows use `MAIN_CATEGORY_ICONS`; child rows use `SUBCATEGORY_ICONS` (with optional `parentCategorySlug` for composite keys).
+ * Parent rows use `MAIN_CATEGORY_ICONS`; child rows use `SUBCATEGORY_ICONS`.
  */
 export function getCategoryMaterialIconName(
   categoryName: string,
   level: "parent" | "child",
-  parentCategorySlug?: string,
 ): CategoryMaterialIconName {
   const n = normalizeCategorySlug(categoryName);
   if (level === "child") {
-    if (parentCategorySlug) {
-      const composite = `${normalizeCategorySlug(parentCategorySlug)}_${n}`;
-      return (
-        SUBCATEGORY_ICONS[composite] ?? SUBCATEGORY_ICONS[n] ?? DEFAULT_ICON
-      );
-    }
     return SUBCATEGORY_ICONS[n] ?? DEFAULT_ICON;
   }
   return MAIN_CATEGORY_ICONS[n] ?? DEFAULT_ICON;

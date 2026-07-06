@@ -34,7 +34,7 @@ export const ExpenseTableRowLabel = memo(function ExpenseTableRowLabel({
   const slug = row.categorySlug ?? '';
   const materialIcon =
     row.level === 'child'
-      ? getCategoryMaterialIconName(slug, 'child', row.parentCategorySlug)
+      ? getCategoryMaterialIconName(slug, 'child')
       : getCategoryMaterialIconName(slug, 'parent');
 
   const rawLabel = row.categorySlug

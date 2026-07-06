@@ -62,9 +62,9 @@ This document describes how the **monthly expense table** on the Home tab is int
 ## Category icons
 
 - Icons are **Material Icons** names (Expo `@expo/vector-icons`), normalized from snake_case to kebab-case in `CategoryIcon`.
-- **Parents** resolve via `MAIN_CATEGORY_ICONS`; **subcategories** via `SUBCATEGORY_ICONS`, with **composite keys** when the same sub-label exists under different parents (e.g. `work_equipment` vs `fitness_equipment`).
-- Unknown slugs fall back to **`more_horiz`**.
-- Some glyphs from the product list are **substituted** where the Material set has no match (e.g. dental → `healing`, gym → `directions-run`); see comments in `shared/lib/categoryIcons.ts`.
+- **Parents** resolve via `MAIN_CATEGORY_ICONS`; **subcategories** via `SUBCATEGORY_ICONS`. Both maps are keyed by the full category `name` from the API (e.g. `groceries_meat`), which is unique across parents.
+- Unknown slugs (including all `*_other`) fall back to **`more_horiz`**.
+- Some glyphs from the product list are **substituted** where the Material set has no match (e.g. dental → `healing`); see comments in `shared/lib/categoryIcons.ts`.
 
 ## Related files (reference)
 
