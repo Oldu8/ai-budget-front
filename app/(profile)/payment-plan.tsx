@@ -36,8 +36,9 @@ export default function PaymentPlanScreen() {
     subscription?.plan?.type &&
     subscription.plan.type !== PlanType.Free;
 
+  /** Wrap in a closure — passing openPortal straight to onPress would feed it the press event. */
   const manageHandler = useMemo(
-    () => (isPaid ? openPortal : () => openPaywall()),
+    () => (isPaid ? () => void openPortal() : () => openPaywall()),
     [isPaid, openPaywall, openPortal]
   );
 

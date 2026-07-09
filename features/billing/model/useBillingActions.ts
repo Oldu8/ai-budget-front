@@ -99,9 +99,12 @@ export function useBillingActions() {
   /** Optional `focusedPlan`: opens the portal directly on the "confirm plan change" screen
    * for that plan (and scopes row loading state to it in PaywallSheet). */
   const openPortal = useCallback(async (focusedPlan?: BillingPlanType) => {
-    const trackRow = focusedPlan !== undefined;
-    if (trackRow) {
-      setPortalLoadingPlanType(focusedPlan);
+    // Guard against being wired straight into onPress: a press event object here
+    // would end up as the request body (and JSON.stringify chokes on its cycles).
+    const targetPlan = typeof focusedPlan === 'string' ? focusedPlan : undefined;
+    const trackRow = targetPlan !== undefined;
+    if (targetPlan !== undefined) {
+      setPortalLoadingPlanType(targetPlan);
     }
     showToast({
       title: t('billing.portalOpening', 'Opening billing portal…'),
@@ -109,7 +112,7 @@ export function useBillingActions() {
     });
     try {
       const prevPlanKey = currentPlanKey();
-      const { portal_url } = await portalMutation.mutateAsync(focusedPlan);
+      const { portal_url } = await portalMutation.mutateAsync(targetPlan);
       hideToast();
       await WebBrowser.openBrowserAsync(portal_url);
       const planChanged = await waitForPlanChange(prevPlanKey);
