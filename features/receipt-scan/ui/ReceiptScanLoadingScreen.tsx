@@ -1,3 +1,4 @@
+import { useKeepAwake } from 'expo-keep-awake';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -15,6 +16,8 @@ import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
 export function ReceiptScanLoadingScreen() {
+  // AI scan takes a while — keep the screen on until this screen unmounts.
+  useKeepAwake();
   const { t } = useTranslation();
   const rotation = useSharedValue(0);
 

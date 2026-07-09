@@ -36,7 +36,7 @@ export function ReceiptReviewLineItemsList({
         {t('add.receiptScan.review.itemsHeading')}
       </ThemedText>
 
-      {items.map((item) => {
+      {items.map((item, index) => {
         const parts = getReceiptItemCategoryParts(
           categories,
           item.categoryId,
@@ -57,6 +57,11 @@ export function ReceiptReviewLineItemsList({
               <View style={styles.topRow}>
                 <View style={styles.mainCol}>
                   <View style={styles.titlePriceRow}>
+                    <View style={styles.indexBadge}>
+                      <ThemedText style={styles.indexText}>
+                        {index + 1}
+                      </ThemedText>
+                    </View>
                     <ThemedText
                       style={trimmedLabel ? styles.title : styles.titleMuted}
                       numberOfLines={2}
@@ -153,6 +158,22 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     gap: 10,
+  },
+  indexBadge: {
+    minWidth: 22,
+    height: 22,
+    borderRadius: 11,
+    paddingHorizontal: 4,
+    backgroundColor: Colors.greyLow,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 1,
+  },
+  indexText: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600',
+    color: Colors.grey,
   },
   title: {
     flex: 1,

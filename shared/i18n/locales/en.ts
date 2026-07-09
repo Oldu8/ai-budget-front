@@ -311,6 +311,15 @@ export const en = {
       errors: {
         invalidReceipt: "This photo could not be processed as a receipt.",
         aiFailed: "AI processing failed. Please try again.",
+        aiQuotaExhausted:
+          "The AI service is out of capacity right now. We've been notified — please try again later.",
+        aiRateLimited:
+          "The AI service is overloaded. Please try again in a minute.",
+        aiUnavailable:
+          "The AI service is temporarily unavailable. Please try again later.",
+        incompleteData:
+          "We couldn't read the amounts on this receipt. Please try another photo.",
+        unsupportedCurrency: "This currency is not supported yet.",
         generic: "Something went wrong. Please try again.",
       },
     },

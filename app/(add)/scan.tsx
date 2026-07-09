@@ -1,7 +1,9 @@
 import { router } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
+import { getScanErrorToastText } from '@/features/receipt-scan/lib/getScanErrorToastText';
 import { useReceiptScanPendingImageStore } from '@/features/receipt-scan/model/useReceiptScanPendingImageStore';
 import { useScanReceiptMutation } from '@/features/receipt-scan/model/useScanReceiptMutation';
 import { ReceiptScanErrorScreen } from '@/features/receipt-scan/ui/ReceiptScanErrorScreen';
@@ -9,7 +11,8 @@ import { ReceiptScanLoadingScreen } from '@/features/receipt-scan/ui/ReceiptScan
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 
 export default function ScanScreen() {
-  const { mutate, reset, isError, isSuccess } = useScanReceiptMutation();
+  const { t } = useTranslation();
+  const { mutate, reset, isError, isSuccess, error } = useScanReceiptMutation();
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -40,7 +43,10 @@ export default function ScanScreen() {
     return (
       <View style={styles.screen}>
         <ScreenContainer variant="default" edges={['bottom']}>
-          <ReceiptScanErrorScreen onTryAgain={onTryAgain} />
+          <ReceiptScanErrorScreen
+            onTryAgain={onTryAgain}
+            description={getScanErrorToastText(error, t)}
+          />
         </ScreenContainer>
       </View>
     );

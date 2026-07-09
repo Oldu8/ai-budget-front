@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Dimensions,
   FlatList,
+  Keyboard,
   Modal,
   Platform,
   Pressable,
@@ -126,7 +127,12 @@ export function SearchableSelect({
     []
   );
 
-  const openModal = useCallback(() => setModalVisible(true), []);
+  const openModal = useCallback(() => {
+    // A text input elsewhere on the screen may still hold focus — hide its
+    // keyboard so it doesn't sit over the select sheet.
+    Keyboard.dismiss();
+    setModalVisible(true);
+  }, []);
 
   const trigger = renderTrigger ? (
     renderTrigger({ onPress: openModal })

@@ -150,6 +150,15 @@ export const es = {
       errors: {
         invalidReceipt: "No se pudo procesar esta foto como recibo.",
         aiFailed: "Falló el procesamiento con IA. Inténtalo de nuevo.",
+        aiQuotaExhausted:
+          "El servicio de IA no tiene capacidad ahora mismo. Ya lo sabemos — inténtalo más tarde.",
+        aiRateLimited:
+          "El servicio de IA está sobrecargado. Inténtalo de nuevo en un minuto.",
+        aiUnavailable:
+          "El servicio de IA no está disponible temporalmente. Inténtalo más tarde.",
+        incompleteData:
+          "No pudimos leer los importes de este recibo. Prueba con otra foto.",
+        unsupportedCurrency: "Esta moneda aún no es compatible.",
         generic: "Algo salió mal. Inténtalo de nuevo.",
       },
     },

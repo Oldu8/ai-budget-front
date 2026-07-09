@@ -155,7 +155,7 @@ export default function ScanReviewScreen() {
               Platform.OS === 'ios' ? 'interactive' : 'on-drag'
             }
             contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator
           >
             <ThemedText type="subtitle" className="pt-2 mb-3 text-brand-primary">
               {fromVoiceDraft

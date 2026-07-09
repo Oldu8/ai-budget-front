@@ -1,12 +1,21 @@
 import type { TFunction } from "i18next";
 
 import { ApiError } from "@/shared/api/client";
-// TODO: needs to refactore and improve
 
 const LARAVEL_GENERIC = new Set([
   "The given data was invalid.",
   "The given data was invalid",
 ]);
+
+/** Backend `code` → i18n key (add.receiptScan.errors.*). */
+const ERROR_CODE_TO_KEY: Record<string, string> = {
+  ai_quota_exhausted: "add.receiptScan.errors.aiQuotaExhausted",
+  ai_rate_limited: "add.receiptScan.errors.aiRateLimited",
+  ai_unavailable: "add.receiptScan.errors.aiUnavailable",
+  ai_failed: "add.receiptScan.errors.aiFailed",
+  incomplete_data: "add.receiptScan.errors.incompleteData",
+  unsupported_currency: "add.receiptScan.errors.unsupportedCurrency",
+};
 
 function isMeaningfulBackendMessage(msg: string): boolean {
   const s = msg.trim();
@@ -20,6 +29,11 @@ export function getScanErrorToastText(err: unknown, t: TFunction): string {
   }
 
   const body = err.body as Record<string, unknown> | undefined;
+
+  const code = typeof body?.code === "string" ? body.code : null;
+  if (code && ERROR_CODE_TO_KEY[code]) {
+    return t(ERROR_CODE_TO_KEY[code]);
+  }
 
   if (err.status === 422 && body) {
     const errors = body.errors;

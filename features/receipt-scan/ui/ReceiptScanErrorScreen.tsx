@@ -10,9 +10,11 @@ import { ThemedText } from '@/shared/ui/ThemedText';
 
 type ReceiptScanErrorScreenProps = {
   onTryAgain: () => void;
+  /** Specific error text from the failed request; falls back to the generic copy. */
+  description?: string;
 };
 
-export function ReceiptScanErrorScreen({ onTryAgain }: ReceiptScanErrorScreenProps) {
+export function ReceiptScanErrorScreen({ onTryAgain, description }: ReceiptScanErrorScreenProps) {
   const { t } = useTranslation();
   const circle = receiptScanStateTokens.iconCircleSize;
 
@@ -46,7 +48,7 @@ export function ReceiptScanErrorScreen({ onTryAgain }: ReceiptScanErrorScreenPro
         className="mt-3 text-center text-base text-brand-grey"
         style={styles.description}
       >
-        {t('add.receiptScan.error.description')}
+        {description || t('add.receiptScan.error.description')}
       </ThemedText>
 
       <View style={styles.cta}>
