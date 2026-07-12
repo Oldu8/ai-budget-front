@@ -1,10 +1,8 @@
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
-import type { Locale } from 'date-fns';
 import { format, startOfDay } from 'date-fns';
-import { enUS, es, uk as ukLocale } from 'date-fns/locale';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Controller,
   type Control,
@@ -23,14 +21,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { EARLIEST_TRANSACTION_DATE } from '@/shared/constants/dates';
 import { Colors } from '@/shared/constants/theme';
+import { useDateFnsLocale } from '@/shared/lib/dateFnsLocale';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
-
-const DATE_FNS_LOCALES: Record<string, Locale> = {
-  en: enUS,
-  es,
-  uk: ukLocale,
-};
 
 interface TransactionDateFieldProps<T extends FieldValues> {
   control: Control<T>;
@@ -52,14 +45,10 @@ export function TransactionDateField<T extends FieldValues>({
   maximumDate: maximumDateProp,
   datePrefixI18nKey = 'add.manual.datePrefix',
 }: TransactionDateFieldProps<T>) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [open, setOpen] = useState(false);
-
-  const dateLocale = useMemo(() => {
-    const code = i18n.language.split(/[-_]/)[0] ?? 'en';
-    return DATE_FNS_LOCALES[code] ?? enUS;
-  }, [i18n.language]);
+  const dateLocale = useDateFnsLocale();
 
   const resolvedMaximumDate =
     maximumDateProp === undefined

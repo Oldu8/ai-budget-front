@@ -1,22 +1,15 @@
-import type { Locale } from 'date-fns';
 import { format, parseISO } from 'date-fns';
-import { enUS, es, uk as ukLocale } from 'date-fns/locale';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { receiptScanStateTokens } from '@/features/receipt-scan/lib/receiptScanStateTokens';
 import { Colors } from '@/shared/constants/theme';
+import { useDateFnsLocale } from '@/shared/lib/dateFnsLocale';
 import { formatMinorAsCurrency } from '@/shared/lib/formatMinorAmount';
 import { Button } from '@/shared/ui/Button';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
-
-const DATE_FNS_LOCALES: Record<string, Locale> = {
-  en: enUS,
-  es,
-  uk: ukLocale,
-};
 
 type ReceiptScanSuccessScreenProps = {
   totalMinor: number;
@@ -31,13 +24,9 @@ export function ReceiptScanSuccessScreen({
   currency,
   onBackHome,
 }: ReceiptScanSuccessScreenProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const circle = receiptScanStateTokens.iconCircleSize;
-
-  const dateLocale = useMemo(() => {
-    const code = i18n.language.split(/[-_]/)[0] ?? 'en';
-    return DATE_FNS_LOCALES[code] ?? enUS;
-  }, [i18n.language]);
+  const dateLocale = useDateFnsLocale();
 
   const dateLine = useMemo(() => {
     try {

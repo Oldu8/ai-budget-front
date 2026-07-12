@@ -5,6 +5,11 @@ import { setAuthErrorHandler } from '@/shared/api/protectedClient';
 import { clearTokens } from '@/shared/storage/tokenStorage';
 import { useAuth } from '@/features/auth/model/useAuth';
 import { useUserStore } from '@/features/auth/model/useUserStore';
+import {
+  setLanguage,
+  supportedLanguages,
+  type SupportedLanguage,
+} from '@/shared/i18n';
 import { ThemedView } from '@/shared/ui/ThemedView';
 import { Colors } from '@/shared/constants/theme';
 
@@ -23,6 +28,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     auth.bootstrapAuth();
   }, []);
+
+  // Apply the saved language whenever settings arrive (bootstrap, login, funnel,
+  // profile update) — i18n itself always starts in "en".
+  const savedLanguage = settings?.language;
+  useEffect(() => {
+    if (
+      savedLanguage &&
+      (supportedLanguages as readonly string[]).includes(savedLanguage)
+    ) {
+      setLanguage(savedLanguage as SupportedLanguage);
+    }
+  }, [savedLanguage]);
 
   useEffect(() => {
     setAuthErrorHandler(async () => {

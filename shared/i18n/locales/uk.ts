@@ -294,6 +294,7 @@ export const uk = {
     saveChanges: "Зберегти зміни",
     cancelEdit: "Скасувати",
     noLabel: "Без опису",
+    expenseFallback: "Витрата",
     deleteExpenseSuccess: "Витрату видалено.",
     deleteLastLineTitle: "Видалити цю витрату?",
     deleteLastLineMessage:

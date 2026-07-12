@@ -14,6 +14,7 @@ import { groupTransactionsByDate } from '@/features/transactions/lib/groupTransa
 import { useTransactionsListQuery } from '@/features/transactions/model/useTransactionsListQuery';
 import { HistoryTransactionRow } from '@/features/transactions/ui/HistoryTransactionRow';
 import { Colors } from '@/shared/constants/theme';
+import { useDateFnsLocale } from '@/shared/lib/dateFnsLocale';
 import { Button } from '@/shared/ui/Button';
 import { PaginationBar } from '@/shared/ui/PaginationBar';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
@@ -22,6 +23,7 @@ import { format, parseISO } from 'date-fns';
 
 export default function HistoryScreen() {
   const { t } = useTranslation();
+  const dateLocale = useDateFnsLocale();
   const { year, month } = useSelectedMonth();
   const currency = useUserStore((s) => s.settings?.currency ?? 'USD');
   const [page, setPage] = useState(1);
@@ -37,12 +39,14 @@ export default function HistoryScreen() {
     const rows = data?.data ?? [];
     return groupTransactionsByDate(rows, (dateKey) => {
       try {
-        return format(parseISO(`${dateKey}T12:00:00`), 'EEEE, MMM d, yyyy');
+        return format(parseISO(`${dateKey}T12:00:00`), 'EEEE, MMM d, yyyy', {
+          locale: dateLocale,
+        });
       } catch {
         return dateKey;
       }
     });
-  }, [data?.data]);
+  }, [data?.data, dateLocale]);
 
   const meta = data?.meta;
   const lastPage = meta?.last_page ?? 1;

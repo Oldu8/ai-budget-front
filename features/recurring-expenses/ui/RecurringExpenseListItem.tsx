@@ -1,3 +1,4 @@
+import type { Locale } from 'date-fns';
 import { format, parseISO } from 'date-fns';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +7,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import type { RecurringExpense } from '@/features/recurring-expenses/types';
 import { Colors } from '@/shared/constants/theme';
+import { useDateFnsLocale } from '@/shared/lib/dateFnsLocale';
 import { formatMinorAsCurrency } from '@/shared/lib/formatMinorAmount';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
@@ -15,12 +17,12 @@ interface RecurringExpenseListItemProps {
   onPress: () => void;
 }
 
-function formatNextRun(raw: string | null): string {
+function formatNextRun(raw: string | null, locale: Locale): string {
   if (!raw) return '—';
   try {
     const d = parseISO(raw);
     if (Number.isNaN(d.getTime())) return '—';
-    return format(d, 'MMM d, yyyy');
+    return format(d, 'MMM d, yyyy', { locale });
   } catch {
     return '—';
   }
@@ -32,6 +34,7 @@ export function RecurringExpenseListItem({
   onPress,
 }: RecurringExpenseListItemProps) {
   const { t } = useTranslation();
+  const dateLocale = useDateFnsLocale();
   const currency = useUserStore((s) => s.settings?.currency ?? 'USD');
 
   const scheduleLine = t(`recurring.frequency.${expense.frequency}`);
@@ -53,7 +56,7 @@ export function RecurringExpenseListItem({
             {scheduleLine}
           </ThemedText>
           <ThemedText style={styles.meta}>
-            {t('recurring.listNext')} {formatNextRun(expense.next_run_at)}
+            {t('recurring.listNext')} {formatNextRun(expense.next_run_at, dateLocale)}
           </ThemedText>
         </View>
       </Pressable>
