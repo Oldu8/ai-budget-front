@@ -1,6 +1,8 @@
 import { format, isMatch, isValid, parseISO } from 'date-fns';
 import { router } from 'expo-router';
+import type { TFunction } from 'i18next';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { TransactionListItem } from '@/features/transactions/types';
@@ -13,19 +15,21 @@ type HistoryTransactionRowProps = {
   currency: string;
 };
 
-/** Unique category names from all line items, in first-seen order. */
-function primaryLabel(tx: TransactionListItem): string {
+/** Unique category names from all line items, in first-seen order (i18n `categories.{slug}` keys). */
+function primaryLabel(tx: TransactionListItem, t: TFunction): string {
   const items = tx.items;
-  if (!items?.length) return 'Expense';
+  if (!items?.length) return t('history.expenseFallback');
 
   const seen = new Set<string>();
   const labels: string[] = [];
   for (const item of items) {
-    const cat =
-      item.category?.label;
-    if (cat && !seen.has(cat)) {
-      seen.add(cat);
-      labels.push(cat);
+    const cat = item.category;
+    const label = cat?.name
+      ? t(`categories.${cat.name}`, { defaultValue: cat.label ?? '' })
+      : cat?.label;
+    if (label && !seen.has(label)) {
+      seen.add(label);
+      labels.push(label);
     }
   }
   return labels.join(', ');
@@ -58,12 +62,13 @@ export function HistoryTransactionRow({
   transaction,
   currency,
 }: HistoryTransactionRowProps) {
+  const { t } = useTranslation();
   const timeLine = useMemo(
     () => timeLineFromDateString(transaction.date),
     [transaction.date],
   );
 
-  const category = primaryLabel(transaction);
+  const category = primaryLabel(transaction, t);
   return (
     <Pressable
       onPress={() =>

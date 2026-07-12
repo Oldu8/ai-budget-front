@@ -1,6 +1,7 @@
 import { usePaidFeatureGate } from '@/features/billing';
 import { useSelectedMonth } from '@/features/home/model/useSelectedMonth';
 import { Colors } from '@/shared/constants/theme';
+import { useDateFnsLocale } from '@/shared/lib/dateFnsLocale';
 import { IconSymbol } from '@/shared/ui/IconSymbol';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { format, isBefore, startOfMonth, subMonths } from 'date-fns';
@@ -10,9 +11,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 export function MonthSwitcher() {
   const { t } = useTranslation();
+  const dateLocale = useDateFnsLocale();
   const { requestAccess } = usePaidFeatureGate();
   const { selectedDate, setPrevMonth, setNextMonth } = useSelectedMonth();
-  const monthYearLabel = format(selectedDate, 'MMMM yyyy');
+  // uk/es month names come lowercase from date-fns; capitalize for the heading.
+  const rawMonthYear = format(selectedDate, 'LLLL yyyy', { locale: dateLocale });
+  const monthYearLabel =
+    rawMonthYear.charAt(0).toUpperCase() + rawMonthYear.slice(1);
 
   const onPrevMonth = useCallback(() => {
     const targetDate = subMonths(selectedDate, 1);

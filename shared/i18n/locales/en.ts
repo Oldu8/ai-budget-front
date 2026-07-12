@@ -458,6 +458,7 @@ export const en = {
     saveChanges: "Save changes",
     cancelEdit: "Cancel",
     noLabel: "No label",
+    expenseFallback: "Expense",
     deleteExpenseSuccess: "Expense deleted.",
     deleteLastLineTitle: "Delete this expense?",
     deleteLastLineMessage: "Removing the last line deletes the whole expense.",

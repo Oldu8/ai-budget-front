@@ -298,6 +298,7 @@ export const es = {
     saveChanges: "Guardar cambios",
     cancelEdit: "Cancelar",
     noLabel: "Sin descripción",
+    expenseFallback: "Gasto",
     deleteExpenseSuccess: "Gasto eliminado.",
     deleteLastLineTitle: "¿Eliminar este gasto?",
     deleteLastLineMessage:
