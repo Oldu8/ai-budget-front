@@ -271,6 +271,8 @@ export const en = {
       review: {
         summaryHeading: "Summary",
         totalLabel: "Total",
+        receiptTotalLabel: "On receipt",
+        rateLabel: "Exchange rate",
         itemsCount: "Items",
         itemsHeading: "Items",
         edit: "Edit",

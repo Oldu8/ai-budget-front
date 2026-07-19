@@ -108,6 +108,8 @@ export const uk = {
       review: {
         summaryHeading: "Підсумок",
         totalLabel: "Всього",
+        receiptTotalLabel: "У чеку",
+        rateLabel: "Курс",
         itemsCount: "Позиції",
         itemsHeading: "Позиції",
         edit: "Змінити",

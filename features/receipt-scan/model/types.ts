@@ -16,6 +16,10 @@ export type ScannedDraft = {
   rawAiData: unknown;
   /** Original (pre-conversion) currency the receipt was denominated in. */
   originalCurrency: string | null;
+  /** Receipt total in originalCurrency minor units, frozen at scan time. */
+  originalTotalAmount: number | null;
+  /** Frozen conversion rate: stored amount = original amount × rate. */
+  exchangeRate: number | null;
   /** True when an approximate (current, not historical) rate was used. */
   rateIsApproximate: boolean;
   items: ScannedDraftItem[];

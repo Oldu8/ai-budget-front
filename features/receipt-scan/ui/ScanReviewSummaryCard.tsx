@@ -10,14 +10,30 @@ type ScanReviewSummaryCardProps = {
   totalMinor: number;
   itemCount: number;
   currency: string;
+  /** Receipt currency when it differs from the account currency — enables the original-total and rate rows. */
+  originalCurrency?: string | null;
+  /** Receipt total in originalCurrency minor units, frozen at scan time. */
+  originalTotalMinor?: number | null;
+  /** Conversion rate: account amount = receipt amount × rate. */
+  exchangeRate?: number | null;
 };
+
+/** Rates vary in magnitude (0.02 … 45.6), so keep up to 4 decimals but drop trailing zeros. */
+function formatRate(rate: number): string {
+  return String(Number(rate.toFixed(4)));
+}
 
 export function ScanReviewSummaryCard({
   totalMinor,
   itemCount,
   currency,
+  originalCurrency,
+  originalTotalMinor,
+  exchangeRate,
 }: ScanReviewSummaryCardProps) {
   const { t } = useTranslation();
+
+  const showOriginal = originalCurrency != null && originalTotalMinor != null;
 
   return (
     <View
@@ -47,6 +63,24 @@ export function ScanReviewSummaryCard({
           {formatMinorAsCurrency(totalMinor, currency)}
         </ThemedText>
       </View>
+      {showOriginal ? (
+        <View className="mt-1 flex-row justify-between">
+          <ThemedText
+            lightColor={Colors.white}
+            style={styles.secondary}
+            className="text-sm"
+          >
+            {t('add.receiptScan.review.receiptTotalLabel')}
+          </ThemedText>
+          <ThemedText
+            lightColor={Colors.white}
+            style={styles.secondary}
+            className="text-sm"
+          >
+            {formatMinorAsCurrency(originalTotalMinor, originalCurrency)}
+          </ThemedText>
+        </View>
+      ) : null}
       <View className="mt-2 flex-row justify-between">
         <ThemedText
           lightColor={Colors.white}
@@ -63,6 +97,24 @@ export function ScanReviewSummaryCard({
           {itemCount}
         </ThemedText>
       </View>
+      {showOriginal && exchangeRate != null ? (
+        <View className="mt-2 flex-row justify-between">
+          <ThemedText
+            lightColor={Colors.white}
+            style={styles.secondary}
+            className="text-sm"
+          >
+            {t('add.receiptScan.review.rateLabel')}
+          </ThemedText>
+          <ThemedText
+            lightColor={Colors.white}
+            style={styles.secondary}
+            className="text-sm"
+          >
+            {`1 ${originalCurrency.toUpperCase()} ≈ ${formatRate(exchangeRate)} ${currency.toUpperCase()}`}
+          </ThemedText>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -81,5 +133,9 @@ const styles = StyleSheet.create({
   },
   label: {
     opacity: 0.85,
+  },
+  /** Receipt-currency total and rate: quieter than the converted total. */
+  secondary: {
+    opacity: 0.7,
   },
 });
