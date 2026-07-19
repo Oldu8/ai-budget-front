@@ -65,6 +65,10 @@ export default function ScanReviewScreen() {
     [draft]
   );
 
+  const foreignReceipt =
+    draft?.originalCurrency != null &&
+    draft.originalCurrency.toUpperCase() !== currency.toUpperCase();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: fromVoiceDraft
@@ -173,6 +177,11 @@ export default function ScanReviewScreen() {
               totalMinor={totalMinor}
               itemCount={items.length}
               currency={currency}
+              originalCurrency={foreignReceipt ? draft?.originalCurrency : null}
+              originalTotalMinor={
+                foreignReceipt ? draft?.originalTotalAmount : null
+              }
+              exchangeRate={foreignReceipt ? draft?.exchangeRate : null}
             />
 
             {draft?.rateIsApproximate ? (

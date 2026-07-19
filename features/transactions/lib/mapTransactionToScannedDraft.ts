@@ -16,6 +16,8 @@ export function mapTransactionDetailToScannedDraft(
       img_path: detail.img_path,
       raw_ai_data: undefined,
       original_currency: detail.original_currency,
+      original_total_amount: detail.original_total_amount,
+      exchange_rate: detail.exchange_rate,
       rate_is_approximate: detail.rate_is_approximate,
       items: detail.items.map((i) => ({
         id: i.id,

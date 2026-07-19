@@ -19,6 +19,7 @@ export type TransactionDetail = {
   currency?: string | null;
   original_currency?: string | null;
   original_total_amount?: number | null;
+  exchange_rate?: number | string | null;
   rate_is_approximate?: boolean;
   type: "expense" | "income" | string;
   created_by: string;

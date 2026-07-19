@@ -110,6 +110,8 @@ export const es = {
       review: {
         summaryHeading: "Resumen",
         totalLabel: "Total",
+        receiptTotalLabel: "En el recibo",
+        rateLabel: "Tipo de cambio",
         itemsCount: "Artículos",
         itemsHeading: "Líneas",
         edit: "Editar",
