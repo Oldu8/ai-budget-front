@@ -1,7 +1,7 @@
 {
   "name": "ai-budget-front",
   "main": "expo-router/entry",
-  "version": "0.8.18",
+  "version": "0.8.19",
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",
@@ -27,6 +27,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "expo": "~54.0.33",
+    "expo-apple-authentication": "~8.0.8",
     "expo-audio": "^55.0.14",
     "expo-build-properties": "~1.0.10",
     "expo-constants": "~18.0.13",

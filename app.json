@@ -4,7 +4,7 @@
     "description": "AI-powered budgeting app for personal finance management.",
     "slug": "vtrata",
     "owner": "oldu8",
-    "version": "0.8.18",
+    "version": "0.8.19",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "vtrata",
@@ -12,6 +12,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "bundleIdentifier": "vtrata.oldu",
       "googleServicesFile": "./GoogleService-Info.plist",
       "infoPlist": {
@@ -73,6 +74,7 @@
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/analytics",
+      "expo-apple-authentication",
       [
         "expo-build-properties",
         {
