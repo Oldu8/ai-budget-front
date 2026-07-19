@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
-import { isProviderAvailable } from '@/features/auth/lib/socialAuth';
+import { isProviderAvailable, loadAppleModule } from '@/features/auth/lib/socialAuth';
 import type { SocialProvider } from '@/features/auth/types';
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
@@ -15,6 +15,10 @@ const GOOGLE_LOGO = require('../../../assets/images/social/google-auth.png');
 const GOOGLE_LOGO_ASPECT = 525 / 120;
 const BUTTON_HEIGHT = 52;
 const BUTTON_RADIUS = 12;
+
+// Apple's own branded native button (required look per HIG). Null in Expo Go /
+// Android, where the Apple button isn't shown anyway.
+const AppleAuth = loadAppleModule();
 
 export function SocialAuthButtons({ disabled }: { disabled?: boolean }) {
   const { t } = useTranslation();
@@ -64,21 +68,31 @@ export function SocialAuthButtons({ disabled }: { disabled?: boolean }) {
               <Image source={GOOGLE_LOGO} style={styles.googleLogo} contentFit="contain" />
             )}
           </Pressable>
+        ) : pending === 'apple' ? (
+          <View key="apple" style={[styles.button, styles.appleButton]}>
+            <ActivityIndicator color={Colors.white} size="small" />
+          </View>
+        ) : AppleAuth ? (
+          <View key="apple" pointerEvents={blocked ? 'none' : 'auto'}>
+            <AppleAuth.AppleAuthenticationButton
+              buttonType={AppleAuth.AppleAuthenticationButtonType.CONTINUE}
+              buttonStyle={AppleAuth.AppleAuthenticationButtonStyle.BLACK}
+              cornerRadius={BUTTON_RADIUS}
+              style={[styles.button, blocked && styles.buttonDisabled]}
+              onPress={() => onPress('apple')}
+            />
+          </View>
         ) : (
           <Pressable
             key="apple"
             style={[styles.button, styles.appleButton, blocked && styles.buttonDisabled]}
             onPress={() => onPress('apple')}
             disabled={blocked}
+            accessibilityRole="button"
+            accessibilityLabel={t('auth.continueWithApple')}
           >
-            {pending === 'apple' ? (
-              <ActivityIndicator color={Colors.white} size="small" />
-            ) : (
-              <>
-                <Ionicons name="logo-apple" size={20} color={Colors.white} style={styles.appleIcon} />
-                <ThemedText style={styles.appleText}>{t('auth.continueWithApple')}</ThemedText>
-              </>
-            )}
+            <Ionicons name="logo-apple" size={20} color={Colors.white} style={styles.appleIcon} />
+            <ThemedText style={styles.appleText}>{t('auth.continueWithApple')}</ThemedText>
           </Pressable>
         ),
       )}

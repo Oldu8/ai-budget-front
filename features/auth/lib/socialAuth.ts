@@ -29,11 +29,11 @@ export class SocialAuthCancelledError extends Error {
 }
 
 /**
- * Master switch for social sign-in UI. Disabled until after the first release
- * (needs a paid Apple Developer account + dev/release builds to test Google & Apple).
- * Flip to `true` to re-enable both buttons; backend + native wiring are already in place.
+ * Master switch for social sign-in UI. Requires a dev/release build (not Expo Go)
+ * and provider credentials: Google web/iOS client ids + Apple Developer account
+ * with the Sign In with Apple capability on the App ID.
  */
-const SOCIAL_AUTH_ENABLED = false;
+const SOCIAL_AUTH_ENABLED = true;
 
 /** Expo Go ("storeClient") has no custom native modules — Google Sign-In needs a dev build. */
 const isExpoGo = Constants.executionEnvironment === 'storeClient';
@@ -53,12 +53,55 @@ function loadGoogleModule(): typeof import('@react-native-google-signin/google-s
 }
 
 /**
- * Obtain a verified id_token from the given provider's native SDK.
- * Apple is not wired yet (see SocialAuthNotConfiguredError).
+ * Lazy-load expo-apple-authentication so importing this file never crashes
+ * Expo Go or Android builds where the module isn't linked.
  */
+export function loadAppleModule(): typeof import('expo-apple-authentication') | null {
+  try {
+    return require('expo-apple-authentication');
+  } catch {
+    return null;
+  }
+}
+
+async function getAppleIdToken(): Promise<SocialSignInResult> {
+  const apple = loadAppleModule();
+  if (!apple) {
+    throw new SocialAuthNotConfiguredError('apple');
+  }
+
+  try {
+    const credential = await apple.signInAsync({
+      requestedScopes: [
+        apple.AppleAuthenticationScope.FULL_NAME,
+        apple.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+
+    if (!credential.identityToken) {
+      throw new Error('Apple sign-in returned no identity token');
+    }
+
+    // Apple only provides the name on the very first sign-in; the backend
+    // merges it into the account then.
+    const name =
+      [credential.fullName?.givenName, credential.fullName?.familyName]
+        .filter(Boolean)
+        .join(' ') || undefined;
+
+    return { idToken: credential.identityToken, name };
+  } catch (err) {
+    if ((err as { code?: string } | null)?.code === 'ERR_REQUEST_CANCELED') {
+      throw new SocialAuthCancelledError();
+    }
+    throw err;
+  }
+}
+
+/** Obtain a verified id_token from the given provider's native SDK. */
 export async function getProviderIdToken(provider: SocialProvider): Promise<SocialSignInResult> {
-  if (provider !== 'google') {
-    throw new SocialAuthNotConfiguredError(provider);
+  if (provider === 'apple') {
+    return getAppleIdToken();
   }
 
   const mod = loadGoogleModule();
