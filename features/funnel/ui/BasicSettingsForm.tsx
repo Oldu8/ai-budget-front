@@ -6,11 +6,9 @@ import {
   ActivityIndicator,
   Pressable,
   StyleSheet,
-  TextInput,
   View,
 } from 'react-native';
 
-import { meUpdateApi } from '@/features/auth/api/updateMe';
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { settingsApi } from '@/features/funnel/api/createSettings';
@@ -55,8 +53,6 @@ export function BasicSettingsForm() {
     resolver: zodResolver(settingsSchema),
     mode: 'onSubmit',
     defaultValues: {
-      first_name: user?.first_name ?? '',
-      last_name: user?.last_name ?? '',
       currency: '',
       language: '',
       timezone: '',
@@ -69,19 +65,13 @@ export function BasicSettingsForm() {
     setSubmitError(null);
     setIsSubmitting(true);
     try {
-      await meUpdateApi.updateMe({
-        first_name: data.first_name,
-        last_name: data.last_name,
-      });
       const settings = await settingsApi.create({
         currency: data.currency,
         language: data.language,
         timezone: data.timezone,
       });
       useUserStore.getState().setUserData({
-        user: user
-          ? { ...user, first_name: data.first_name, last_name: data.last_name }
-          : null,
+        user: user ?? null,
         settings,
       });
       setLanguage(data.language as 'en' | 'uk' | 'es');
@@ -97,64 +87,6 @@ export function BasicSettingsForm() {
 
   return (
     <ThemedView style={styles.form}>
-      <Controller
-        control={control}
-        name="first_name"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <ThemedView style={styles.field}>
-            <ThemedText style={styles.label}>First name</ThemedText>
-            <TextInput
-              style={[styles.input, showError('first_name') && styles.inputError]}
-              placeholder="Enter first name"
-              placeholderTextColor={Colors.grey}
-              value={value}
-              onChangeText={(v) => {
-                clearErrors('first_name');
-                onChange(v);
-              }}
-              onBlur={onBlur}
-              autoCapitalize="words"
-              editable={!loading}
-            />
-            <View style={styles.errorSlot}>
-              <FieldError
-                show={!!showError('first_name')}
-                message={errors.first_name?.message}
-              />
-            </View>
-          </ThemedView>
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="last_name"
-        render={({ field: { onChange, onBlur, value } }) => (
-          <ThemedView style={styles.field}>
-            <ThemedText style={styles.label}>Last name</ThemedText>
-            <TextInput
-              style={[styles.input, showError('last_name') && styles.inputError]}
-              placeholder="Enter last name"
-              placeholderTextColor={Colors.grey}
-              value={value}
-              onChangeText={(v) => {
-                clearErrors('last_name');
-                onChange(v);
-              }}
-              onBlur={onBlur}
-              autoCapitalize="words"
-              editable={!loading}
-            />
-            <View style={styles.errorSlot}>
-              <FieldError
-                show={!!showError('last_name')}
-                message={errors.last_name?.message}
-              />
-            </View>
-          </ThemedView>
-        )}
-      />
-
       <Controller
         control={control}
         name="currency"
