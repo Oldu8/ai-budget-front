@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
 import { setAuthErrorHandler } from '@/shared/api/protectedClient';
@@ -25,9 +25,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const routerRef = useRef(router);
   routerRef.current = router;
 
+  /**
+   * Gates the full-screen spinner to the initial session check only. Without this,
+   * `status === 'loading'` during a login/signup submit would unmount `children`
+   * (including the auth screens), wiping local form state on failure (e.g. wrong
+   * password clearing the email/password fields).
+   */
+  const [hasBootstrapped, setHasBootstrapped] = useState(false);
+
   useEffect(() => {
     auth.bootstrapAuth();
   }, []);
+
+  useEffect(() => {
+    if (!hasBootstrapped && (status === 'authenticated' || status === 'unauthenticated')) {
+      setHasBootstrapped(true);
+    }
+  }, [status, hasBootstrapped]);
 
   // Apply the saved language whenever settings arrive (bootstrap, login, funnel,
   // profile update) — i18n itself always starts in "en".
@@ -73,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [status, segments, settings]);
 
-  if (status === 'idle' || status === 'loading') {
+  if (!hasBootstrapped) {
     return (
       <ThemedView style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.primary} />

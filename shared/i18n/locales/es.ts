@@ -41,6 +41,8 @@ export const es = {
       saveExpense: "Guardar gasto",
       datePrefix: "Fecha:",
       dateDone: "Listo",
+      label: "Etiqueta",
+      labelPlaceholder: "p. ej. Supermercado",
     },
     toast: {
       processingTitle: "Procesando...",

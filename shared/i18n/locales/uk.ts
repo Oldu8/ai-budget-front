@@ -41,6 +41,8 @@ export const uk = {
       saveExpense: "Зберегти витрату",
       datePrefix: "Дата:",
       dateDone: "Готово",
+      label: "Назва",
+      labelPlaceholder: "наприклад Продукти",
     },
     toast: {
       processingTitle: "Обробка...",

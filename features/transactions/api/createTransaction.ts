@@ -5,6 +5,7 @@ export interface CreateTransactionPayload {
   date: string;
   type: 'expense';
   category_id: number;
+  label?: string | null;
 }
 
 export async function createTransaction(

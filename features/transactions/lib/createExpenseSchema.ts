@@ -7,6 +7,7 @@ export const createExpenseSchema = z
       .number()
       .min(0.01, 'Amount must be greater than 0')
       .max(1_000_000, 'Amount is too large'),
+    label: z.union([z.string().max(255), z.null()]),
     /** Default `null` in the form; submit is blocked until a subcategory is chosen. */
     subcategoryId: z.union([z.null(), z.number()]),
     /** Local calendar day; default today in the form. */
@@ -30,6 +31,7 @@ export type CreateExpenseFormData = z.infer<typeof createExpenseSchema>;
 export function getDefaultExpenseFormValues(): CreateExpenseFormData {
   return {
     amount: 0,
+    label: null,
     subcategoryId: null,
     date: startOfDay(new Date()),
   };

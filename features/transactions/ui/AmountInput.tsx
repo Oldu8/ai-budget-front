@@ -24,6 +24,9 @@ import { ThemedText } from '@/shared/ui/ThemedText';
 /** iOS: toolbar above decimal-pad with "Done" to dismiss keyboard. */
 const IOS_AMOUNT_INPUT_ACCESSORY_ID = 'amount-input-keyboard-accessory';
 
+/** Covers up to 9,999,999.99 — comfortably above the 1,000,000 form max. */
+const MAX_AMOUNT_INPUT_LENGTH = 10;
+
 interface AmountInputProps<T extends FieldValues> {
   control: Control<T>;
   name: FieldPath<T>;
@@ -183,6 +186,7 @@ function AmountInputInner({
         inputAccessoryViewID={
           Platform.OS === 'ios' ? IOS_AMOUNT_INPUT_ACCESSORY_ID : undefined
         }
+        maxLength={MAX_AMOUNT_INPUT_LENGTH}
         style={styles.hiddenInput}
       />
     </View>

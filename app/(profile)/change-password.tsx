@@ -23,9 +23,9 @@ import { ThemedText } from '@/shared/ui/ThemedText';
 
 const schema = z
   .object({
-    current_password: z.string().min(1),
-    new_password: z.string().min(6),
-    confirm_password: z.string().min(1),
+    current_password: z.string().min(1).max(128),
+    new_password: z.string().min(6).max(128),
+    confirm_password: z.string().min(1).max(128),
   })
   .refine((d) => d.new_password === d.confirm_password, {
     path: ['confirm_password'],
@@ -135,6 +135,7 @@ export default function ChangePasswordScreen() {
                       error={fieldError(f.name)}
                       editable={!isSubmitting}
                       autoCapitalize="none"
+                      maxLength={128}
                     />
                   )}
                 />

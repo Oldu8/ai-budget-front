@@ -41,6 +41,9 @@ function parseToMajorUnits(sanitized: string): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+/** Covers up to 9,999,999.99 — comfortably above the 1,000,000 form max. */
+const MAX_AMOUNT_INPUT_LENGTH = 10;
+
 type SimplePriceInputProps<T extends FieldValues> = {
   control: Control<T>;
   name: FieldPath<T>;
@@ -159,6 +162,7 @@ function SimplePriceInputInner({
           }
           placeholder="0.00"
           placeholderTextColor={Colors.grey}
+          maxLength={MAX_AMOUNT_INPUT_LENGTH}
           style={styles.input}
         />
       </View>

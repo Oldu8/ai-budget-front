@@ -17,6 +17,7 @@ import { AmountInput } from '@/features/transactions/ui/AmountInput';
 import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
 import { TransactionDateField } from '@/features/transactions/ui/TransactionDateField';
 import { Button } from '@/shared/ui/Button';
+import { HookFormOutlinedTextField } from '@/shared/ui/HookFormOutlinedTextField';
 import { ScreenContainer } from '@/shared/ui/ScreenContainer';
 import { useToast } from '@/shared/ui/Toast';
 import { useWatch } from 'react-hook-form';
@@ -90,6 +91,16 @@ export default function ManualAddScreen() {
               control={form.control}
               name="amount"
               disabled={isLoading}
+            />
+
+            <HookFormOutlinedTextField
+              control={form.control}
+              name="label"
+              label={t('add.manual.label')}
+              placeholder={t('add.manual.labelPlaceholder')}
+              disabled={isLoading}
+              emptyHandling="nullIfEmpty"
+              maxLength={255}
             />
 
             <TransactionDateField
