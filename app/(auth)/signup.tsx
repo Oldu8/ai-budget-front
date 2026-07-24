@@ -23,8 +23,15 @@ import { useAuthContext } from '@/features/auth/providers/AuthProvider';
 import { Colors } from '@/shared/constants/theme';
 
 const schema = z.object({
-  email: z.string().min(1, 'Email is required').email('Invalid email format'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z
+    .string()
+    .min(1, 'Email is required')
+    .max(255, 'Email is too long')
+    .email('Invalid email format'),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128, 'Password is too long'),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -92,6 +99,7 @@ export default function SignupScreen() {
             onChangeText={(v) => handleChange('email', v)}
             error={errors.email?.message}
             editable={!loading}
+            maxLength={255}
           />
 
           <PasswordInput
@@ -101,6 +109,7 @@ export default function SignupScreen() {
             onChangeText={(v) => handleChange('password', v)}
             error={errors.password?.message}
             editable={!loading}
+            maxLength={128}
           />
 
           {error ? (

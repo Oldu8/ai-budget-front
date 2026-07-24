@@ -139,6 +139,7 @@ export default function ScanReviewItemScreen() {
               placeholder={t('add.receiptScan.itemLabelPlaceholder')}
               autoCapitalize="sentences"
               autoCorrect
+              maxLength={120}
             />
 
             <SimplePriceInput

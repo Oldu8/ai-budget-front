@@ -4,8 +4,8 @@ import { protectedPut } from '@/shared/api/protectedClient';
 
 const receiptItemPayloadSchema = z.object({
   id: z.number().optional(),
-  label: z.string().min(1),
-  amount: z.number().int(),
+  label: z.string().min(1).max(255),
+  amount: z.number().int().max(100_000_000),
   category_id: z.number().int().positive(),
 });
 

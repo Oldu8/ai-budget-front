@@ -41,6 +41,7 @@ export function useCreateTransaction() {
       date,
       type: "expense",
       category_id: subId,
+      label: data.label,
     });
   });
 

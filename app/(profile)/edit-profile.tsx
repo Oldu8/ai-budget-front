@@ -137,6 +137,7 @@ export default function EditProfileScreen() {
                       }}
                       onBlur={onBlur}
                       autoCapitalize="words"
+                      maxLength={50}
                       editable={!isSubmitting}
                     />
                     <View style={styles.errorSlot}>
@@ -171,6 +172,7 @@ export default function EditProfileScreen() {
                       }}
                       onBlur={onBlur}
                       autoCapitalize="words"
+                      maxLength={50}
                       editable={!isSubmitting}
                     />
                     <View style={styles.errorSlot}>

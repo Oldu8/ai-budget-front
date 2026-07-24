@@ -203,6 +203,8 @@ export const en = {
       saveExpense: "Save Expense",
       datePrefix: "Date:",
       dateDone: "Done",
+      label: "Label",
+      labelPlaceholder: "e.g. Groceries",
     },
     toast: {
       processingTitle: "Processing...",
