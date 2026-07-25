@@ -16,6 +16,8 @@ export interface SettingsRowProps {
   showChevron?: boolean;
   /** Chevron for navigation, picker for modal. Default: chevron */
   disclosureType?: 'chevron' | 'picker';
+  /** Red title/icon for destructive actions (e.g. delete account). */
+  destructive?: boolean;
 }
 
 export function SettingsRow({
@@ -26,7 +28,10 @@ export function SettingsRow({
   onPress,
   showChevron = true,
   disclosureType = 'chevron',
+  destructive = false,
 }: SettingsRowProps) {
+  const accent = destructive ? Colors.error : Colors.primary;
+
   return (
     <Pressable
       style={({ pressed }) => [styles.pressable, pressed && styles.rowPressed]}
@@ -36,10 +41,13 @@ export function SettingsRow({
     >
       <View style={styles.row}>
         <View style={styles.iconContainer}>
-          <MaterialIcons name={icon} size={22} color={Colors.primary} />
+          <MaterialIcons name={icon} size={22} color={accent} />
         </View>
         <View style={styles.content}>
-          <ThemedText style={styles.title} numberOfLines={1}>
+          <ThemedText
+            style={[styles.title, destructive && styles.titleDestructive]}
+            numberOfLines={1}
+          >
             {title}
           </ThemedText>
           {subtitle ? (
@@ -100,6 +108,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
     color: Colors.black,
+  },
+  titleDestructive: {
+    color: Colors.error,
   },
   subtitle: {
     fontSize: 13,

@@ -205,6 +205,14 @@ export function useAuth() {
     Analytics.setUser(null);
   }, [resetAuth]);
 
+  /** Soft-delete account, then clear local session (tokens already revoked server-side). */
+  const deleteAccount = useCallback(async () => {
+    await authApi.deleteAccount();
+    await clearTokens();
+    resetAuth();
+    Analytics.setUser(null);
+  }, [resetAuth]);
+
   /** Change password for a user who already has one. Returns true on success. */
   const changePassword = useCallback(
     async (currentPassword: string, newPassword: string) => {
@@ -297,6 +305,7 @@ export function useAuth() {
     signInWithProvider,
     changePassword,
     signOut,
+    deleteAccount,
     bootstrapAuth,
     refetchMe,
   };

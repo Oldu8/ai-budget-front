@@ -68,6 +68,7 @@ There is no separate `screens/` folder; routes live under `app/`.
 - **`useAuthContext()`** (from `useAuth`): `signIn`, `signUp`, `signInWithProvider`, `changePassword`, `signOut`, `bootstrapAuth`, `refetchMe`, `user`, `settings`, `subscription`, `subscriptionStatus`, `scanUsage`, `status`, `error`, `setError`.
 - **Social sign-in:** `SocialAuthButtons` on login/signup → `signInWithProvider('google'|'apple')` → native SDK `id_token` → `POST /api/auth/social`. Apple is iOS-only. Native token retrieval lives in `features/auth/lib/socialAuth.ts` (throws `SocialAuthNotConfiguredError` until provider SDKs + credentials are wired).
 - **Change password:** `app/(profile)/change-password.tsx` → `changePassword(current, new)` → `PUT /api/me/password`. The Profile entry is shown only when `user.has_password` (hidden for social-only accounts).
+- **Delete account:** Profile section «Delete account» (above Sign out) → row «Permanently delete account» → confirm `Alert` → `deleteAccount()` → `DELETE /api/me`, then clear local tokens (AuthProvider redirects to login).
 
 ---
 
