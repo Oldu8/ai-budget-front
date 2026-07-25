@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
@@ -40,14 +40,18 @@ export default function ProfileScreen() {
     subscriptionStatus,
     scanUsage,
     signOut,
+    deleteAccount,
     refetchMe,
   } = useAuthContext();
   const { requestAccess } = usePaidFeatureGate();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [currencyError, setCurrencyError] = useState<string | null>(null);
   const [languageError, setLanguageError] = useState<string | null>(null);
   const [timezoneError, setTimezoneError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+  const [deleteAccountError, setDeleteAccountError] = useState<string | null>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -64,8 +68,6 @@ export default function ProfileScreen() {
     }
   }, [refetchMe]);
 
-  const [logoutError, setLogoutError] = useState<string | null>(null);
-
   const handleSignOut = async () => {
     setLogoutError(null);
     setIsSigningOut(true);
@@ -76,6 +78,36 @@ export default function ProfileScreen() {
     } finally {
       setIsSigningOut(false);
     }
+  };
+
+  const runDeleteAccount = async () => {
+    setDeleteAccountError(null);
+    setIsDeletingAccount(true);
+    try {
+      await deleteAccount();
+    } catch {
+      setDeleteAccountError(
+        t('profile.deleteAccountError', 'Something went wrong. Please try again.')
+      );
+    } finally {
+      setIsDeletingAccount(false);
+    }
+  };
+
+  const handleDeleteAccount = () => {
+    if (isDeletingAccount) return;
+    Alert.alert(
+      t('profile.deleteConfirm.title'),
+      t('profile.deleteConfirm.message'),
+      [
+        { text: t('profile.deleteConfirm.cancel'), style: 'cancel' },
+        {
+          text: t('profile.deleteConfirm.confirm'),
+          style: 'destructive',
+          onPress: () => void runDeleteAccount(),
+        },
+      ]
+    );
   };
 
   const handleCurrencyChange = useCallback(
@@ -187,6 +219,7 @@ export default function ProfileScreen() {
             <SettingsRow
               icon="lock"
               title={t('auth.changePassword.title')}
+              subtitle={t('auth.changePassword.subtitle')}
               onPress={() => router.push('/(profile)/change-password')}
             />
           ) : null}
@@ -263,9 +296,22 @@ export default function ProfileScreen() {
           <SettingsRow
             icon="notifications"
             title={t('profile.notifications')}
+            subtitle={t('profile.notificationsSubtitle')}
             onPress={() => router.push('/(profile)/notifications')}
           />
         </SettingsSection>
+
+        <SettingsSection title={t('profile.sectionDeleteAccount')}>
+          <SettingsRow
+            icon="person-remove"
+            title={t('profile.deleteAccount')}
+            subtitle={t('profile.deleteAccountSubtitle')}
+            onPress={handleDeleteAccount}
+          />
+        </SettingsSection>
+        {deleteAccountError ? (
+          <ThemedText style={styles.deleteAccountError}>{deleteAccountError}</ThemedText>
+        ) : null}
 
         <View style={styles.logoutSection}>
           <Button
@@ -316,6 +362,13 @@ const styles = StyleSheet.create({
     color: Colors.error,
     textAlign: 'center',
     marginTop: 8,
+  },
+  deleteAccountError: {
+    fontSize: 13,
+    color: Colors.error,
+    marginTop: -12,
+    marginBottom: 12,
+    marginHorizontal: 4,
   },
   version: {
     fontSize: 13,

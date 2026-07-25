@@ -227,6 +227,7 @@ export const es = {
     sectionPersonalization: "Personalización",
     sectionData: "Datos",
     sectionNotifications: "Notificaciones",
+    sectionDeleteAccount: "Eliminar cuenta",
     editProfile: "Editar perfil",
     editProfileSubtitle: "Actualizar tu nombre",
     paymentAndPlan: "Pago y plan",
@@ -242,8 +243,19 @@ export const es = {
     exportData: "Exportar datos",
     exportDataSubtitle: "Descarga tus transacciones como CSV",
     notifications: "Notificaciones",
+    notificationsSubtitle: "Alertas push y por email",
     logout: "Cerrar sesión",
     logoutError: "Algo ha ido mal. Inténtalo de nuevo.",
+    deleteAccount: "Eliminar cuenta permanentemente",
+    deleteAccountSubtitle: "Esta acción no se puede deshacer",
+    deleteAccountError: "Algo ha ido mal. Inténtalo de nuevo.",
+    deleteConfirm: {
+      title: "¿Eliminar cuenta?",
+      message:
+        "Tu cuenta y datos personales se eliminarán. Una suscripción de pago activa se cancelará. Esta acción no se puede deshacer.",
+      confirm: "Eliminar cuenta",
+      cancel: "Cancelar",
+    },
     version: "Versión {{version}}",
     paymentPlanDescription:
       "Gestiona tus métodos de pago y plan de suscripción. Próximamente.",
@@ -494,6 +506,7 @@ export const es = {
     },
     changePassword: {
       title: "Cambiar contraseña",
+      subtitle: "Actualiza la contraseña de tu cuenta",
       currentLabel: "Contraseña actual",
       currentPlaceholder: "Introduce la contraseña actual",
       newLabel: "Nueva contraseña",

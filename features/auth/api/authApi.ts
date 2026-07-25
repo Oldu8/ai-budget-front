@@ -1,5 +1,5 @@
 import { api } from '@/shared/api/client';
-import { protectedPut } from '@/shared/api/protectedClient';
+import { protectedDelete, protectedPut } from '@/shared/api/protectedClient';
 import type {
   LoginResponse,
   RegisterResponse,
@@ -36,5 +36,10 @@ export const authApi = {
   /** Change password for the logged-in user (protected). */
   changePassword(payload: ChangePasswordBody) {
     return protectedPut<{ message: string }>('/api/me/password', payload);
+  },
+
+  /** Soft-delete the logged-in account. Sessions are revoked server-side. */
+  deleteAccount() {
+    return protectedDelete('/api/me');
   },
 };

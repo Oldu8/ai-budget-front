@@ -388,6 +388,7 @@ export const en = {
     sectionPersonalization: "Personalization",
     sectionData: "Data",
     sectionNotifications: "Notifications",
+    sectionDeleteAccount: "Delete account",
     editProfile: "Edit Profile",
     editProfileSubtitle: "Update your name",
     paymentAndPlan: "Payment & Plan",
@@ -403,8 +404,19 @@ export const en = {
     exportData: "Export Data",
     exportDataSubtitle: "Download your transactions as CSV",
     notifications: "Notifications",
+    notificationsSubtitle: "Push and email alerts",
     logout: "Sign out",
     logoutError: "Something went wrong. Please try again.",
+    deleteAccount: "Permanently delete account",
+    deleteAccountSubtitle: "This cannot be undone",
+    deleteAccountError: "Something went wrong. Please try again.",
+    deleteConfirm: {
+      title: "Delete account?",
+      message:
+        "Your account and personal data will be removed. An active paid subscription will be canceled. This cannot be undone.",
+      confirm: "Delete account",
+      cancel: "Cancel",
+    },
     version: "Version {{version}}",
     paymentPlanDescription:
       "Manage your payment methods and subscription plan. Coming soon.",
@@ -653,6 +665,7 @@ export const en = {
     },
     changePassword: {
       title: "Change password",
+      subtitle: "Update your account password",
       currentLabel: "Current password",
       currentPlaceholder: "Enter current password",
       newLabel: "New password",

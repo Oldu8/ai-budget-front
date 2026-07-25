@@ -224,6 +224,7 @@ export const uk = {
     sectionPersonalization: "Персоналізація",
     sectionData: "Дані",
     sectionNotifications: "Сповіщення",
+    sectionDeleteAccount: "Видалення акаунта",
     editProfile: "Редагувати профіль",
     editProfileSubtitle: "Оновити імʼя",
     paymentAndPlan: "Оплата та план",
@@ -239,8 +240,19 @@ export const uk = {
     exportData: "Експорт даних",
     exportDataSubtitle: "Завантажте транзакції у форматі CSV",
     notifications: "Сповіщення",
+    notificationsSubtitle: "Push та email-оповіщення",
     logout: "Вийти",
     logoutError: "Щось пішло не так. Спробуйте ще раз.",
+    deleteAccount: "Назавжди видалити акаунт",
+    deleteAccountSubtitle: "Цю дію не можна скасувати",
+    deleteAccountError: "Щось пішло не так. Спробуйте ще раз.",
+    deleteConfirm: {
+      title: "Видалити акаунт?",
+      message:
+        "Ваш акаунт і персональні дані буде видалено. Активну платну підписку буде скасовано. Цю дію не можна скасувати.",
+      confirm: "Видалити акаунт",
+      cancel: "Скасувати",
+    },
     version: "Версія {{version}}",
     paymentPlanDescription:
       "Керуйте способами оплати та планом підписки. Незабаром.",
@@ -490,6 +502,7 @@ export const uk = {
     },
     changePassword: {
       title: "Змінити пароль",
+      subtitle: "Оновіть пароль акаунта",
       currentLabel: "Поточний пароль",
       currentPlaceholder: "Введіть поточний пароль",
       newLabel: "Новий пароль",
