@@ -1,42 +1,44 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { router, useLocalSearchParams, usePathname } from 'expo-router';
-import React, { useEffect, useMemo } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { router, useLocalSearchParams, usePathname } from "expo-router";
+import React, { useEffect, useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { getReceiptItemCategoryCaption } from '@/features/receipt-scan/lib/receiptCategoryCaption';
+import { getReceiptItemCategoryCaption } from "@/features/receipt-scan/lib/receiptCategoryCaption";
 import {
   createReceiptItemEditSchema,
   type ReceiptItemEditFormData,
-} from '@/features/receipt-scan/model/createReceiptItemEditSchema';
-import { useReceiptReviewStore } from '@/features/receipt-scan/model/useReceiptReviewStore';
-import { useCategoriesQuery } from '@/features/home/model/useCategoriesQuery';
-import { CategoryGrid } from '@/features/transactions/ui/CategoryGrid';
-import { SimplePriceInput } from '@/features/transactions/ui/SimplePriceInput';
-import { BackButton } from '@/shared/ui/BackButton';
-import { Button } from '@/shared/ui/Button';
-import { HookFormOutlinedTextField } from '@/shared/ui/HookFormOutlinedTextField';
-import { ScreenContainer } from '@/shared/ui/ScreenContainer';
+} from "@/features/receipt-scan/model/createReceiptItemEditSchema";
+import { useReceiptReviewStore } from "@/features/receipt-scan/model/useReceiptReviewStore";
+import { useCategoriesQuery } from "@/features/home/model/useCategoriesQuery";
+import { CategoryGrid } from "@/features/transactions/ui/CategoryGrid";
+import { SimplePriceInput } from "@/features/transactions/ui/SimplePriceInput";
+import { BackButton } from "@/shared/ui/BackButton";
+import { Button } from "@/shared/ui/Button";
+import { HookFormOutlinedTextField } from "@/shared/ui/HookFormOutlinedTextField";
+import { ScreenContainer } from "@/shared/ui/ScreenContainer";
 
 export default function ScanReviewItemScreen() {
   const { t } = useTranslation();
   const headerHeight = useHeaderHeight();
   const pathname = usePathname();
   /** History stack provides native header back; add stack keeps floating BackButton. */
-  const showFloatingBack = !pathname.includes('/history/');
+  const showFloatingBack = !pathname.includes("/history/");
   const { itemId: itemIdParam } = useLocalSearchParams<{ itemId: string }>();
   const itemId = itemIdParam != null ? Number(itemIdParam) : NaN;
 
   const item = useReceiptReviewStore((s) =>
-    Number.isFinite(itemId) ? s.items.find((row) => row.id === itemId) : undefined
+    Number.isFinite(itemId)
+      ? s.items.find((row) => row.id === itemId)
+      : undefined,
   );
   const updateItem = useReceiptReviewStore((s) => s.updateItem);
 
@@ -47,12 +49,12 @@ export default function ScanReviewItemScreen() {
 
   const defaultValues = useMemo((): ReceiptItemEditFormData => {
     if (!item) {
-      return { label: '', amount: 0, subcategoryId: null };
+      return { label: "", amount: 0, subcategoryId: null };
     }
-    const trimmed = (item.label ?? '').trim();
+    const trimmed = (item.label ?? "").trim();
     /** Empty server labels left `canSave` false (label trim length 0); zod also needs ≥1 letter. */
     return {
-      label: trimmed.length > 0 ? trimmed : t('history.noLabel'),
+      label: trimmed.length > 0 ? trimmed : t("history.noLabel"),
       amount: item.amount / 100,
       subcategoryId: item.categoryId ?? null,
     };
@@ -60,15 +62,15 @@ export default function ScanReviewItemScreen() {
 
   const form = useForm<ReceiptItemEditFormData>({
     resolver: zodResolver(itemEditSchema),
-    mode: 'onSubmit',
-    reValidateMode: 'onChange',
+    mode: "onSubmit",
+    reValidateMode: "onChange",
     defaultValues,
     values: defaultValues,
   });
 
   const subcategoryId = useWatch({
     control: form.control,
-    name: 'subcategoryId',
+    name: "subcategoryId",
   });
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export default function ScanReviewItemScreen() {
   }, [item]);
 
   const handleSubcategorySelect = (id: number | null) => {
-    form.setValue('subcategoryId', id, {
+    form.setValue("subcategoryId", id, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
@@ -92,7 +94,7 @@ export default function ScanReviewItemScreen() {
     const categoryLabel = getReceiptItemCategoryCaption(
       categories,
       subId,
-      (key, opts) => t(key, opts)
+      (key, opts) => t(key, opts),
     );
     updateItem(item.id, {
       label: data.label.trim(),
@@ -103,11 +105,9 @@ export default function ScanReviewItemScreen() {
     router.back();
   });
 
-  const labelTrimmed = form.watch('label').trim();
+  const labelTrimmed = form.watch("label").trim();
   const canSave =
-    subcategoryId !== null &&
-    subcategoryId > 0 &&
-    labelTrimmed.length > 0;
+    subcategoryId !== null && subcategoryId > 0 && labelTrimmed.length > 0;
 
   if (!item) {
     return null;
@@ -117,17 +117,17 @@ export default function ScanReviewItemScreen() {
     <View style={styles.screen}>
       {/*TODO: вот это надо удалить, когда буду фиксить бек баттон */}
       {showFloatingBack ? <BackButton /> : null}
-      <ScreenContainer variant="default" edges={['bottom']}>
+      <ScreenContainer variant="default" edges={[]}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+          keyboardVerticalOffset={Platform.OS === "ios" ? headerHeight : 0}
           style={styles.keyboard}
         >
           <ScrollView
             bounces={false}
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode={
-              Platform.OS === 'ios' ? 'interactive' : 'on-drag'
+              Platform.OS === "ios" ? "interactive" : "on-drag"
             }
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
@@ -135,8 +135,8 @@ export default function ScanReviewItemScreen() {
             <HookFormOutlinedTextField
               control={form.control}
               name="label"
-              label={t('add.receiptScan.itemLabel')}
-              placeholder={t('add.receiptScan.itemLabelPlaceholder')}
+              label={t("add.receiptScan.itemLabel")}
+              placeholder={t("add.receiptScan.itemLabelPlaceholder")}
               autoCapitalize="sentences"
               autoCorrect
               maxLength={120}
@@ -161,13 +161,10 @@ export default function ScanReviewItemScreen() {
                 onPress={handleSave}
                 disabled={!canSave}
               >
-                {t('history.saveChanges')}
+                {t("history.saveChanges")}
               </Button>
-              <Button
-                variant="secondary"
-                onPress={() => router.back()}
-              >
-                {t('history.cancelEdit')}
+              <Button variant="secondary" onPress={() => router.back()}>
+                {t("history.cancelEdit")}
               </Button>
             </View>
           </ScrollView>

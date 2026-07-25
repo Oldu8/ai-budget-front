@@ -4,7 +4,7 @@
     "description": "AI-powered budgeting app for personal finance management.",
     "slug": "vtrata",
     "owner": "oldu8",
-    "version": "0.8.20",
+    "version": "0.8.21",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "vtrata",

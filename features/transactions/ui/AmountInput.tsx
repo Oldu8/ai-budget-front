@@ -19,6 +19,7 @@ import {
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { Colors } from '@/shared/constants/theme';
 import { getCurrencySymbol } from '@/shared/lib/getCurrencySymbol';
+import { groupThousands } from '@/shared/lib/groupThousands';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
 /** iOS: toolbar above decimal-pad with "Done" to dismiss keyboard. */
@@ -38,15 +39,18 @@ function formatAmount(value: number): string {
   return value.toFixed(2);
 }
 
+/** Matches the 1,000,000 form max — typing an 8th integer digit is simply ignored. */
+const MAX_INTEGER_DIGITS = 7;
+
 function sanitizeAmountInput(input: string): string {
   // iOS decimal pad often only has "," — treat like "."; display stays with "."
   const normalized = input.replace(/,/g, '.');
   const cleaned = normalized.replace(/[^0-9.]/g, '');
   const parts = cleaned.split('.');
+  const integerPart = parts[0].slice(0, MAX_INTEGER_DIGITS);
 
-  if (parts.length === 1) return cleaned;
+  if (parts.length === 1) return integerPart;
 
-  const integerPart = parts[0];
   const decimalPart = parts.slice(1).join('').slice(0, 2);
 
   return `${integerPart}.${decimalPart}`;
@@ -154,7 +158,7 @@ function AmountInputInner({
       >
         <ThemedText style={styles.display}>
           {symbol}
-          {displayValue}
+          {groupThousands(displayValue)}
         </ThemedText>
       </Pressable>
 

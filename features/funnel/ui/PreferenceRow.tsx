@@ -59,7 +59,7 @@ export function PreferenceRow({
 const styles = StyleSheet.create({
   pressable: {
     width: '100%',
-    marginBottom: 8,
+    marginBottom: 4,
     backgroundColor: Colors.white,
     borderRadius: 12,
     borderWidth: 1,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 4,
     flexWrap: 'nowrap',
   },

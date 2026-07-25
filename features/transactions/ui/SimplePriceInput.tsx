@@ -19,20 +19,32 @@ import {
 import { useUserStore } from '@/features/auth/model/useUserStore';
 import { Colors } from '@/shared/constants/theme';
 import { getCurrencySymbol } from '@/shared/lib/getCurrencySymbol';
+import { groupThousands } from '@/shared/lib/groupThousands';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
-function formatUsTwoDecimals(value: number): string {
+function formatPlainTwoDecimals(value: number): string {
   if (!Number.isFinite(value) || value === 0) return '';
   return value.toFixed(2);
 }
+
+/** Settled (not-focused) display only — editing starts from the ungrouped plain text
+ * so backspacing never has to skip over a grouping space. */
+function formatGroupedTwoDecimals(value: number): string {
+  const plain = formatPlainTwoDecimals(value);
+  return plain ? groupThousands(plain) : plain;
+}
+
+/** Matches the 1,000,000 form max — typing an 8th integer digit is simply ignored. */
+const MAX_INTEGER_DIGITS = 7;
 
 /** Normalize comma decimal to dot; keep digits and at most one dot. */
 function sanitizeDecimalInput(input: string): string {
   const normalized = input.replace(/,/g, '.');
   const cleaned = normalized.replace(/[^0-9.]/g, '');
   const parts = cleaned.split('.');
-  if (parts.length <= 1) return cleaned;
-  return `${parts[0]}.${parts.slice(1).join('').slice(0, 2)}`;
+  const integerPart = parts[0].slice(0, MAX_INTEGER_DIGITS);
+  if (parts.length <= 1) return integerPart;
+  return `${integerPart}.${parts.slice(1).join('').slice(0, 2)}`;
 }
 
 function parseToMajorUnits(sanitized: string): number {
@@ -94,14 +106,14 @@ function SimplePriceInputInner({
     `simplePriceInputAccessory-${Math.random().toString(36).slice(2, 11)}`
   ).current;
   const [focused, setFocused] = useState(false);
-  const [text, setText] = useState(() => formatUsTwoDecimals(value));
+  const [text, setText] = useState(() => formatGroupedTwoDecimals(value));
   const prevValueRef = useRef(value);
 
   useEffect(() => {
     if (focused) return;
     if (prevValueRef.current !== value) {
       prevValueRef.current = value;
-      setText(value > 0 ? formatUsTwoDecimals(value) : '');
+      setText(value > 0 ? formatGroupedTwoDecimals(value) : '');
     }
   }, [value, focused]);
 
@@ -120,13 +132,13 @@ function SimplePriceInputInner({
     const sanitized = sanitizeDecimalInput(text);
     const major = parseToMajorUnits(sanitized);
     onChange(major);
-    setText(major > 0 ? formatUsTwoDecimals(major) : '');
+    setText(major > 0 ? formatGroupedTwoDecimals(major) : '');
   }, [text, onChange]);
 
   const handleFocus = useCallback(() => {
     setFocused(true);
     if (value > 0) {
-      const s = formatUsTwoDecimals(value);
+      const s = formatPlainTwoDecimals(value);
       setText(s === '0.00' ? '' : s);
     }
   }, [value]);
