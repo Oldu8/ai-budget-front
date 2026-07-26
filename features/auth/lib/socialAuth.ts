@@ -142,12 +142,19 @@ export async function getProviderIdToken(provider: SocialProvider): Promise<Soci
   }
 }
 
+/**
+ * Google button is hidden until the Android build is ready to test it (backend +
+ * native wiring already work). Flip to `true` when starting the Android build.
+ */
+const GOOGLE_AUTH_ENABLED = false;
+
 /** Whether a provider button should be shown. */
 export function isProviderAvailable(provider: SocialProvider, _os: string): boolean {
   // Whole feature is off until after release (see SOCIAL_AUTH_ENABLED).
   if (!SOCIAL_AUTH_ENABLED) return false;
   // Native social sign-in only works in a dev build, not Expo Go.
   if (isExpoGo) return false;
+  if (provider === 'google') return GOOGLE_AUTH_ENABLED;
   // Apple is iOS-only.
   if (provider === 'apple') return _os === 'ios';
   return true;
