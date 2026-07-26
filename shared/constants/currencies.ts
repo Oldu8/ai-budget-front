@@ -157,4 +157,18 @@ export const CURRENCY_ITEMS: SelectItem[] = [
     leftIcon: "L",
     keywords: ["moldovan", "leu", "mdl"],
   },
+  {
+    label: "Thai Baht",
+    value: "THB",
+    badge: "THB",
+    leftIcon: "฿",
+    keywords: ["thai", "baht", "thb"],
+  },
+  {
+    label: "Vietnamese Dong",
+    value: "VND",
+    badge: "VND",
+    leftIcon: "₫",
+    keywords: ["vietnamese", "dong", "vnd"],
+  },
 ];
