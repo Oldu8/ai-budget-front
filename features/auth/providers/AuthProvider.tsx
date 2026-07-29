@@ -5,6 +5,7 @@ import { setAuthErrorHandler } from '@/shared/api/protectedClient';
 import { clearTokens } from '@/shared/storage/tokenStorage';
 import { useAuth } from '@/features/auth/model/useAuth';
 import { useUserStore } from '@/features/auth/model/useUserStore';
+import { configureRevenueCat, logOutRevenueCat } from '@/features/billing';
 import {
   setLanguage,
   supportedLanguages,
@@ -21,9 +22,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
   const segments = useSegments();
-  const { status, settings } = auth;
+  const { status, settings, user } = auth;
   const routerRef = useRef(router);
   routerRef.current = router;
+  const prevStatusRef = useRef(status);
 
   /**
    * Gates the full-screen spinner to the initial session check only. Without this,
@@ -54,6 +56,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLanguage(savedLanguage as SupportedLanguage);
     }
   }, [savedLanguage]);
+
+  // Identify the RevenueCat customer with our own user id (iOS only) so the webhook
+  // on the backend can match purchases straight to app_users. No-op on web/Android.
+  useEffect(() => {
+    if (status === 'authenticated' && user?.id) {
+      configureRevenueCat(String(user.id));
+    }
+    if (prevStatusRef.current === 'authenticated' && status === 'unauthenticated') {
+      logOutRevenueCat();
+    }
+    prevStatusRef.current = status;
+  }, [status, user?.id]);
 
   useEffect(() => {
     setAuthErrorHandler(async () => {
