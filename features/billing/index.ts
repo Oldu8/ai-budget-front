@@ -7,6 +7,7 @@ export {
   planIncludesPaidFeature,
   type PaidFeature,
 } from '@/features/billing/lib/planEntitlements';
+export { configureRevenueCat, logOutRevenueCat } from '@/features/billing/lib/revenueCat';
 export type { BillingPlan, BillingPlanType } from '@/features/billing/types';
 export { PaywallSheet } from '@/features/billing/ui/PaywallSheet';
 export { BillingReturnListener } from '@/features/billing/ui/BillingReturnListener';

@@ -15,4 +15,6 @@ export const env = {
   /** Google OAuth client ids (public). Used to obtain an id_token for /api/auth/social. */
   googleWebClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
   googleIosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
+  /** RevenueCat public SDK key (iOS app). Empty on web/Android — RevenueCat is not configured there. */
+  revenueCatIosKey: process.env.EXPO_PUBLIC_REVENUE_CAT_KEY ?? '',
 } as const;
