@@ -24,7 +24,7 @@ type UserState = {
 
   setTokens: (tokens: { accessToken: string; refreshToken: string } | null) => void;
   setUserData: (data: {
-    user: AppUser | null;
+    user?: AppUser | null;
     settings?: AppUserSettings | null;
     subscription?: UserSubscription | null;
     subscriptionStatus?: string | null;
