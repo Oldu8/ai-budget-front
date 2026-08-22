@@ -53,14 +53,24 @@ export function logOutRevenueCat(): void {
 
 export class RevenueCatCancelledError extends Error {}
 
+/** StoreKit refused the purchase because this Apple ID already holds it (stale local subscription state). */
+export class RevenueCatAlreadyOwnedError extends Error {}
+
 function findPackage(packages: PurchasesPackage[], identifier: string): PurchasesPackage | undefined {
   return packages.find((p) => p.identifier === identifier);
 }
 
+async function getCurrentPackages(): Promise<PurchasesPackage[]> {
+  const offerings = await Purchases.getOfferings();
+  return offerings.current?.availablePackages ?? [];
+}
+
 /**
- * Buys the package mapped to `planType` from the current Offering.
- * Resolves once Apple confirms the purchase — backend plan sync happens via the
- * RevenueCat webhook, same as the Stripe flow polls `/me` after checkout.
+ * Buys the package mapped to `planType` from the current Offering. A purchase that resolves
+ * without throwing is treated as success — checking `customerInfo.entitlements.active`
+ * synchronously off the purchase result turned out to be racy (RevenueCat doesn't always have
+ * it updated in that exact response yet), so we trust the resolved promise itself instead. The
+ * webhook still persists the plan in our DB in the background, decoupled from this call.
  */
 export async function purchasePlan(planType: BillingPlanType): Promise<void> {
   const packageId = PACKAGE_IDS[planType as PlanType];
@@ -68,8 +78,7 @@ export async function purchasePlan(planType: BillingPlanType): Promise<void> {
     throw new Error(`No RevenueCat package mapped for plan "${planType}"`);
   }
 
-  const offerings = await Purchases.getOfferings();
-  const pkg = offerings.current ? findPackage(offerings.current.availablePackages, packageId) : undefined;
+  const pkg = findPackage(await getCurrentPackages(), packageId);
   if (!pkg) {
     throw new Error(`Package "${packageId}" not found in the current RevenueCat offering`);
   }
@@ -77,9 +86,44 @@ export async function purchasePlan(planType: BillingPlanType): Promise<void> {
   try {
     await Purchases.purchasePackage(pkg);
   } catch (err) {
-    if ((err as PurchasesError)?.code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
+    const code = (err as PurchasesError)?.code;
+    if (code === PURCHASES_ERROR_CODE.PURCHASE_CANCELLED_ERROR) {
       throw new RevenueCatCancelledError();
+    }
+    if (code === PURCHASES_ERROR_CODE.PRODUCT_ALREADY_PURCHASED_ERROR) {
+      throw new RevenueCatAlreadyOwnedError();
     }
     throw err;
   }
+}
+
+/**
+ * Re-syncs past purchases from Apple onto this account (Apple requires a visible "Restore
+ * Purchases" action for any app selling restorable IAP — e.g. after a reinstall, or a second
+ * device signed into the same Apple ID). Resolves `true` if anything was found and restored.
+ */
+export async function restorePurchases(): Promise<boolean> {
+  const customerInfo = await Purchases.restorePurchases();
+  return Object.keys(customerInfo.entitlements.active).length > 0;
+}
+
+/**
+ * Apple's own localized price string per plan (e.g. "$9.99"), read straight off the
+ * StoreKit product. The backend's price/currency is Stripe-oriented (fixed EUR) and can
+ * mismatch what Apple actually charges a given buyer, whose price depends on their App
+ * Store storefront country — this is the source of truth for what iOS users actually pay.
+ */
+export async function getIosPriceStrings(): Promise<Partial<Record<PlanType, string>>> {
+  const packages = await getCurrentPackages();
+  const result: Partial<Record<PlanType, string>> = {};
+
+  for (const planType of Object.keys(PACKAGE_IDS) as PlanType[]) {
+    const packageId = PACKAGE_IDS[planType];
+    const pkg = packageId ? findPackage(packages, packageId) : undefined;
+    if (pkg) {
+      result[planType] = pkg.product.priceString;
+    }
+  }
+
+  return result;
 }

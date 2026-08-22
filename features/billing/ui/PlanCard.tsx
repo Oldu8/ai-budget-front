@@ -17,16 +17,18 @@ interface PlanCardProps {
   onSelect: (plan: BillingPlan) => void;
   loading?: boolean;
   selectLabel?: string;
+  /** Apple's localized price string for this plan (iOS only) — overrides the backend's price. */
+  priceOverride?: string;
 }
 
-export function PlanCard({ plan, isCurrent, onSelect, loading, selectLabel }: PlanCardProps) {
+export function PlanCard({ plan, isCurrent, onSelect, loading, selectLabel, priceOverride }: PlanCardProps) {
   const { t } = useTranslation();
   const isFree = plan.type === PlanType.Free;
   const copy: PlanCopy | null = getPlanCopy(t, plan.type);
 
   const priceLine = isFree
     ? t('billing.freeLabel', 'Free')
-    : formatMinorAsCurrency(plan.price, plan.currency ?? 'usd');
+    : priceOverride ?? formatMinorAsCurrency(plan.price, plan.currency ?? 'usd');
 
   return (
     <View

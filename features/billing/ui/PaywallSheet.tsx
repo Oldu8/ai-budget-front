@@ -20,10 +20,13 @@ import Animated, {
 
 import { PlanType } from '@/entities/user';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
+import { isRevenueCatPlatform } from '@/features/billing/lib/revenueCat';
 import { useBillingActions } from '@/features/billing/model/useBillingActions';
 import { usePaywallStore } from '@/features/billing/model/usePaywallStore';
+import { useIosPrices } from '@/features/billing/model/useIosPrices';
 import { usePlansQuery } from '@/features/billing/model/usePlansQuery';
 import { PlanCard } from '@/features/billing/ui/PlanCard';
+import { SubscriptionTermsFooter } from '@/features/billing/ui/SubscriptionTermsFooter';
 import { Analytics } from '@/shared/analytics';
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
@@ -44,6 +47,7 @@ export function PaywallSheet() {
   const currentPlanType = subscription?.plan?.type ?? PlanType.Free;
 
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
+  const { data: iosPrices } = useIosPrices();
   const {
     startCheckout,
     checkoutLoadingPlanType,
@@ -164,6 +168,7 @@ export function PaywallSheet() {
                 key={plan.type}
                 plan={plan}
                 isCurrent={plan.type === currentPlanType}
+                priceOverride={iosPrices?.[plan.type as PlanType]}
                 onSelect={() =>
                   hasActivePaidPlan
                     ? void openPortal(plan.type)
@@ -180,6 +185,7 @@ export function PaywallSheet() {
                 }
               />
             ))}
+            {isRevenueCatPlatform() ? <SubscriptionTermsFooter /> : null}
           </ScrollView>
         )}
       </Animated.View>

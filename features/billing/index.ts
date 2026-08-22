@@ -1,4 +1,5 @@
 export { usePlansQuery } from '@/features/billing/model/usePlansQuery';
+export { useIosPrices } from '@/features/billing/model/useIosPrices';
 export { useBillingActions } from '@/features/billing/model/useBillingActions';
 export { usePaidFeatureGate } from '@/features/billing/model/usePaidFeatureGate';
 export { usePaywallStore } from '@/features/billing/model/usePaywallStore';

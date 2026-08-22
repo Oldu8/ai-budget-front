@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
+  Pressable,
   ScrollView,
   StyleSheet,
   View,
@@ -10,9 +11,11 @@ import {
 
 import { PlanType } from '@/entities/user';
 import { useAuthContext } from '@/features/auth/providers/AuthProvider';
-import { useBillingActions, usePlansQuery } from '@/features/billing';
+import { useBillingActions, useIosPrices, usePlansQuery } from '@/features/billing';
+import { isRevenueCatPlatform } from '@/features/billing/lib/revenueCat';
 import { getPlanFeatureLines } from '@/features/billing/lib/planMarketingCopy';
 import { PlanCard } from '@/features/billing/ui/PlanCard';
+import { SubscriptionTermsFooter } from '@/features/billing/ui/SubscriptionTermsFooter';
 import { UpgradePromoCard } from '@/features/billing/ui/UpgradePromoCard';
 import { SubscriptionProfileBlock } from '@/features/subscription';
 import { Colors } from '@/shared/constants/theme';
@@ -23,10 +26,13 @@ export default function PaymentPlanScreen() {
   const { t } = useTranslation();
   const { subscription, subscriptionStatus, scanUsage } = useAuthContext();
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
+  const { data: iosPrices } = useIosPrices();
   const {
     startCheckout,
     openPortal,
     openPaywall,
+    restorePurchases,
+    isRestoring,
     checkoutLoadingPlanType,
     portalLoadingPlanType,
   } = useBillingActions();
@@ -105,6 +111,7 @@ export default function PaymentPlanScreen() {
                   key={plan.type}
                   plan={plan}
                   isCurrent={plan.type === currentPlan}
+                  priceOverride={iosPrices?.[plan.type as PlanType]}
                   onSelect={(p) =>
                     isPaid ? void openPortal(p.type) : void startCheckout(p.type)
                   }
@@ -120,6 +127,25 @@ export default function PaymentPlanScreen() {
             )}
           </Section>
 
+          {isRevenueCatPlatform() ? (
+            <>
+              <SubscriptionTermsFooter />
+              <Pressable
+                style={styles.restoreButton}
+                onPress={() => void restorePurchases()}
+                disabled={isRestoring}
+                accessibilityRole="button"
+              >
+                {isRestoring ? (
+                  <ActivityIndicator color={Colors.primary} />
+                ) : (
+                  <ThemedText style={styles.restoreButtonText}>
+                    {t('billing.restorePurchases', 'Restore Purchases')}
+                  </ThemedText>
+                )}
+              </Pressable>
+            </>
+          ) : null}
         </ScrollView>
       </ScreenContainer>
     </View>
@@ -180,5 +206,14 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     paddingTop: 16,
     textAlign: 'center',
+  },
+  restoreButton: {
+    alignItems: 'center',
+    paddingVertical: 12,
+  },
+  restoreButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
   },
 });
