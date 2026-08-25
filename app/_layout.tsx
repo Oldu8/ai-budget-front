@@ -10,12 +10,15 @@ import 'react-native-reanimated';
 
 import { AuthProvider } from '@/features/auth/providers/AuthProvider';
 import { BillingReturnListener, PaywallSheet } from '@/features/billing';
+import { setupCrashReporting } from '@/shared/crashlytics';
 import { ToastOverlay, ToastProvider } from '@/shared/ui/Toast';
 
 export const unstable_settings = {
   /** Full path: bare `(tabs)` is unreliable; see Expo Router `initialRouteName` / root stack. */
   initialRouteName: 'index',
 };
+
+setupCrashReporting();
 
 const queryClient = new QueryClient();
 

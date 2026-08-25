@@ -11,7 +11,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "usesAppleSignIn": true,
       "bundleIdentifier": "vtrata.oldu",
       "googleServicesFile": "./GoogleService-Info.plist",
@@ -74,6 +74,7 @@
       ],
       "@react-native-firebase/app",
       "@react-native-firebase/analytics",
+      "@react-native-firebase/crashlytics",
       "expo-apple-authentication",
       [
         "expo-build-properties",

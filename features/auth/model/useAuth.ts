@@ -12,6 +12,7 @@ import {
 import { useCallback } from "react";
 
 import { Analytics } from "@/shared/analytics";
+import { Crashlytics } from "@/shared/crashlytics";
 
 /** Translation key for the last auth error (e.g. auth.error.invalidCredentials). */
 const AUTH_ERROR_KEYS = {
@@ -74,6 +75,7 @@ export function useAuth() {
         const appUser = mapAuthUserToAppUser(data.user);
         setUserData({ user: appUser });
         Analytics.setUser(String(appUser.id));
+        Crashlytics.setUser(String(appUser.id));
         Analytics.logSignUp("email");
         try {
           const me = await meApi.getMe();
@@ -115,6 +117,7 @@ export function useAuth() {
           settings: data.settings ?? undefined,
         });
         Analytics.setUser(String(appUser.id));
+        Crashlytics.setUser(String(appUser.id));
         Analytics.logLogin("email");
         try {
           const me = await meApi.getMe();
@@ -157,6 +160,7 @@ export function useAuth() {
           settings: data.settings ?? undefined,
         });
         Analytics.setUser(String(appUser.id));
+        Crashlytics.setUser(String(appUser.id));
         // Social sign-in can be a first-time sign-up or a return login; the
         // backend does not distinguish them here, so we log it as a login.
         Analytics.logLogin(provider === "apple" ? "apple" : "google");
@@ -203,6 +207,7 @@ export function useAuth() {
     await clearTokens();
     resetAuth();
     Analytics.setUser(null);
+    Crashlytics.setUser(null);
   }, [resetAuth]);
 
   /** Soft-delete account, then clear local session (tokens already revoked server-side). */
@@ -211,6 +216,7 @@ export function useAuth() {
     await clearTokens();
     resetAuth();
     Analytics.setUser(null);
+    Crashlytics.setUser(null);
   }, [resetAuth]);
 
   /** Change password for a user who already has one. Returns true on success. */
