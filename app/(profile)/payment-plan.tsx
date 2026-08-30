@@ -24,9 +24,9 @@ import { ThemedText } from '@/shared/ui/ThemedText';
 
 export default function PaymentPlanScreen() {
   const { t } = useTranslation();
-  const { subscription, subscriptionStatus, scanUsage } = useAuthContext();
+  const { subscription, subscriptionStatus, scanUsage, status } = useAuthContext();
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
-  const { data: iosPrices } = useIosPrices();
+  const { data: iosPrices } = useIosPrices(status === 'authenticated');
   const {
     startCheckout,
     openPortal,

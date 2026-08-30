@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import { useRouter, useSegments } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { setAuthErrorHandler } from '@/shared/api/protectedClient';
 import { clearTokens } from '@/shared/storage/tokenStorage';
 import { useAuth } from '@/features/auth/model/useAuth';
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const auth = useAuth();
   const router = useRouter();
   const segments = useSegments();
+  const queryClient = useQueryClient();
   const { status, settings, user } = auth;
   const routerRef = useRef(router);
   routerRef.current = router;
@@ -62,12 +64,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (status === 'authenticated' && user?.id) {
       configureRevenueCat(String(user.id));
+      // useIosPrices() can fire (and fail — SDK not configured yet) before this runs;
+      // re-run it now that RevenueCat is actually configured.
+      void queryClient.invalidateQueries({ queryKey: ['billing', 'ios-prices'] });
     }
     if (prevStatusRef.current === 'authenticated' && status === 'unauthenticated') {
       logOutRevenueCat();
     }
     prevStatusRef.current = status;
-  }, [status, user?.id]);
+  }, [status, user?.id, queryClient]);
 
   useEffect(() => {
     setAuthErrorHandler(async () => {

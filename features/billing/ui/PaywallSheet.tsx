@@ -43,11 +43,11 @@ export function PaywallSheet() {
   const [isMounted, setIsMounted] = useState(false);
   const backdropOpacity = useSharedValue(0);
   const sheetTranslateY = useSharedValue(SCREEN_HEIGHT);
-  const { subscription } = useAuthContext();
+  const { subscription, status } = useAuthContext();
   const currentPlanType = subscription?.plan?.type ?? PlanType.Free;
 
   const { data: plans, isLoading, isError, refetch } = usePlansQuery();
-  const { data: iosPrices } = useIosPrices();
+  const { data: iosPrices } = useIosPrices(status === 'authenticated');
   const {
     startCheckout,
     checkoutLoadingPlanType,
