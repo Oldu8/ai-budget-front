@@ -3,11 +3,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  Dimensions,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import Animated, {
@@ -31,10 +31,12 @@ import { Analytics } from '@/shared/analytics';
 import { Colors } from '@/shared/constants/theme';
 import { ThemedText } from '@/shared/ui/ThemedText';
 
-const SCREEN_HEIGHT = Dimensions.get('window').height;
-
 export function PaywallSheet() {
   const { t } = useTranslation();
+  /** Reactive — a static Dimensions.get() snapshot goes stale on iPad, where the app's
+   * window can resize at runtime (Split View, Slide Over, Stage Manager), leaving the
+   * sheet's "off-screen" position wrong and its buttons out of reach. */
+  const { height: screenHeight } = useWindowDimensions();
   /** Separate selectors — object selector would return a new ref every time and loop updates. */
   const isOpen = usePaywallStore((s) => s.isOpen);
   const contextTitle = usePaywallStore((s) => s.contextTitle);
@@ -42,7 +44,7 @@ export function PaywallSheet() {
   const close = usePaywallStore((s) => s.close);
   const [isMounted, setIsMounted] = useState(false);
   const backdropOpacity = useSharedValue(0);
-  const sheetTranslateY = useSharedValue(SCREEN_HEIGHT);
+  const sheetTranslateY = useSharedValue(screenHeight);
   const { subscription, status } = useAuthContext();
   const currentPlanType = subscription?.plan?.type ?? PlanType.Free;
 
@@ -101,7 +103,7 @@ export function PaywallSheet() {
     } else if (isMounted) {
       backdropOpacity.value = withTiming(0, { duration: 200 });
       sheetTranslateY.value = withTiming(
-        SCREEN_HEIGHT,
+        screenHeight,
         { duration: 240, easing: Easing.in(Easing.cubic) },
         (finished) => {
           if (finished) runOnJS(setIsMounted)(false);

@@ -63,7 +63,8 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow Vtrata to access your microphone for voice expense entry."
+          "microphonePermission": "Allow Vtrata to access your microphone for voice expense entry.",
+          "enableBackgroundPlayback": false
         }
       ],
       [
