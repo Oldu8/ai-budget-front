@@ -17,7 +17,7 @@ import { CURRENCY_ITEMS } from '@/shared/constants/currencies';
 import { LANGUAGE_ITEMS } from '@/shared/constants/languages';
 import { Colors } from '@/shared/constants/theme';
 import { TIMEZONE_ITEMS } from '@/shared/constants/timezones';
-import { setLanguage } from '@/shared/i18n';
+import { setLanguage, type SupportedLanguage } from '@/shared/i18n';
 import { SearchableSelect } from '@/shared/ui/SearchableSelect';
 import { ThemedText } from '@/shared/ui/ThemedText';
 import { ThemedView } from '@/shared/ui/ThemedView';
@@ -74,7 +74,7 @@ export function BasicSettingsForm() {
         user: user ?? null,
         settings,
       });
-      setLanguage(data.language as 'en' | 'uk' | 'es');
+      setLanguage(data.language as SupportedLanguage);
       router.push('/(funnel)/visibility-questions');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Something went wrong');

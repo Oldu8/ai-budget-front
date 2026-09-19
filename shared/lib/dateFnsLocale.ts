@@ -1,11 +1,12 @@
 import type { Locale } from "date-fns";
-import { enUS, es, uk } from "date-fns/locale";
+import { enUS, es, ru, uk } from "date-fns/locale";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 const DATE_FNS_LOCALES: Record<string, Locale> = {
   en: enUS,
   es,
+  ru,
   uk,
 };
 
